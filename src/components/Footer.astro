@@ -1,6 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import logo from '../assets/brand/logo.png';
+import Icon from './Icon.astro';
+import { CREATOR_GITHUB_URL } from '../lib/constants';
 
 const year = new Date().getFullYear();
 ---
@@ -27,6 +29,17 @@ const year = new Date().getFullYear();
       </div>
     </div>
 
-    <p class="mt-12 text-xs text-[var(--color-ink-faint)]">&copy; {year} Project Arwen.</p>
+    <div class="mt-12 flex flex-wrap items-center justify-between gap-4">
+      <p class="text-xs text-[var(--color-ink-faint)]">&copy; {year} Project Arwen.</p>
+      <a
+        href={CREATOR_GITHUB_URL}
+        target="_blank"
+        rel="noreferrer"
+        class="inline-flex items-center gap-1.5 text-xs text-[var(--color-ink-faint)] hover:text-[var(--color-ink)]"
+      >
+        <Icon name="github-logo" class="h-3.5 w-3.5" />
+        Made by relense
+      </a>
+    </div>
   </div>
 </footer>

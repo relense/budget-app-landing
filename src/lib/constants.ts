@@ -4,3 +4,5 @@
 // Expected contract: POST { email: string } -> 201 on success, 409 if the
 // email is already on the list, anything else treated as a generic error.
 export const WAITLIST_API_URL: string | null = null;
+
+export const CREATOR_GITHUB_URL = 'https://github.com/relense';
