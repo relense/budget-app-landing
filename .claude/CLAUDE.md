@@ -4,10 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Marketing landing page for **Budget Tracker**, a shared, multi-currency budget and savings
-tracker. Points visitors to the live web app (`https://budget-app-web-sjzr.onrender.com`) and the
-GitHub repos, and hosts the product's real `/privacy` and `/terms` pages (not links out to the web
-app). No auth, no data fetching, no backend of its own.
+Marketing landing page for **Project Arwen** (on-page product name; repo/package name stays
+`budget-app-landing`), a shared, multi-currency budget and savings tracker. Nothing is public yet:
+the web app is still in staging and the mobile apps aren't published, so the page's primary CTA is
+a waitlist email signup, not a link to the app. Hosts the product's real `/privacy` and `/terms`
+pages. No GitHub/source links on the page (removed on request). No auth, no data fetching, no
+backend of its own besides the (not-yet-built) waitlist API it POSTs to.
 
 Sibling repos in the parent `ai-projects/` directory (same product, separate deploys):
 `budget-app-web` (React/Vite web app), `budget-app-api` (Fastify/GraphQL backend),
@@ -31,9 +33,9 @@ See `docs/PLAN.md` for the original scaffolding plan and rationale.
 
 Astro 5 + Tailwind CSS v4 (CSS-first `@theme`, no `tailwind.config.js`), static output
 (`output: 'static'`). No React, no client state. The only client JS is small inline `<script>`
-blocks: the nav's mobile menu toggle, the screenshot gallery's desktop/mobile tab switcher, and a
-shared IntersectionObserver-based scroll-reveal (`[data-reveal]` in `src/styles/global.css`,
-wired up once in `src/layouts/BaseLayout.astro`).
+blocks: the nav's mobile menu toggle, `Waitlist.astro`'s form submit handler (client-side `fetch()`
+POST to `WAITLIST_API_URL`), and a shared IntersectionObserver-based scroll-reveal (`[data-reveal]`
+in `src/styles/global.css`, wired up once in `src/layouts/BaseLayout.astro`).
 
 ## Commands
 
@@ -53,7 +55,8 @@ npm run preview   # serve the production build locally
 - `src/layouts/LegalLayout.astro` — shared shell for `/privacy` and `/terms`
 - `src/assets/brand/`, `src/assets/screenshots/` — copied from `budget-app-web`'s `public/` and
   `design/` folders, optimized at build time via `astro:assets` (`<Image />`)
-- `src/lib/constants.ts` — web app URL, GitHub repo links, app store links (currently `null`)
+- `src/lib/constants.ts` — `WAITLIST_API_URL` (currently `null`, no backend built yet; see Known
+  TODOs)
 
 ## Brand tokens
 
@@ -64,8 +67,11 @@ tokens for this repo; don't reintroduce a `tailwind.config.js`.
 
 ## Known TODOs
 
-- `IOS_STORE_URL` / `ANDROID_STORE_URL` in `src/lib/constants.ts` are `null` until the mobile app
-  is published. `GetTheApp.astro` renders a disabled state until they're set.
+- `WAITLIST_API_URL` in `src/lib/constants.ts` is `null`, there's no waitlist backend yet.
+  `Waitlist.astro`'s form validates and shows a clear "not connected yet" state instead of faking
+  success. Contract it expects once an endpoint exists: `POST { email: string }` -> `201` success,
+  `409` if already registered, anything else treated as a generic error. Needs CORS enabled for
+  this site's origin (it's a cross-origin browser `fetch()`).
 - `astro.config.mjs`'s `site` and `public/robots.txt`'s sitemap line use a placeholder domain
   (`https://budgettracker.app`). Update both once a real domain is chosen, and add
   `@astrojs/sitemap` at that point.

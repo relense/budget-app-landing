@@ -2,7 +2,6 @@
 import { Image } from 'astro:assets';
 import desktopHome from '../assets/screenshots/desktop-home.png';
 import mobileHome from '../assets/screenshots/mobile-home.png';
-import { WEB_APP_URL } from '../lib/constants';
 import Icon from './Icon.astro';
 ---
 
@@ -29,10 +28,10 @@ import Icon from './Icon.astro';
 
       <div class="mt-9 flex flex-wrap items-center gap-4">
         <a
-          href={WEB_APP_URL}
+          href="#waitlist"
           class="inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white shadow-[var(--shadow-lifted)] transition-transform active:scale-[0.98]"
         >
-          Get started
+          Join the waitlist
           <Icon name="arrow-right" class="h-4 w-4" />
         </a>
       </div>

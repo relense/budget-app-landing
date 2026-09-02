@@ -2,7 +2,6 @@
 import { Image } from 'astro:assets';
 import logo from '../assets/brand/logo.png';
 import Icon from './Icon.astro';
-import { WEB_APP_URL } from '../lib/constants';
 ---
 
 <header class="sticky top-0 z-40 border-b border-[var(--color-line)] bg-white/85 backdrop-blur">
@@ -32,10 +31,10 @@ import { WEB_APP_URL } from '../lib/constants';
 
     <div class="hidden items-center md:flex">
       <a
-        href={WEB_APP_URL}
+        href="#waitlist"
         class="rounded-full bg-[var(--color-pill)] px-5 py-2.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
       >
-        Get started
+        Join the waitlist
       </a>
     </div>
 
@@ -63,10 +62,10 @@ import { WEB_APP_URL } from '../lib/constants';
         >Screens</a
       >
       <a
-        href={WEB_APP_URL}
+        href="#waitlist"
         class="mt-2 rounded-full bg-[var(--color-pill)] px-5 py-3 text-center text-[15px] font-medium text-white"
       >
-        Get started
+        Join the waitlist
       </a>
     </div>
   </div>

@@ -1,8 +1,9 @@
 # budget-app-landing
 
-Marketing landing page for **Budget Tracker**, a shared, multi-currency budget and savings
-tracker. Points visitors to the live web app and the source repos; also hosts the product's
-`/privacy` and `/terms` pages.
+Marketing landing page for **Project Arwen** (on-page product name; this repo keeps its original
+name), a shared, multi-currency budget and savings tracker. Nothing is public yet, so the page's
+primary CTA is a waitlist email signup rather than a link to the app. Also hosts the product's
+real `/privacy` and `/terms` pages.
 
 Sibling repos (same product, separate deploys): `budget-app-web`, `budget-app-api`,
 `budget-app-mobile`.
@@ -10,7 +11,7 @@ Sibling repos (same product, separate deploys): `budget-app-web`, `budget-app-ap
 ## Stack
 
 Astro + Tailwind CSS v4, static output. No framework, no client state: this page is content, plus
-one small island (the screenshot gallery's desktop/mobile tab switcher).
+two small islands (the nav's mobile menu toggle and the waitlist form's submit handler).
 
 ## Commands
 
@@ -27,13 +28,13 @@ npm run preview   # serve the production build locally
 - `src/layouts/` — `BaseLayout.astro` (head/meta/OG) and `LegalLayout.astro` (privacy/terms)
 - `src/assets/` — brand logo + screenshots, copied from `budget-app-web` and optimized at build
   time via `astro:assets`
-- `src/lib/constants.ts` — the web app URL, GitHub repo links, and the (currently unset) app store
-  links
+- `src/lib/constants.ts` — `WAITLIST_API_URL`, currently `null` (no backend built yet)
 
 ## Known TODOs
 
-- `src/lib/constants.ts`: `IOS_STORE_URL` / `ANDROID_STORE_URL` are `null` until the mobile app is
-  published. The "Get the app" section renders a clearly-labeled disabled state until then.
+- `src/lib/constants.ts`: `WAITLIST_API_URL` is `null`. `Waitlist.astro`'s form shows an honest
+  "not connected yet" state until a real endpoint exists. Expected contract: `POST { email }` ->
+  `201` success, `409` already registered, needs CORS enabled for this site's origin.
 - `astro.config.mjs`'s `site` and `public/robots.txt`'s sitemap URL use a placeholder domain
-  (`https://budgettracker.app`) — update both once a real domain is chosen, and add
+  (`https://budgettracker.app`), update both once a real domain is chosen, and add
   `@astrojs/sitemap` at that point.
