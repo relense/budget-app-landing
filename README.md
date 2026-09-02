@@ -1,7 +1,7 @@
 # budget-app-landing
 
-Marketing landing page for **Project Arwen** (on-page product name; this repo keeps its original
-name), a shared, multi-currency budget and savings tracker. Nothing is public yet, so the page's
+Marketing landing page for **Arwen** (on-page product name; this repo keeps its original name),
+a shared, multi-currency budget and savings tracker. Nothing is public yet, so the page's
 primary CTA is a waitlist email signup rather than a link to the app. Also hosts the product's
 real `/privacy` and `/terms` pages.
 

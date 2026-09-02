@@ -7,7 +7,7 @@ interface Props {
 }
 
 const {
-  title = 'Project Arwen: a shared budget and savings tracker',
+  title = 'Arwen: a shared budget and savings tracker',
   description = 'A multi-currency budget and savings tracker you can share with your household. No ads, no data-selling, no bank-sync creepiness.',
 } = Astro.props;
 
@@ -17,7 +17,7 @@ const ogImageURL = new URL('/og-image.png', Astro.site);
 const websiteJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'Project Arwen',
+  name: 'Arwen',
   url: Astro.site,
 };
 ---
@@ -37,7 +37,7 @@ const websiteJsonLd = {
     <meta name="description" content={description} />
 
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Project Arwen" />
+    <meta property="og:site_name" content="Arwen" />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

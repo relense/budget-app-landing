@@ -4,8 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Marketing landing page for **Project Arwen** (on-page product name; repo/package name stays
-`budget-app-landing`), a shared, multi-currency budget and savings tracker. Nothing is public yet:
+Marketing landing page for **Arwen** (on-page product name; repo/package name stays
+`budget-app-landing`). "Arwen" is the app name; "Project" is a separate parent/umbrella brand
+meant to eventually host multiple apps, not part of this app's own name, don't reintroduce
+"Project Arwen". A shared, multi-currency budget and savings tracker. Nothing is public yet:
 the web app is still in staging and the mobile apps aren't published, so the page's primary CTA is
 a waitlist email signup, not a link to the app. Hosts the product's real `/privacy` and `/terms`
 pages. No GitHub/source links on the page (removed on request). No auth, no data fetching, no
@@ -97,11 +99,7 @@ the single source of tokens; don't reintroduce a `tailwind.config.js`.
   (`https://budgettracker.app`). `@astrojs/sitemap` is already wired up and generates
   `sitemap-index.xml` from whatever `site` is set to, so updating that one value once a real
   domain exists is all that's needed, no further sitemap work.
-- `public/og-image.png` was composed locally with Pillow (logo + Fredoka + brand palette), not
-  screenshotted from the live design tool. It still has a light background from before the dark
-  mode switch, regenerate it (same script/approach) to match.
-- Product name is pending change: "Project Arwen" is being renamed (the "Project" part is staying
-  as the parent/umbrella brand for multiple future apps; this budget tracker needs its own name
-  under it). Don't invent one, ask. Once decided it touches: nav/footer wordmark + alt text, hero/
-  meta titles, `og-image.png`, `llms.txt`, the `WebSite`/`SoftwareApplication` JSON-LD `name`
-  fields, and every "Project Arwen" string in `/privacy` and `/terms`.
+- `public/og-image.png` was composed locally with Pillow (logo + Fredoka + brand palette). Not
+  screenshotted from a live design tool, regenerate the same way (script isn't checked in, rebuild
+  it from `og-image.png`'s own content if it needs to change again) if the hero copy, palette, or
+  name changes.
