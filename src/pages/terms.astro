@@ -1,0 +1,113 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+
+const CONTACT_EMAIL = 'budgeterinfo@gmail.com';
+const LAST_UPDATED = 'September 1, 2026';
+---
+
+<LegalLayout
+  title="Terms of Service, Budget Tracker"
+  description="The terms that govern your use of Budget Tracker."
+  heading="Terms of Service"
+  lastUpdated={LAST_UPDATED}
+>
+  <h2>Agreement to these terms</h2>
+  <p>
+    These Terms of Service ("Terms") govern your use of Budget Tracker ("the Service," "we,"
+    "us"), operated by Miguel Furtado, an individual based in Portugal. The Service includes both
+    the web app and the companion mobile app, which share the same account and backend. By
+    creating an account or using the Service, you agree to these Terms. If you don't agree, don't
+    use the Service.
+  </p>
+
+  <h2>What the Service is</h2>
+  <p>
+    Budget Tracker is a personal budgeting and expense-tracking tool: you record budgets,
+    expenses, recurring bills, and savings, optionally shared with people you invite into a
+    workspace. It is a record-keeping tool, not financial, tax, or investment advice. Any decision
+    you make based on what you enter or see in the app is your own responsibility.
+  </p>
+
+  <h2>Your account</h2>
+  <p>
+    You need a valid email address to create an account, and you're responsible for keeping access
+    to it secure. Anyone who can complete the login flow for your email can access your account.
+    The Service is intended for a general audience and is not directed at children under 16; you
+    must be at least 16 years old to use it.
+  </p>
+  <p>
+    The accuracy of anything you enter (amounts, categories, dates) is entirely up to you. We
+    don't verify it against any external source.
+  </p>
+
+  <h2>Your content</h2>
+  <p>
+    You own the data you enter into the Service. We don't claim any ownership over it, and we
+    don't use it for anything beyond providing the Service to you (see our
+    <a href="/privacy">Privacy Policy</a>). You grant us the limited right to store and process it
+    solely so the Service can work: displaying it back to you, syncing it across your devices, and
+    sharing it with anyone you explicitly invite into a workspace.
+  </p>
+  <p>
+    If you invite someone into a shared workspace, an Editor or Owner role gives them full
+    read/write access to everything in that workspace, and a Viewer role gives read-only access.
+    Think about who you share a workspace with accordingly.
+  </p>
+
+  <h2>Acceptable use</h2>
+  <p>You agree not to:</p>
+  <p>
+    use the Service for anything illegal; attempt to gain unauthorized access to any account,
+    workspace, or part of the Service that isn't yours; interfere with, overload, or abuse the
+    Service's infrastructure or API; reverse-engineer, scrape, or attempt to extract the Service's
+    source code beyond what's already public; or impersonate any person or entity.
+  </p>
+
+  <h2>Fees</h2>
+  <p>
+    The Service is currently free to use, with no paid tier. If that changes in the future, we'll
+    update these Terms first and give you a clear choice before anything you rely on becomes paid.
+  </p>
+
+  <h2>Termination</h2>
+  <p>
+    You can delete your account at any time from Profile &rarr; Account &rarr; Delete my account.
+    This permanently and immediately erases your account and all associated data, and cannot be
+    undone.
+  </p>
+  <p>
+    We may suspend or terminate your access if you violate these Terms, including the
+    acceptable-use rules above. Where reasonably possible, we'll try to give you notice first.
+  </p>
+
+  <h2>Disclaimer of warranties</h2>
+  <p>
+    The Service is provided "as is" and "as available," without warranties of any kind, express or
+    implied. We don't guarantee the Service will be uninterrupted, error-free, or available at all
+    times, and we don't warrant the accuracy of any calculation, total, or figure it displays.
+  </p>
+
+  <h2>Limitation of liability</h2>
+  <p>
+    To the fullest extent permitted by law, we are not liable for any indirect, incidental, or
+    consequential damages arising from your use of the Service, including any financial decision
+    made based on data stored in it. Nothing in these Terms limits any liability that cannot
+    legally be limited or excluded.
+  </p>
+
+  <h2>Governing law</h2>
+  <p>
+    These Terms are governed by the laws of Portugal, without regard to its conflict-of-law rules.
+    Any dispute not otherwise resolved will be subject to the exclusive jurisdiction of the courts
+    of Portugal.
+  </p>
+
+  <h2>Changes to these Terms</h2>
+  <p>
+    If we make material changes to these Terms, we will update the "Last updated" date above and,
+    where appropriate, notify you directly.
+  </p>
+
+  <h2>Contact</h2>
+  <p>Questions about these Terms: {CONTACT_EMAIL}.</p>
+</LegalLayout>

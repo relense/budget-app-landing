@@ -1,0 +1,57 @@
+---
+import Icon from './Icon.astro';
+
+const steps = [
+  {
+    icon: 'sliders-horizontal' as const,
+    title: 'Set the budget',
+    body: 'Create categories and set a monthly budget for each one.',
+  },
+  {
+    icon: 'arrows-clockwise' as const,
+    title: 'Log expenses',
+    body: 'Add them as they happen, or let recurring bills track themselves.',
+  },
+  {
+    icon: 'coins' as const,
+    title: 'Watch your balance',
+    body: "See what's left this month, updated the moment you add something.",
+  },
+  {
+    icon: 'piggy-bank' as const,
+    title: 'Grow your savings',
+    body: 'Set a goal and build dedicated funds alongside your monthly budget.',
+  },
+];
+---
+
+<section id="how-it-works" class="bg-white py-20 sm:py-28">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <h2
+      class="max-w-[20ch] text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl"
+      data-reveal
+    >
+      How it works
+    </h2>
+
+    <div class="mt-14 grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        steps.map((step, i) => (
+          <div
+            class="border-t-2 border-[var(--color-ink)] pt-5"
+            data-reveal
+            style={`transition-delay:${i * 80}ms`}
+          >
+            <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-bg-mint)] text-[var(--color-mint-deep)]">
+              <Icon name={step.icon} class="h-5 w-5" />
+            </div>
+            <h3 class="mt-5 text-lg font-medium text-[var(--color-ink)]">{step.title}</h3>
+            <p class="mt-2 max-w-[30ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+              {step.body}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

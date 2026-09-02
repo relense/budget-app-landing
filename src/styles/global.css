@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Fredoka', system-ui, sans-serif;
+
+  --color-bg: #ffffff;
+  --color-bg-mint: #eefaf1;
+  --color-ink: #16171a;
+  --color-ink-soft: #63666d;
+  --color-ink-faint: #9a9da4;
+  --color-line: #ebebe9;
+
+  --color-mint: #cff3da;
+  --color-mint-deep: #234d2e;
+  --color-pill: #131313;
+  --color-blue: #2f80ed;
+  --color-pink: #ffccdb;
+  --color-coral: #f2705c;
+
+  --color-cat-green-bg: #cff3da;
+  --color-cat-green-icon: #234d2e;
+  --color-cat-pink-bg: #f7d6de;
+  --color-cat-pink-icon: #a24f63;
+  --color-cat-purple-bg: #e7daf5;
+  --color-cat-purple-icon: #7a5aa8;
+  --color-cat-blue-bg: #d8e7f7;
+  --color-cat-blue-icon: #3e6fa6;
+  --color-cat-peach-bg: #f6decb;
+  --color-cat-peach-icon: #b97a4c;
+  --color-cat-teal-bg: #d6f1ec;
+  --color-cat-teal-icon: #327e71;
+  --color-cat-yellow-bg: #f5e27a;
+  --color-cat-yellow-icon: #8a6d1a;
+
+  --radius-card: 20px;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 2px 10px rgba(22, 23, 26, 0.05);
+  --shadow-lifted: 0 18px 45px rgba(22, 23, 26, 0.1);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+}
+
+::selection {
+  background-color: var(--color-mint);
+  color: var(--color-mint-deep);
+}
+
+.balance-figure {
+  font-variant-numeric: tabular-nums;
+}
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}

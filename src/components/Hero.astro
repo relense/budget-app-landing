@@ -1,0 +1,76 @@
+---
+import { Image } from 'astro:assets';
+import desktopHome from '../assets/screenshots/desktop-home.png';
+import mobileHome from '../assets/screenshots/mobile-home.png';
+import { WEB_APP_URL, GITHUB_URL } from '../lib/constants';
+import Icon from './Icon.astro';
+---
+
+<section class="relative overflow-hidden bg-white pt-14 pb-20 sm:pt-20 sm:pb-28">
+  <div
+    class="pointer-events-none absolute -top-24 right-[-10%] h-[520px] w-[520px] rounded-full bg-[var(--color-bg-mint)] blur-2xl"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div
+    class="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-14 px-5 sm:px-8 lg:grid-cols-[1fr_1.05fr] lg:gap-8"
+  >
+    <div data-reveal>
+      <h1
+        class="max-w-[16ch] text-4xl leading-[1.1] font-medium tracking-tight text-[var(--color-ink)] sm:text-5xl lg:text-6xl"
+      >
+        One budget. Actually shared.
+      </h1>
+      <p class="mt-6 max-w-[46ch] text-lg leading-relaxed text-[var(--color-ink-soft)]">
+        Log expenses, track recurring bills, and grow savings funds with the people you trust, in
+        any of 10 currencies.
+      </p>
+
+      <div class="mt-9 flex flex-wrap items-center gap-4">
+        <a
+          href={WEB_APP_URL}
+          class="inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white shadow-[var(--shadow-lifted)] transition-transform active:scale-[0.98]"
+        >
+          Get started
+          <Icon name="arrow-right" class="h-4 w-4" />
+        </a>
+        <a
+          href={GITHUB_URL}
+          target="_blank"
+          rel="noreferrer"
+          class="inline-flex items-center gap-2 rounded-full border border-[var(--color-line)] px-7 py-3.5 text-[15px] font-medium text-[var(--color-ink)] transition-colors hover:border-[var(--color-ink)]"
+        >
+          <Icon name="github-logo" class="h-4 w-4" />
+          View the code
+        </a>
+      </div>
+    </div>
+
+    <div class="relative" data-reveal style="transition-delay: 120ms">
+      <div
+        class="relative mx-auto max-w-[560px] rotate-[-2deg] overflow-hidden rounded-2xl border border-[var(--color-line)] shadow-[var(--shadow-lifted)] sm:rounded-[28px]"
+      >
+        <Image
+          src={desktopHome}
+          alt="Budget Tracker home dashboard on the web, showing total balance, this month's spending, and an emergency fund goal"
+          width={800}
+          loading="eager"
+          class="w-full"
+        />
+      </div>
+
+      <div
+        class="absolute -bottom-10 -left-4 w-[150px] rotate-[4deg] overflow-hidden rounded-[22px] border-4 border-[#16171a] shadow-[var(--shadow-lifted)] sm:-bottom-12 sm:-left-8 sm:w-[190px]"
+      >
+        <Image
+          src={mobileHome}
+          alt="Budget Tracker home screen on mobile in dark mode, showing recent activity and quick actions"
+          width={420}
+          loading="eager"
+          class="w-full"
+        />
+      </div>
+    </div>
+  </div>
+</section>

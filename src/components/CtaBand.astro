@@ -1,0 +1,34 @@
+---
+import Icon from './Icon.astro';
+import { WEB_APP_URL, GITHUB_URL } from '../lib/constants';
+---
+
+<section class="bg-[var(--color-pill)] py-20 sm:py-24">
+  <div
+    class="mx-auto flex max-w-4xl flex-col items-center px-5 text-center sm:px-8"
+    data-reveal
+  >
+    <h2 class="max-w-[18ch] text-3xl leading-tight font-medium text-white sm:text-4xl">
+      Your budget, shared, in the currency you actually use.
+    </h2>
+
+    <div class="mt-9 flex flex-wrap items-center justify-center gap-4">
+      <a
+        href={WEB_APP_URL}
+        class="inline-flex items-center gap-2 rounded-full bg-[var(--color-mint)] px-7 py-3.5 text-[15px] font-medium text-[var(--color-mint-deep)] transition-transform active:scale-[0.98]"
+      >
+        Get started
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+      <a
+        href={GITHUB_URL}
+        target="_blank"
+        rel="noreferrer"
+        class="inline-flex items-center gap-2 rounded-full border border-white/25 px-7 py-3.5 text-[15px] font-medium text-white transition-colors hover:border-white/60"
+      >
+        <Icon name="github-logo" class="h-4 w-4" />
+        View the code
+      </a>
+    </div>
+  </div>
+</section>

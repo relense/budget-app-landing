@@ -1,0 +1,139 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+
+const CONTACT_EMAIL = 'budgeterinfo@gmail.com';
+const LAST_UPDATED = 'September 1, 2026';
+---
+
+<LegalLayout
+  title="Privacy Policy, Budget Tracker"
+  description="How Budget Tracker collects, uses, and protects your data."
+  heading="Privacy Policy"
+  lastUpdated={LAST_UPDATED}
+>
+  <h2>Who we are</h2>
+  <p>
+    Budget Tracker ("the Service," "we," "us") is operated by Miguel Furtado, an individual
+    based in Portugal. The Service includes both the web app and the companion mobile app, which
+    share the same account and backend, so this policy applies to both.
+  </p>
+  <p>For any privacy question or data request, contact {CONTACT_EMAIL}.</p>
+
+  <h2>What we collect</h2>
+  <p>
+    <strong>Account data:</strong> the email address you sign in with, an optional display name,
+    and your currency preference.
+  </p>
+  <p>
+    <strong>Financial data you enter:</strong> budgets, categories, transactions, recurring
+    expenses, savings funds and movements, and the workspace(s) they belong to. This is the core
+    data the Service exists to store on your behalf.
+  </p>
+  <p>
+    <strong>Workspace & social data:</strong> workspace memberships and roles, friend connections,
+    and pending invites/requests between accounts.
+  </p>
+  <p>
+    <strong>Authentication data:</strong> one-time login codes (stored as a hash, short-lived) and
+    refresh tokens (stored as a hash server-side; on web, held only in an httpOnly cookie your
+    browser sends automatically, never accessible to page scripts).
+  </p>
+  <p>
+    <strong>Local device storage:</strong> a small set of preferences (theme, active workspace,
+    and a flag noting you edited a past month's balance) are kept only in your browser's local
+    storage on this device. They are never transmitted to us and are not part of any account data
+    we hold.
+  </p>
+  <p>
+    We do not use analytics, advertising, or third-party tracking of any kind, and we do not use
+    cookies other than the single authentication cookie described above.
+  </p>
+
+  <h2>How we use it</h2>
+  <p>
+    We use your data solely to provide the Service: authenticating you, storing and syncing the
+    budgeting data you create, and letting you share a workspace with people you invite. We do not
+    use your data for advertising, and we do not sell it.
+  </p>
+  <p>
+    Our legal basis for processing is performance of the contract between you and us (running the
+    app you signed up to use). See "Your rights" below for how to withdraw that relationship
+    entirely by deleting your account.
+  </p>
+
+  <h2>Who we share it with</h2>
+  <p>
+    We use a small number of infrastructure providers to run the Service, each acting as a data
+    processor on our behalf, under their own security and privacy commitments:
+  </p>
+  <p>
+    <strong>SendGrid</strong> - delivers the one-time login codes we email you.<br />
+    <strong>Render</strong> - hosts our application servers and database.
+  </p>
+  <p>
+    We may in the future enable error tracking (e.g. Sentry) to catch and fix bugs faster; if and
+    when that happens, this policy will be updated first. We do not otherwise share your data with
+    any third party, and we never sell it.
+  </p>
+
+  <h2>Data retention</h2>
+  <p>
+    Your account data and everything you've entered is kept for as long as your account exists.
+    Login codes and refresh tokens expire automatically and are cleaned up shortly after they're
+    no longer valid. If you delete your account, all of your data is permanently removed in a
+    single operation. See "Your rights" below.
+  </p>
+
+  <h2>Your rights</h2>
+  <p>
+    Under the EU General Data Protection Regulation (GDPR) and similar laws, you have the right to
+    access, correct, export, or delete your personal data, and to object to how it is processed.
+    Two of these are already built directly into the app, under Profile &rarr; Account:
+  </p>
+  <p>
+    <strong>Export my data</strong> - download a complete copy of your account and everything
+    you've stored with us, as a single file.<br />
+    <strong>Delete my account</strong> - permanently and immediately erase your account and all
+    associated data. This cannot be undone.
+  </p>
+  <p>
+    For any other request (correction, objection, or a question about how your data is handled),
+    contact {CONTACT_EMAIL}.
+  </p>
+  <p>
+    <strong>California residents:</strong> under the CCPA, you have the right to know what personal
+    information we collect, to request its deletion, and to opt out of its sale. We do not sell
+    personal information, so no opt-out is necessary; the export and deletion tools above satisfy
+    the equivalent access and deletion rights.
+  </p>
+
+  <h2>Cookies & local storage</h2>
+  <p>
+    We set exactly one cookie: an httpOnly authentication cookie that keeps you signed in. It
+    cannot be read by page scripts and is not used for tracking. Separately, a few UI preferences
+    are stored in your browser's local storage, as described above. These never leave your device.
+  </p>
+
+  <h2>Children's privacy</h2>
+  <p>
+    The Service is intended for a general audience and is not directed at children under 16. We do
+    not knowingly collect personal data from children under 16; if you believe a child has
+    provided us with personal data, contact us at {CONTACT_EMAIL} and we will delete it.
+  </p>
+
+  <h2>International data transfers</h2>
+  <p>
+    Our infrastructure providers may process data in countries other than your own. Where this
+    happens, we rely on those providers' own safeguards for transferring data internationally in
+    compliance with applicable law.
+  </p>
+
+  <h2>Changes to this policy</h2>
+  <p>
+    If we make material changes to this policy, we will update the "Last updated" date above and,
+    where appropriate, notify you directly.
+  </p>
+
+  <h2>Contact</h2>
+  <p>Questions, requests, or concerns about this policy or your data: {CONTACT_EMAIL}.</p>
+</LegalLayout>
