@@ -1,6 +1,6 @@
 ---
 import Icon from './Icon.astro';
-import { WEB_APP_URL, GITHUB_URL } from '../lib/constants';
+import { WEB_APP_URL } from '../lib/constants';
 ---
 
 <section class="bg-[var(--color-pill)] py-20 sm:py-24">
@@ -19,15 +19,6 @@ import { WEB_APP_URL, GITHUB_URL } from '../lib/constants';
       >
         Get started
         <Icon name="arrow-right" class="h-4 w-4" />
-      </a>
-      <a
-        href={GITHUB_URL}
-        target="_blank"
-        rel="noreferrer"
-        class="inline-flex items-center gap-2 rounded-full border border-white/25 px-7 py-3.5 text-[15px] font-medium text-white transition-colors hover:border-white/60"
-      >
-        <Icon name="github-logo" class="h-4 w-4" />
-        View the code
       </a>
     </div>
   </div>

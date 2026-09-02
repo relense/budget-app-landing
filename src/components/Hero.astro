@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import desktopHome from '../assets/screenshots/desktop-home.png';
 import mobileHome from '../assets/screenshots/mobile-home.png';
-import { WEB_APP_URL, GITHUB_URL } from '../lib/constants';
+import { WEB_APP_URL } from '../lib/constants';
 import Icon from './Icon.astro';
 ---
 
@@ -35,15 +35,6 @@ import Icon from './Icon.astro';
           Get started
           <Icon name="arrow-right" class="h-4 w-4" />
         </a>
-        <a
-          href={GITHUB_URL}
-          target="_blank"
-          rel="noreferrer"
-          class="inline-flex items-center gap-2 rounded-full border border-[var(--color-line)] px-7 py-3.5 text-[15px] font-medium text-[var(--color-ink)] transition-colors hover:border-[var(--color-ink)]"
-        >
-          <Icon name="github-logo" class="h-4 w-4" />
-          View the code
-        </a>
       </div>
     </div>
 
@@ -53,7 +44,7 @@ import Icon from './Icon.astro';
       >
         <Image
           src={desktopHome}
-          alt="Budget Tracker home dashboard on the web, showing total balance, this month's spending, and an emergency fund goal"
+          alt="Project Arwen home dashboard on the web, showing total balance, this month's spending, and an emergency fund goal"
           width={800}
           loading="eager"
           class="w-full"
@@ -65,7 +56,7 @@ import Icon from './Icon.astro';
       >
         <Image
           src={mobileHome}
-          alt="Budget Tracker home screen on mobile in dark mode, showing recent activity and quick actions"
+          alt="Project Arwen home screen on mobile in dark mode, showing recent activity and quick actions"
           width={420}
           loading="eager"
           class="w-full"
