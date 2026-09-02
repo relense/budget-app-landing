@@ -58,6 +58,14 @@ npm run preview   # serve the production build locally
 - `src/lib/constants.ts` — `WAITLIST_API_URL` (currently `null`, no backend built yet; see Known
   TODOs)
 
+## SEO
+
+`@astrojs/sitemap` generates `sitemap-index.xml` at build from `site` in `astro.config.mjs`,
+referenced from `public/robots.txt`. `BaseLayout.astro` emits a sitewide `WebSite` JSON-LD block;
+`Faq.astro` emits its own `FAQPage` JSON-LD generated from the same array that renders its visible
+`<details>` accordion, so the structured data can't drift from the visible content. Keep it that
+way, don't hand-maintain a separate copy of the FAQ text for the schema.
+
 ## Brand tokens
 
 Ported from `budget-app-web/src/theme/colors.ts` and `src/index.css` into
@@ -73,8 +81,9 @@ tokens for this repo; don't reintroduce a `tailwind.config.js`.
   `409` if already registered, anything else treated as a generic error. Needs CORS enabled for
   this site's origin (it's a cross-origin browser `fetch()`).
 - `astro.config.mjs`'s `site` and `public/robots.txt`'s sitemap line use a placeholder domain
-  (`https://budgettracker.app`). Update both once a real domain is chosen, and add
-  `@astrojs/sitemap` at that point.
+  (`https://budgettracker.app`). `@astrojs/sitemap` is already wired up and generates
+  `sitemap-index.xml` from whatever `site` is set to, so updating that one value once a real
+  domain exists is all that's needed, no further sitemap work.
 - `public/og-image.png` was composed locally with Pillow (logo + Fredoka + brand palette), not
   screenshotted from the live design tool. Regenerate it the same way if the hero copy or palette
   changes.
