@@ -15,6 +15,18 @@ Sibling repos in the parent `ai-projects/` directory (same product, separate dep
 
 See `docs/PLAN.md` for the original scaffolding plan and rationale.
 
+## Rules (apply every session, not just the first)
+
+- **Never invent details.** If something isn't decided in `docs/PLAN.md`, ask before writing code, don't fill the gap with a "reasonable" default.
+- **Interview before coding ("grill me").** Before starting a new module or feature, ask about edge cases, data shapes, and error behavior until there's a shared understanding, don't jump from a one-line request straight to code.
+- **TDD, small steps.** Failing test, then minimal code to pass, then refactor. Don't generate a whole module in one shot.
+- **Money is always integer cents** (`amountCents` etc.), never float. The ×100/÷100 conversion happens only in the frontend.
+- **Multi-tenancy is non-negotiable.** Every resolver reads `userId` from the authenticated context and scopes its query by it, no exceptions, not even in early dev.
+- **Interface changes get flagged explicitly.** Before changing a GraphQL type, a service function signature, or the Prisma schema, say so up front, don't let it happen as a side effect of unrelated work.
+- **Frontend work: ask, don't assume.** For every screen/component, ask for layout, states, copy, colors, and edge-case behavior first. Before starting the mobile app specifically, ask for the design references (mockups + Excel structure) rather than relying on memory of past conversations.
+- **No new dependencies without asking first.**
+- **Production hardening isn't a later step.** Graceful shutdown, crash handlers, env var validation, security headers, and GraphQL introspection/depth limits belong in the code as it's written, not retrofitted right before deploy.
+
 ## Stack
 
 Astro 5 + Tailwind CSS v4 (CSS-first `@theme`, no `tailwind.config.js`), static output
