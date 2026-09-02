@@ -2,7 +2,7 @@
 import Icon from './Icon.astro';
 ---
 
-<section id="features" class="bg-white py-20 sm:py-28">
+<section id="features" class="bg-[var(--color-bg)] py-20 sm:py-28">
   <div class="mx-auto max-w-7xl px-5 sm:px-8">
     <h2
       class="max-w-[22ch] text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl"
@@ -13,7 +13,7 @@ import Icon from './Icon.astro';
 
     <div class="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <div
-        class="rounded-[var(--radius-card)] bg-[var(--color-bg-mint)] p-7 sm:col-span-2 lg:col-span-2"
+        class="rounded-[var(--radius-card)] bg-[var(--color-mint)] p-7 sm:col-span-2 lg:col-span-2"
         data-reveal
       >
         <div
@@ -21,8 +21,8 @@ import Icon from './Icon.astro';
         >
           <Icon name="sliders-horizontal" class="h-5 w-5" />
         </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">Budget by category</h3>
-        <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[#2b4a35]">
+        <h3 class="mt-6 text-xl font-medium text-[var(--color-mint-deep)]">Budget by category</h3>
+        <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[var(--color-mint-deep)]">
           Set a monthly budget for each category, and watch what's left update as you spend.
         </p>
       </div>
@@ -37,19 +37,21 @@ import Icon from './Icon.astro';
         >
           <Icon name="users-three" class="h-5 w-5" />
         </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">Shared workspaces</h3>
-        <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[#2c4b6b]">
+        <h3 class="mt-6 text-xl font-medium text-[var(--color-cat-blue-icon)]">
+          Shared workspaces
+        </h3>
+        <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[var(--color-cat-blue-icon)]">
           Invite people you trust as an Editor with full access, or a read-only Viewer.
         </p>
       </div>
 
       <div
-        class="rounded-[var(--radius-card)] border border-[var(--color-line)] p-7 sm:col-span-1 lg:col-span-1"
+        class="rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:col-span-1 lg:col-span-1"
         data-reveal
         style="transition-delay: 120ms"
       >
         <div
-          class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-bg-mint)] text-[var(--color-mint-deep)]"
+          class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]"
         >
           <Icon name="user-plus" class="h-5 w-5" />
         </div>
@@ -69,8 +71,8 @@ import Icon from './Icon.astro';
         >
           <Icon name="calendar-blank" class="h-5 w-5" />
         </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">Plan ahead</h3>
-        <p class="mt-2 max-w-[42ch] text-[15px] leading-relaxed text-[#7a4d2c]">
+        <h3 class="mt-6 text-xl font-medium text-[var(--color-cat-peach-icon)]">Plan ahead</h3>
+        <p class="mt-2 max-w-[42ch] text-[15px] leading-relaxed text-[var(--color-cat-peach-icon)]">
           Lock a month once it's settled, and plan your budget up to 24 months ahead.
         </p>
       </div>

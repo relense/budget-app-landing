@@ -66,12 +66,25 @@ referenced from `public/robots.txt`. `BaseLayout.astro` emits a sitewide `WebSit
 `<details>` accordion, so the structured data can't drift from the visible content. Keep it that
 way, don't hand-maintain a separate copy of the FAQ text for the schema.
 
-## Brand tokens
+## Brand tokens & theme
 
-Ported from `budget-app-web/src/theme/colors.ts` and `src/index.css` into
-`src/styles/global.css`'s `@theme` block: Fredoka font, mint/blue/peach/pink category pastels, the
-black pill CTA (`--color-pill`), 20px card radius. Keep this file as the single source of brand
-tokens for this repo; don't reintroduce a `tailwind.config.js`.
+Dark mode is this page's single locked theme, no light variant, no toggle (see Page Theme Lock in
+the design-taste-frontend skill). Every color in `src/styles/global.css`'s `@theme` block is copied
+verbatim from `budget-app-mobile/src/theme/colors.ts`'s `darkColors` export (comments in
+`global.css` note which token each one mirrors), not from the web app's light theme and not
+invented. Two things to know before touching colors:
+
+- Pastel category surfaces (mint/pink/purple/blue/peach/teal) are identical between mobile's light
+  and dark mode by mobile's own design, so they're used directly as backgrounds for cards/chips/
+  banners, same as mobile does. Don't tint them for "dark mode" — they're already right.
+- `--color-on-surface` / `--color-placeholder` exist for text drawn on a *fixed light* surface
+  embedded in the dark page (currently: the waitlist email input). This mirrors mobile's own
+  `text.onSurface` pattern, which is identical in both of its modes for exactly this reason. Any
+  new white/light input or chip needs this treatment, not `--color-ink` (which is light-on-dark
+  text and will go invisible on a light fill).
+
+Fredoka font, 20px card radius, pill-shaped buttons carried over as before. Keep `global.css` as
+the single source of tokens; don't reintroduce a `tailwind.config.js`.
 
 ## Known TODOs
 
@@ -85,5 +98,10 @@ tokens for this repo; don't reintroduce a `tailwind.config.js`.
   `sitemap-index.xml` from whatever `site` is set to, so updating that one value once a real
   domain exists is all that's needed, no further sitemap work.
 - `public/og-image.png` was composed locally with Pillow (logo + Fredoka + brand palette), not
-  screenshotted from the live design tool. Regenerate it the same way if the hero copy or palette
-  changes.
+  screenshotted from the live design tool. It still has a light background from before the dark
+  mode switch, regenerate it (same script/approach) to match.
+- Product name is pending change: "Project Arwen" is being renamed (the "Project" part is staying
+  as the parent/umbrella brand for multiple future apps; this budget tracker needs its own name
+  under it). Don't invent one, ask. Once decided it touches: nav/footer wordmark + alt text, hero/
+  meta titles, `og-image.png`, `llms.txt`, the `WebSite`/`SoftwareApplication` JSON-LD `name`
+  fields, and every "Project Arwen" string in `/privacy` and `/terms`.

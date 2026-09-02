@@ -11,6 +11,23 @@ import GetTheApp from '../components/GetTheApp.astro';
 import Faq from '../components/Faq.astro';
 import Waitlist from '../components/Waitlist.astro';
 import Footer from '../components/Footer.astro';
+
+// Deliberately no aggregateRating/review here: there are none yet, and inventing one would be
+// exactly the kind of fake trust signal this project's own design rules ban.
+const softwareAppJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Project Arwen',
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web, iOS, Android',
+  description:
+    'A shared, multi-currency budget and savings tracker. Invite people you trust into a workspace, track expenses and recurring bills, and grow savings funds together.',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'EUR',
+  },
+};
 ---
 
 <BaseLayout>
@@ -27,4 +44,5 @@ import Footer from '../components/Footer.astro';
     <Waitlist />
   </main>
   <Footer />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareAppJsonLd)} />
 </BaseLayout>

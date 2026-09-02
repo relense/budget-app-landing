@@ -5,9 +5,9 @@ import mobileHome from '../assets/screenshots/mobile-home.png';
 import Icon from './Icon.astro';
 ---
 
-<section class="relative overflow-hidden bg-white pt-14 pb-20 sm:pt-20 sm:pb-28">
+<section class="relative overflow-hidden bg-[var(--color-bg)] pt-14 pb-20 sm:pt-20 sm:pb-28">
   <div
-    class="pointer-events-none absolute -top-24 right-[-10%] h-[520px] w-[520px] rounded-full bg-[var(--color-bg-mint)] blur-2xl"
+    class="pointer-events-none absolute -top-24 right-[-10%] h-[520px] w-[520px] rounded-full bg-[var(--color-mint)]/10 blur-2xl"
     aria-hidden="true"
   >
   </div>
@@ -46,12 +46,13 @@ import Icon from './Icon.astro';
           alt="Project Arwen home dashboard on the web, showing total balance, this month's spending, and an emergency fund goal"
           width={800}
           loading="eager"
+          fetchpriority="high"
           class="w-full"
         />
       </div>
 
       <div
-        class="absolute -bottom-10 -left-4 w-[150px] rotate-[4deg] overflow-hidden rounded-[22px] border-4 border-[#16171a] shadow-[var(--shadow-lifted)] sm:-bottom-12 sm:-left-8 sm:w-[190px]"
+        class="absolute -bottom-10 -left-4 w-[150px] rotate-[4deg] overflow-hidden rounded-[22px] border-4 border-[var(--color-bg-elevated)] shadow-[var(--shadow-lifted)] sm:-bottom-12 sm:-left-8 sm:w-[190px]"
       >
         <Image
           src={mobileHome}

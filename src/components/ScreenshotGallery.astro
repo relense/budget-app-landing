@@ -14,7 +14,7 @@ const mobileShots = [
 ];
 ---
 
-<section id="screens" class="bg-white py-20 sm:py-28">
+<section id="screens" class="bg-[var(--color-bg)] py-20 sm:py-28">
   <div class="mx-auto max-w-7xl px-5 sm:px-8">
     <h2
       class="max-w-[20ch] text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl"
@@ -31,7 +31,7 @@ const mobileShots = [
       {
         mobileShots.map((shot) => (
           <figure class="w-[52vw] flex-shrink-0 snap-start sm:w-[240px]">
-            <div class="overflow-hidden rounded-[24px] border-4 border-[#16171a] shadow-[var(--shadow-soft)]">
+            <div class="overflow-hidden rounded-[24px] border-4 border-[var(--color-bg-elevated)] shadow-[var(--shadow-soft)]">
               <Image
                 src={shot.src}
                 alt={`Project Arwen mobile screenshot: ${shot.caption}`}
