@@ -1,18 +1,23 @@
 ---
 import '../styles/global.css';
+import { getLangFromUrl, getAlternatePath, useTranslations, htmlLang } from '../i18n/utils';
 
 interface Props {
   title?: string;
   description?: string;
 }
 
-const {
-  title = 'Arwen: a shared budget and savings tracker',
-  description = 'A multi-currency budget and savings tracker you can share with your household. No ads, no data-selling, no bank-sync creepiness.',
-} = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const { title = t('meta.title'), description = t('meta.description') } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImageURL = new URL('/og-image.png', Astro.site);
+const alternateURL = new URL(getAlternatePath(Astro.url.pathname, lang), Astro.site);
+const alternateLang = lang === 'en' ? 'pt-PT' : 'en';
+// x-default always points at the English version, regardless of which locale is rendering.
+const defaultLocaleURL = lang === 'en' ? canonicalURL : alternateURL;
 
 const websiteJsonLd = {
   '@context': 'https://schema.org',
@@ -23,7 +28,7 @@ const websiteJsonLd = {
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={htmlLang[lang]}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -31,6 +36,9 @@ const websiteJsonLd = {
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="canonical" href={canonicalURL} />
+    <link rel="alternate" hreflang={htmlLang[lang]} href={canonicalURL} />
+    <link rel="alternate" hreflang={alternateLang} href={alternateURL} />
+    <link rel="alternate" hreflang="x-default" href={defaultLocaleURL} />
     <meta name="generator" content={Astro.generator} />
 
     <title>{title}</title>
@@ -73,6 +81,30 @@ const websiteJsonLd = {
           { threshold: 0.15, rootMargin: '0px 0px -8% 0px' },
         );
         targets.forEach((el) => observer.observe(el));
+      }
+    </script>
+
+    <script is:inline define:vars={{ lang, alternatePath: getAlternatePath(Astro.url.pathname, lang) }}>
+      // First-visit-only language redirect: if the visitor's browser is set to Portuguese and
+      // they land on the English (default-locale) site, send them to the pt-PT equivalent page
+      // once. Remembered in localStorage so it never fires again after that. Deliberately
+      // one-directional: someone who lands on (or follows a link to) a /pt-pt/ page is never
+      // redirected away from it, so shared pt-pt links always work as sent.
+      try {
+        const DONE_KEY = 'arwen-locale-redirect-done';
+        if (!localStorage.getItem(DONE_KEY)) {
+          localStorage.setItem(DONE_KEY, '1');
+          if (lang === 'en') {
+            const browserIsPortuguese = navigator.languages
+              ? navigator.languages.some((l) => l.toLowerCase().startsWith('pt'))
+              : navigator.language.toLowerCase().startsWith('pt');
+            if (browserIsPortuguese) {
+              window.location.replace(alternatePath + window.location.search + window.location.hash);
+            }
+          }
+        }
+      } catch {
+        // localStorage unavailable (private mode, disabled storage, etc.) -- skip detection.
       }
     </script>
   </body>

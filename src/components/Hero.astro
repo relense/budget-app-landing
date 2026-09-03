@@ -3,6 +3,10 @@ import { Image } from 'astro:assets';
 import desktopHome from '../assets/screenshots/desktop-home.png';
 import mobileHome from '../assets/screenshots/mobile-home.png';
 import Icon from './Icon.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <section class="relative overflow-hidden bg-[var(--color-bg)] pt-14 pb-20 sm:pt-20 sm:pb-28">
@@ -19,11 +23,10 @@ import Icon from './Icon.astro';
       <h1
         class="max-w-[16ch] text-4xl leading-[1.1] font-medium tracking-tight text-[var(--color-ink)] sm:text-5xl lg:text-6xl"
       >
-        One budget. Actually shared.
+        {t('hero.title')}
       </h1>
       <p class="mt-6 max-w-[46ch] text-lg leading-relaxed text-[var(--color-ink-soft)]">
-        Log expenses, track recurring bills, and grow savings funds with the people you trust, in
-        any of 10 currencies.
+        {t('hero.subtitle')}
       </p>
 
       <div class="mt-9 flex flex-wrap items-center gap-4">
@@ -31,7 +34,7 @@ import Icon from './Icon.astro';
           href="#waitlist"
           class="inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white shadow-[var(--shadow-lifted)] transition-transform active:scale-[0.98]"
         >
-          Join the waitlist
+          {t('hero.cta')}
           <Icon name="arrow-right" class="h-4 w-4" />
         </a>
       </div>
@@ -43,7 +46,7 @@ import Icon from './Icon.astro';
       >
         <Image
           src={desktopHome}
-          alt="Arwen home dashboard on the web, showing total balance, this month's spending, and an emergency fund goal"
+          alt={t('hero.desktopAlt')}
           width={800}
           loading="eager"
           fetchpriority="high"
@@ -56,7 +59,7 @@ import Icon from './Icon.astro';
       >
         <Image
           src={mobileHome}
-          alt="Arwen home screen on mobile in dark mode, showing recent activity and quick actions"
+          alt={t('hero.mobileAlt')}
           width={420}
           loading="eager"
           class="w-full"

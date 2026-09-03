@@ -1,20 +1,34 @@
 ---
 import { WAITLIST_API_URL } from '../lib/constants';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const messages = {
+  invalidEmail: t('waitlist.msg.invalidEmail'),
+  notConnected: t('waitlist.msg.notConnected'),
+  joining: t('waitlist.joining'),
+  success: t('waitlist.msg.success'),
+  alreadyOnList: t('waitlist.msg.alreadyOnList'),
+  tooMany: t('waitlist.msg.tooMany'),
+  generic: t('waitlist.msg.generic'),
+  submit: t('waitlist.submit'),
+};
 ---
 
 <section id="waitlist" class="bg-[var(--color-pill)] py-20 sm:py-28">
   <div class="mx-auto max-w-xl px-5 text-center sm:px-8" data-reveal>
     <h2 class="text-3xl font-medium text-[var(--color-ink)] sm:text-4xl">
-      Get notified when it's ready
+      {t('waitlist.heading')}
     </h2>
     <p class="mt-4 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-      Leave your email and we'll let you know the moment web, iOS, or Android launches. One
-      email, no spam.
+      {t('waitlist.body')}
     </p>
 
     <form id="waitlist-form" class="mt-8 text-left" novalidate>
       <label for="waitlist-email" class="block text-sm font-medium text-[var(--color-ink-soft)]">
-        Email address
+        {t('waitlist.emailLabel')}
       </label>
       <div class="mt-2 flex flex-col gap-3 sm:flex-row">
         <input
@@ -23,14 +37,14 @@ import { WAITLIST_API_URL } from '../lib/constants';
           type="email"
           autocomplete="email"
           required
-          placeholder="you@example.com"
+          placeholder={t('waitlist.placeholder')}
           class="w-full flex-1 rounded-full bg-white px-5 py-3 text-[15px] text-[var(--color-on-surface)] placeholder:text-[var(--color-placeholder)] focus:ring-2 focus:ring-[var(--color-mint)] focus:outline-none"
         />
         <button
           type="submit"
           class="inline-flex flex-shrink-0 items-center justify-center gap-2 rounded-full bg-[var(--color-mint)] px-7 py-3 text-[15px] font-medium text-[var(--color-mint-deep)] transition-transform active:scale-[0.98]"
         >
-          Join the waitlist
+          {t('waitlist.submit')}
         </button>
       </div>
       <p
@@ -43,7 +57,7 @@ import { WAITLIST_API_URL } from '../lib/constants';
   </div>
 </section>
 
-<script is:inline define:vars={{ WAITLIST_API_URL }}>
+<script is:inline define:vars={{ WAITLIST_API_URL, messages }}>
   const form = document.getElementById('waitlist-form');
   const message = document.getElementById('waitlist-message');
   const emailInput = document.getElementById('waitlist-email');
@@ -66,19 +80,19 @@ import { WAITLIST_API_URL } from '../lib/constants';
     const email = emailInput instanceof HTMLInputElement ? emailInput.value.trim() : '';
 
     if (!emailPattern.test(email)) {
-      setMessage('Enter a valid email address.', 'error');
+      setMessage(messages.invalidEmail, 'error');
       return;
     }
 
     if (!(submitButton instanceof HTMLButtonElement)) return;
 
     if (!WAITLIST_API_URL) {
-      setMessage("Signups aren't connected yet, check back soon.", 'idle');
+      setMessage(messages.notConnected, 'idle');
       return;
     }
 
     submitButton.disabled = true;
-    submitButton.textContent = 'Joining...';
+    submitButton.textContent = messages.joining;
     setMessage('', 'idle');
 
     try {
@@ -89,22 +103,22 @@ import { WAITLIST_API_URL } from '../lib/constants';
       });
 
       if (response.ok) {
-        setMessage("You're on the list. We'll email you when it's ready.", 'success');
+        setMessage(messages.success, 'success');
         form.reset();
       } else if (response.status === 409) {
-        setMessage("You're already on the list.", 'idle');
+        setMessage(messages.alreadyOnList, 'idle');
       } else if (response.status === 400) {
-        setMessage('Enter a valid email address.', 'error');
+        setMessage(messages.invalidEmail, 'error');
       } else if (response.status === 429) {
-        setMessage('Too many attempts. Try again later.', 'error');
+        setMessage(messages.tooMany, 'error');
       } else {
-        setMessage('Something went wrong. Try again in a moment.', 'error');
+        setMessage(messages.generic, 'error');
       }
     } catch {
-      setMessage('Something went wrong. Try again in a moment.', 'error');
+      setMessage(messages.generic, 'error');
     } finally {
       submitButton.disabled = false;
-      submitButton.textContent = 'Join the waitlist';
+      submitButton.textContent = messages.submit;
     }
   });
 </script>

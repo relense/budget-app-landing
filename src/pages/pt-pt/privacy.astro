@@ -1,0 +1,159 @@
+---
+// The body copy below is a European Portuguese (pt-PT) translation written by Claude, not
+// reviewed by a lawyer or native speaker. Legal text carries real risk if translated loosely --
+// have this proofread (ideally by counsel familiar with Portuguese/GDPR compliance language)
+// before treating it as final. The page title/description/heading pull from src/i18n/ui.ts.
+import LegalLayout from '../../layouts/LegalLayout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const CONTACT_EMAIL = 'budgeterinfo@gmail.com';
+const LAST_UPDATED = 'September 1, 2026';
+---
+
+<LegalLayout
+  title={t('privacyPage.title')}
+  description={t('privacyPage.description')}
+  heading={t('privacyPage.heading')}
+  lastUpdated={LAST_UPDATED}
+>
+  <h2>Quem somos</h2>
+  <p>
+    A Arwen ("o Serviço", "nós") é operada por Miguel Furtado, uma pessoa singular sediada em
+    Portugal. O Serviço inclui tanto a aplicação web como a aplicação móvel associada, que
+    partilham a mesma conta e o mesmo back-end, pelo que esta política se aplica a ambas.
+  </p>
+  <p>Para qualquer questão sobre privacidade ou pedido relativo aos dados, contacta {CONTACT_EMAIL}.</p>
+
+  <h2>O que recolhemos</h2>
+  <p>
+    <strong>Dados da conta:</strong> o endereço de email com que inicias sessão, um nome de
+    apresentação opcional, e a tua moeda preferida.
+  </p>
+  <p>
+    <strong>Dados financeiros que introduzes:</strong> orçamentos, categorias, transações,
+    despesas recorrentes, fundos e movimentos de poupança, e o(s) espaço(s) de trabalho a que
+    pertencem. Estes são os dados principais que o Serviço existe para armazenar em teu nome.
+  </p>
+  <p>
+    <strong>Dados de espaço de trabalho e sociais:</strong> associações e funções em espaços de
+    trabalho, ligações de amizade, e convites/pedidos pendentes entre contas.
+  </p>
+  <p>
+    <strong>Dados de autenticação:</strong> códigos de início de sessão únicos (armazenados como
+    hash, de curta duração) e tokens de atualização (armazenados como hash no servidor; na web,
+    guardados apenas numa cookie httpOnly enviada automaticamente pelo teu navegador, nunca
+    acessível a scripts da página).
+  </p>
+  <p>
+    <strong>Armazenamento local no dispositivo:</strong> um pequeno conjunto de preferências
+    (tema, espaço de trabalho ativo, e um indicador de que editaste o saldo de um mês passado) é
+    guardado apenas no armazenamento local do teu navegador, neste dispositivo. Nunca nos são
+    transmitidos e não fazem parte de quaisquer dados de conta que detemos.
+  </p>
+  <p>
+    Não utilizamos análise de tráfego, publicidade, nem rastreio de terceiros de qualquer tipo, e
+    não utilizamos cookies além da única cookie de autenticação descrita acima.
+  </p>
+  <p>
+    <strong>Email da lista de espera:</strong> se te inscreveres na lista de espera neste site,
+    armazenamos o endereço de email que forneces exclusivamente para te notificar quando a
+    aplicação web, iOS ou Android estiver disponível. Não o utilizamos para mais nada, e podes
+    pedir-nos que o removamos a qualquer momento contactando {CONTACT_EMAIL}.
+  </p>
+
+  <h2>Como utilizamos os dados</h2>
+  <p>
+    Utilizamos os teus dados exclusivamente para fornecer o Serviço: autenticar-te, armazenar e
+    sincronizar os dados de orçamento que crias, e permitir que partilhes um espaço de trabalho
+    com pessoas que convidas. Não utilizamos os teus dados para publicidade, nem os vendemos.
+  </p>
+  <p>
+    A nossa base legal para o tratamento é a execução do contrato entre ti e nós (o funcionamento
+    da aplicação a que te inscreveste). Consulta "Os teus direitos" abaixo para saberes como
+    terminar essa relação por completo, eliminando a tua conta.
+  </p>
+
+  <h2>Com quem partilhamos os dados</h2>
+  <p>
+    Utilizamos um pequeno número de fornecedores de infraestrutura para operar o Serviço, cada um
+    a atuar como subcontratante em nosso nome, sob os seus próprios compromissos de segurança e
+    privacidade:
+  </p>
+  <p>
+    <strong>SendGrid</strong> - entrega os códigos de início de sessão únicos que te enviamos por email.<br />
+    <strong>Render</strong> - aloja os nossos servidores de aplicação e a base de dados.
+  </p>
+  <p>
+    Poderemos, no futuro, ativar ferramentas de deteção de erros (por exemplo, Sentry) para
+    corrigir problemas mais rapidamente; se e quando isso acontecer, esta política será atualizada
+    primeiro. Não partilhamos os teus dados com mais nenhum terceiro, e nunca os vendemos.
+  </p>
+
+  <h2>Retenção de dados</h2>
+  <p>
+    Os dados da tua conta e tudo o que introduziste são mantidos enquanto a tua conta existir. Os
+    códigos de início de sessão e os tokens de atualização expiram automaticamente e são
+    eliminados pouco depois de deixarem de ser válidos. Se eliminares a tua conta, todos os teus
+    dados são removidos permanentemente numa única operação. Consulta "Os teus direitos" abaixo.
+  </p>
+
+  <h2>Os teus direitos</h2>
+  <p>
+    Ao abrigo do Regulamento Geral sobre a Proteção de Dados (RGPD) da UE e de legislação
+    semelhante, tens o direito de aceder, corrigir, exportar ou eliminar os teus dados pessoais, e
+    de te opores à forma como são tratados. Duas destas opções já estão integradas diretamente na
+    aplicação, em Perfil &rarr; Conta:
+  </p>
+  <p>
+    <strong>Exportar os meus dados</strong> - descarrega uma cópia completa da tua conta e de tudo
+    o que guardaste connosco, num único ficheiro.<br />
+    <strong>Eliminar a minha conta</strong> - apaga permanente e imediatamente a tua conta e todos
+    os dados associados. Esta ação não pode ser desfeita.
+  </p>
+  <p>
+    Para qualquer outro pedido (correção, oposição, ou uma questão sobre como os teus dados são
+    tratados), contacta {CONTACT_EMAIL}.
+  </p>
+  <p>
+    <strong>Residentes da Califórnia:</strong> ao abrigo do CCPA, tens o direito de saber que
+    informação pessoal recolhemos, de pedir a sua eliminação, e de optar por não permitir a sua
+    venda. Não vendemos informação pessoal, pelo que não é necessário optar por não a vender; as
+    ferramentas de exportação e eliminação acima satisfazem os direitos equivalentes de acesso e
+    eliminação.
+  </p>
+
+  <h2>Cookies e armazenamento local</h2>
+  <p>
+    Utilizamos apenas uma cookie: uma cookie de autenticação httpOnly que mantém a tua sessão
+    iniciada. Não pode ser lida por scripts da página e não é utilizada para rastreio.
+    Separadamente, algumas preferências de interface são guardadas no armazenamento local do teu
+    navegador, como descrito acima. Estas nunca saem do teu dispositivo.
+  </p>
+
+  <h2>Privacidade de menores</h2>
+  <p>
+    O Serviço destina-se a um público em geral e não é dirigido a crianças com menos de 16 anos.
+    Não recolhemos intencionalmente dados pessoais de crianças com menos de 16 anos; se
+    acreditares que uma criança nos forneceu dados pessoais, contacta-nos em {CONTACT_EMAIL} e
+    procederemos à sua eliminação.
+  </p>
+
+  <h2>Transferências internacionais de dados</h2>
+  <p>
+    Os nossos fornecedores de infraestrutura poderão tratar dados em países diferentes do teu.
+    Nesses casos, confiamos nas salvaguardas próprias desses fornecedores para transferências
+    internacionais de dados, em conformidade com a legislação aplicável.
+  </p>
+
+  <h2>Alterações a esta política</h2>
+  <p>
+    Se fizermos alterações materiais a esta política, atualizaremos a data de "Última atualização"
+    acima e, quando apropriado, notificar-te-emos diretamente.
+  </p>
+
+  <h2>Contacto</h2>
+  <p>Questões, pedidos ou preocupações sobre esta política ou os teus dados: {CONTACT_EMAIL}.</p>
+</LegalLayout>
