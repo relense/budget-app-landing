@@ -90,15 +90,16 @@ the single source of tokens; don't reintroduce a `tailwind.config.js`.
 
 ## Known TODOs
 
-- `WAITLIST_API_URL` in `src/lib/constants.ts` is `null`, there's no waitlist backend yet.
-  `Waitlist.astro`'s form validates and shows a clear "not connected yet" state instead of faking
-  success. Contract it expects once an endpoint exists: `POST { email: string }` -> `201` success,
-  `409` if already registered, anything else treated as a generic error. Needs CORS enabled for
-  this site's origin (it's a cross-origin browser `fetch()`).
+- `WAITLIST_API_URL` in `src/lib/constants.ts` is `null`, waiting on `budget-app-api`'s deployed
+  `POST /waitlist` URL. Contract is confirmed and fully wired up in `Waitlist.astro` already (201
+  success, 409 duplicate, 400 bad email, 429 rate-limited, else generic error — see the comment in
+  `constants.ts`), CORS on their end is a placeholder any-origin until this site has a real domain,
+  at which point tell that session the domain so they can lock it down.
 - `astro.config.mjs`'s `site` and `public/robots.txt`'s sitemap line use a placeholder domain
   (`https://budgettracker.app`). `@astrojs/sitemap` is already wired up and generates
   `sitemap-index.xml` from whatever `site` is set to, so updating that one value once a real
-  domain exists is all that's needed, no further sitemap work.
+  domain exists is all that's needed, no further sitemap work. Same domain also needs to go back
+  to `budget-app-api` for its CORS lock-down, see the `WAITLIST_API_URL` TODO above.
 - `public/og-image.png` was composed locally with Pillow (logo + Fredoka + brand palette). Not
   screenshotted from a live design tool, regenerate the same way (script isn't checked in, rebuild
   it from `og-image.png`'s own content if it needs to change again) if the hero copy, palette, or

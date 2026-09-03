@@ -93,6 +93,10 @@ import { WAITLIST_API_URL } from '../lib/constants';
         form.reset();
       } else if (response.status === 409) {
         setMessage("You're already on the list.", 'idle');
+      } else if (response.status === 400) {
+        setMessage('Enter a valid email address.', 'error');
+      } else if (response.status === 429) {
+        setMessage('Too many attempts. Try again later.', 'error');
       } else {
         setMessage('Something went wrong. Try again in a moment.', 'error');
       }
