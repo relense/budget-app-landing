@@ -57,8 +57,13 @@ npm run preview   # serve the production build locally
 - `src/layouts/LegalLayout.astro` — shared shell for `/privacy` and `/terms`
 - `src/assets/brand/`, `src/assets/screenshots/` — copied from `budget-app-web`'s `public/` and
   `design/` folders, optimized at build time via `astro:assets` (`<Image />`)
-- `src/lib/constants.ts` — `WAITLIST_API_URL` (currently `null`, no backend built yet; see Known
-  TODOs)
+- `src/lib/constants.ts` — `WAITLIST_API_URL`, sourced from the `WAITLIST_API_URL` env var (see
+  `.env.example` and `src/env.d.ts`), not hardcoded; differs per environment (local/prod)
+- `src/env.d.ts` — `ImportMetaEnv` augmentation for `WAITLIST_API_URL`, needed since it's a
+  non-`PUBLIC_`-prefixed custom env var (fine here: it's only ever read in `.astro` frontmatter, a
+  build-time context, then explicitly passed into `Waitlist.astro`'s inline script via
+  `define:vars` — never referenced directly inside client-bundled JS, so the `PUBLIC_` prefix
+  Vite/Astro requires for that case doesn't apply)
 
 ## SEO
 
@@ -90,11 +95,15 @@ the single source of tokens; don't reintroduce a `tailwind.config.js`.
 
 ## Known TODOs
 
-- `WAITLIST_API_URL` in `src/lib/constants.ts` is `null`, waiting on `budget-app-api`'s deployed
-  `POST /waitlist` URL. Contract is confirmed and fully wired up in `Waitlist.astro` already (201
-  success, 409 duplicate, 400 bad email, 429 rate-limited, else generic error — see the comment in
-  `constants.ts`), CORS on their end is a placeholder any-origin until this site has a real domain,
-  at which point tell that session the domain so they can lock it down.
+- Waitlist end-to-end verified working (2026-09-03) against a local `budget-app-api` dev server
+  on port 4400: real 201 on signup, real 409 on a repeat submission, correct message for each.
+  Production URL (`https://budget-app-api-6hrz.onrender.com/waitlist`) is set in `.env.example`
+  as the documented value but 404s as of this date — the route landed on `budget-app-api`'s
+  `develop` branch (PR #117) but hasn't been promoted to `main`/redeployed yet. No frontend work
+  left here; this is purely "wait for that deploy," then set `WAITLIST_API_URL` to that URL in
+  whatever's providing env vars for the actual production build (Cloudflare Pages' dashboard, not
+  a committed file). CORS on their end is a placeholder any-origin until this site has a real
+  domain, at which point tell that session the domain so they can lock it down.
 - `astro.config.mjs`'s `site` and `public/robots.txt`'s sitemap line use a placeholder domain
   (`https://budgettracker.app`). `@astrojs/sitemap` is already wired up and generates
   `sitemap-index.xml` from whatever `site` is set to, so updating that one value once a real

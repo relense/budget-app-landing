@@ -1,8 +1,10 @@
-// No URL yet, waiting on budget-app-api's deployed domain. Set this once it exists and
-// Waitlist.astro's form starts actually submitting instead of showing its "not connected
-// yet" state -- no other frontend change needed, the contract below is already fully wired up.
+// Sourced from the WAITLIST_API_URL env var (see .env.example), not hardcoded, since this
+// value legitimately differs across local dev (a local budget-app-api server), staging, and
+// production -- set it per-environment (Cloudflare Pages' dashboard for prod/preview deploys,
+// a local .env for dev). Falls back to null (Waitlist.astro's honest "not connected yet" state)
+// if unset, e.g. a fresh clone with no .env.
 //
-// Confirmed contract (budget-app-api's POST /waitlist, CORS already handled on their end):
+// Confirmed contract (POST /waitlist, CORS already handled on their end):
 //   POST <url> { "email": string } ->
 //     201  success
 //     409  already on the list
@@ -10,8 +12,11 @@
 //     429  same email retried >5x/hour (abuse protection)
 //     else generic error
 //
-// Once this is set to a real deployed URL, tell the budget-app-api session that domain so
-// they can lock its CORS down from the current any-origin placeholder to just this one.
-export const WAITLIST_API_URL: string | null = null;
+// Production value: https://budget-app-api-6hrz.onrender.com/waitlist -- exists on
+// budget-app-api's `develop` branch (PR #117) but not yet promoted to `main`/redeployed as of
+// 2026-09-03 (confirmed by curling it: 404). Once this site has a real domain, tell the
+// budget-app-api session so they can lock its WAITLIST_CORS_ORIGIN down from the current
+// any-origin placeholder to just this one.
+export const WAITLIST_API_URL: string | null = import.meta.env.WAITLIST_API_URL ?? null;
 
 export const CREATOR_GITHUB_URL = 'https://github.com/relense';

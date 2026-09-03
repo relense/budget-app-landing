@@ -10,12 +10,15 @@ Sibling repos (same product, separate deploys): `budget-app-web`, `budget-app-ap
 
 ## Stack
 
-Astro + Tailwind CSS v4, static output. No framework, no client state: this page is content, plus
-two small islands (the nav's mobile menu toggle and the waitlist form's submit handler).
+Astro + Tailwind CSS v4, static output, dark mode only (colors sourced from
+`budget-app-mobile/src/theme/colors.ts`'s `darkColors`). No framework, no client state: this page
+is content, plus two small islands (the nav's mobile menu toggle and the waitlist form's submit
+handler).
 
 ## Commands
 
 ```bash
+cp .env.example .env   # set WAITLIST_API_URL, see .env.example
 npm install
 npm run dev       # http://localhost:4321
 npm run build     # astro check && astro build -> dist/
@@ -25,16 +28,13 @@ npm run preview   # serve the production build locally
 ## Structure
 
 - `src/components/` — one section per file (`Hero.astro`, `FeatureGrid.astro`, etc.)
-- `src/layouts/` — `BaseLayout.astro` (head/meta/OG) and `LegalLayout.astro` (privacy/terms)
-- `src/assets/` — brand logo + screenshots, copied from `budget-app-web` and optimized at build
-  time via `astro:assets`
-- `src/lib/constants.ts` — `WAITLIST_API_URL`, currently `null` (no backend built yet)
+- `src/layouts/` — `BaseLayout.astro` (head/meta/OG/JSON-LD) and `LegalLayout.astro`
+  (privacy/terms)
+- `src/assets/` — brand logo, screenshots, and the self-hosted Fredoka font subset
+- `src/lib/constants.ts` — `WAITLIST_API_URL`, read from the env var of the same name (see
+  `.env.example`)
 
 ## Known TODOs
 
-- `src/lib/constants.ts`: `WAITLIST_API_URL` is `null`. `Waitlist.astro`'s form shows an honest
-  "not connected yet" state until a real endpoint exists. Expected contract: `POST { email }` ->
-  `201` success, `409` already registered, needs CORS enabled for this site's origin.
-- `astro.config.mjs`'s `site` and `public/robots.txt`'s sitemap URL use a placeholder domain
-  (`https://budgettracker.app`), update both once a real domain is chosen, and add
-  `@astrojs/sitemap` at that point.
+See `.claude/CLAUDE.md`'s Known TODOs for the current, maintained list (waitlist deploy status,
+placeholder domain, OG image regeneration notes). Kept there instead of duplicated here.
