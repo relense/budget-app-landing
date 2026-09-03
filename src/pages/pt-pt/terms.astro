@@ -1,0 +1,127 @@
+---
+// The body copy below is a European Portuguese (pt-PT) translation written by Claude, not
+// reviewed by a lawyer or native speaker. Legal text carries real risk if translated loosely --
+// have this proofread (ideally by counsel familiar with Portuguese contract-law language)
+// before treating it as final. The page title/description/heading pull from src/i18n/ui.ts.
+import LegalLayout from '../../layouts/LegalLayout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const CONTACT_EMAIL = 'budgeterinfo@gmail.com';
+const LAST_UPDATED = 'September 1, 2026';
+---
+
+<LegalLayout
+  title={t('termsPage.title')}
+  description={t('termsPage.description')}
+  heading={t('termsPage.heading')}
+  lastUpdated={LAST_UPDATED}
+>
+  <h2>Aceitação destes termos</h2>
+  <p>
+    Estes Termos de Serviço ("Termos") regem a tua utilização da Arwen ("o Serviço", "nós"),
+    operada por Miguel Furtado, uma pessoa singular sediada em Portugal. O Serviço inclui tanto a
+    aplicação web como a aplicação móvel associada, que partilham a mesma conta e o mesmo
+    back-end. Ao criares uma conta ou utilizares o Serviço, aceitas estes Termos. Se não
+    concordares, não utilizes o Serviço.
+  </p>
+
+  <h2>O que é o Serviço</h2>
+  <p>
+    A Arwen é uma ferramenta pessoal de orçamento e controlo de despesas: registas orçamentos,
+    despesas, contas recorrentes e poupanças, opcionalmente partilhadas com pessoas que convidas
+    para um espaço de trabalho. É uma ferramenta de registo, não aconselhamento financeiro,
+    fiscal ou de investimento. Qualquer decisão que tomes com base no que introduzes ou vês na
+    aplicação é da tua exclusiva responsabilidade.
+  </p>
+
+  <h2>A tua conta</h2>
+  <p>
+    Precisas de um endereço de email válido para criar uma conta, e és responsável por manter o
+    acesso a esse email seguro. Qualquer pessoa capaz de concluir o processo de início de sessão
+    do teu email pode aceder à tua conta. O Serviço destina-se a um público em geral e não é
+    dirigido a crianças com menos de 16 anos; tens de ter, no mínimo, 16 anos para o utilizar.
+  </p>
+  <p>
+    A exatidão de tudo o que introduzes (valores, categorias, datas) é inteiramente da tua
+    responsabilidade. Não verificamos essa informação contra qualquer fonte externa.
+  </p>
+
+  <h2>O teu conteúdo</h2>
+  <p>
+    Os dados que introduzes no Serviço são teus. Não reclamamos qualquer propriedade sobre eles,
+    nem os utilizamos para nada além de te fornecer o Serviço (consulta a nossa
+    <a href="/pt-pt/privacy">Política de Privacidade</a>). Concedes-nos o direito limitado de os
+    armazenar e processar apenas para que o Serviço funcione: mostrando-os de volta a ti,
+    sincronizando-os entre os teus dispositivos, e partilhando-os com quem convidares
+    explicitamente para um espaço de trabalho.
+  </p>
+  <p>
+    Se convidares alguém para um espaço de trabalho partilhado, uma função de Editor ou
+    Proprietário dá-lhe acesso total de leitura/escrita a tudo nesse espaço, e uma função de
+    Visualizador dá acesso só de leitura. Pensa em quem partilhas um espaço de trabalho tendo isto
+    em conta.
+  </p>
+
+  <h2>Utilização aceitável</h2>
+  <p>Comprometes-te a não:</p>
+  <p>
+    utilizar o Serviço para qualquer fim ilegal; tentar obter acesso não autorizado a qualquer
+    conta, espaço de trabalho, ou parte do Serviço que não te pertença; interferir com,
+    sobrecarregar, ou abusar da infraestrutura ou API do Serviço; fazer engenharia inversa,
+    extração automatizada de dados (scraping), ou tentar extrair o código-fonte do Serviço para
+    além do que já é público; ou fazer-te passar por qualquer pessoa ou entidade.
+  </p>
+
+  <h2>Preços</h2>
+  <p>
+    O Serviço é, atualmente, gratuito, sem qualquer plano pago. Se isso mudar no futuro,
+    atualizaremos estes Termos primeiro e dar-te-emos uma escolha clara antes de algo que uses
+    passar a ser pago.
+  </p>
+
+  <h2>Cessação</h2>
+  <p>
+    Podes eliminar a tua conta a qualquer momento em Perfil &rarr; Conta &rarr; Eliminar a minha
+    conta. Esta ação apaga permanente e imediatamente a tua conta e todos os dados associados, e
+    não pode ser desfeita.
+  </p>
+  <p>
+    Podemos suspender ou terminar o teu acesso caso violes estes Termos, incluindo as regras de
+    utilização aceitável acima. Sempre que razoavelmente possível, tentaremos avisar-te primeiro.
+  </p>
+
+  <h2>Exclusão de garantias</h2>
+  <p>
+    O Serviço é fornecido "tal como está" e "conforme disponível", sem garantias de qualquer tipo,
+    expressas ou implícitas. Não garantimos que o Serviço estará ininterrupto, isento de erros, ou
+    disponível em todos os momentos, nem garantimos a exatidão de qualquer cálculo, total, ou
+    valor que apresente.
+  </p>
+
+  <h2>Limitação de responsabilidade</h2>
+  <p>
+    Na medida máxima permitida por lei, não somos responsáveis por quaisquer danos indiretos,
+    incidentais, ou consequenciais decorrentes da tua utilização do Serviço, incluindo qualquer
+    decisão financeira tomada com base em dados nele armazenados. Nada nestes Termos limita
+    qualquer responsabilidade que não possa ser legalmente limitada ou excluída.
+  </p>
+
+  <h2>Lei aplicável</h2>
+  <p>
+    Estes Termos são regidos pelas leis de Portugal, sem consideração pelas suas regras de
+    conflito de leis. Qualquer litígio não resolvido de outra forma será submetido à jurisdição
+    exclusiva dos tribunais portugueses.
+  </p>
+
+  <h2>Alterações a estes Termos</h2>
+  <p>
+    Se fizermos alterações materiais a estes Termos, atualizaremos a data de "Última atualização"
+    acima e, quando apropriado, notificar-te-emos diretamente.
+  </p>
+
+  <h2>Contacto</h2>
+  <p>Questões sobre estes Termos: {CONTACT_EMAIL}.</p>
+</LegalLayout>

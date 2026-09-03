@@ -1,5 +1,9 @@
 ---
 import Icon from './Icon.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <section class="border-y border-[var(--color-line)] bg-[var(--color-bg-elevated)]">
@@ -8,7 +12,7 @@ import Icon from './Icon.astro';
   >
     <Icon name="shield-check" class="h-5 w-5 flex-shrink-0 text-[var(--color-mint)]" />
     <p class="text-[15px] font-medium text-[var(--color-mint)]">
-      No ads. No data-selling. No bank-sync creepiness.
+      {t('trustStrip.text')}
     </p>
   </div>
 </section>

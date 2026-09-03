@@ -1,14 +1,18 @@
 ---
 import LegalLayout from '../layouts/LegalLayout.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const CONTACT_EMAIL = 'budgeterinfo@gmail.com';
 const LAST_UPDATED = 'September 1, 2026';
 ---
 
 <LegalLayout
-  title="Terms of Service, Arwen"
-  description="The terms that govern your use of Arwen."
-  heading="Terms of Service"
+  title={t('termsPage.title')}
+  description={t('termsPage.description')}
+  heading={t('termsPage.heading')}
   lastUpdated={LAST_UPDATED}
 >
   <h2>Agreement to these terms</h2>

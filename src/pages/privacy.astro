@@ -1,14 +1,18 @@
 ---
 import LegalLayout from '../layouts/LegalLayout.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const CONTACT_EMAIL = 'budgeterinfo@gmail.com';
 const LAST_UPDATED = 'September 1, 2026';
 ---
 
 <LegalLayout
-  title="Privacy Policy, Arwen"
-  description="How Arwen collects, uses, and protects your data."
-  heading="Privacy Policy"
+  title={t('privacyPage.title')}
+  description={t('privacyPage.description')}
+  heading={t('privacyPage.heading')}
   lastUpdated={LAST_UPDATED}
 >
   <h2>Who we are</h2>

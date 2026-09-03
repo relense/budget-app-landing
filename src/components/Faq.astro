@@ -1,37 +1,10 @@
 ---
 import Icon from './Icon.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
-const faqs = [
-  {
-    question: 'Is Arwen free?',
-    answer:
-      "Yes. It's currently free to use, with no paid tier. If that ever changes, we'll say so clearly before anything you rely on becomes paid.",
-  },
-  {
-    question: 'Can I share a budget with someone else?',
-    answer:
-      'Yes. Invite people you trust into a shared workspace, as an Editor with full access or a Viewer with read-only access.',
-  },
-  {
-    question: 'What currencies does it support?',
-    answer:
-      'Ten, including EUR, USD, GBP, JPY, and CHF, so everyone in a shared workspace can see balances in the currency they actually use.',
-  },
-  {
-    question: 'Do I need a password?',
-    answer: 'No. Sign in with a one-time code sent to your email instead.',
-  },
-  {
-    question: 'Is my data sold or used for ads?',
-    answer:
-      "No. There's no advertising, no data-selling, and no third-party tracking of any kind.",
-  },
-  {
-    question: 'When can I actually use it?',
-    answer:
-      "The web app is in staging and the iOS and Android apps are still in progress. Join the waitlist and we'll email you the moment any of them are ready.",
-  },
-];
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const faqs = t('faq.items');
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -53,7 +26,7 @@ const jsonLd = {
       class="max-w-[20ch] text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl"
       data-reveal
     >
-      Frequently asked questions
+      {t('faq.heading')}
     </h2>
 
     <div class="mt-10 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">

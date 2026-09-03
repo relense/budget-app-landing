@@ -73,6 +73,42 @@ referenced from `public/robots.txt`. `BaseLayout.astro` emits a sitewide `WebSit
 `<details>` accordion, so the structured data can't drift from the visible content. Keep it that
 way, don't hand-maintain a separate copy of the FAQ text for the schema.
 
+## i18n (English + pt-PT)
+
+English is the default locale, unprefixed (`/`, `/privacy`, `/terms`); Portuguese lives under
+`/pt-pt/` (`/pt-pt/`, `/pt-pt/privacy`, `/pt-pt/terms`). Configured via Astro's built-in `i18n`
+routing in `astro.config.mjs` (`defaultLocale: 'en'`, `locales: ['en', { path: 'pt-pt', codes:
+['pt-PT'] }]`, `prefixDefaultLocale: false`) — Astro doesn't auto-generate translated pages from
+this, it's routing/URL convention plus `Astro.currentLocale` only; the actual page files under
+`src/pages/pt-pt/` are hand-duplicated. No visible language switcher: a first-visit-only,
+localStorage-remembered redirect in `BaseLayout.astro` sends English-page visitors with a
+Portuguese browser language to the `/pt-pt/` equivalent, one-directional only (never redirects
+someone away from a `/pt-pt/` page they navigated to directly, e.g. a shared link).
+
+- `src/i18n/ui.ts` — the single translation dictionary, keyed by section (`hero.title`,
+  `faq.items`, etc.), one object per locale. **The `'pt-pt'` values are European Portuguese
+  (not pt-BR) written by Claude, informal "tu" register, not reviewed by a native speaker** — worth
+  a proofread pass before treating as final. Any new UI string goes in both locale objects.
+- `src/i18n/utils.ts` — `getLangFromUrl(url)` (derives `'en' | 'pt-pt'` from the path prefix),
+  `useTranslations(lang)` (returns a `t(key)` getter), `getAlternatePath()` (maps a path to its
+  other-locale equivalent, used for hreflang and the redirect), `htmlLang` (maps `'pt-pt'` →
+  `pt-PT` for the `<html lang>` attribute).
+- Every component that renders copy calls `getLangFromUrl(Astro.url)` + `useTranslations(lang)`
+  itself (not threaded via props) and pulls its strings from `t()`. `BaseLayout.astro` also emits
+  `hreflang` alternate `<link>` tags (self + the other locale + `x-default` pointing at English)
+  for every page; `@astrojs/sitemap`'s `i18n` option in `astro.config.mjs` mirrors this into
+  `sitemap-index.xml` automatically.
+- `src/pages/privacy.astro` / `terms.astro` and their `src/pages/pt-pt/` counterparts: both the
+  page chrome (title/description/heading, from `t('privacyPage.*')` / `t('termsPage.*')`) and the
+  legal body copy are translated. The `pt-pt/privacy.astro` and `pt-pt/terms.astro` bodies carry a
+  comment at the top of each file noting the translation is Claude's, not lawyer- or
+  native-speaker-reviewed — legal text carries real risk if loosely translated, so have it
+  proofread before treating it as final.
+- `404.astro` stays English-only, deliberately not duplicated under `/pt-pt/`: static hosts only
+  ever serve one root-level `404.html` as the catch-all for unmatched routes, so a locale-prefixed
+  404 page wouldn't be reachable through that fallback anyway.
+- `public/og-image.png` (see the TODO below) is still English-only; no pt-PT variant exists yet.
+
 ## Brand tokens & theme
 
 Dark mode is this page's single locked theme, no light variant, no toggle (see Page Theme Lock in
