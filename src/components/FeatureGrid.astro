@@ -4,7 +4,7 @@ import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const [budgetByCategory, sharedWorkspaces, friends, planAhead] = t('featureGrid.cards');
+const [sharedTogether, simple, friends, nudges] = t('featureGrid.cards');
 ---
 
 <section id="features" class="bg-[var(--color-bg)] py-20 sm:py-28">
@@ -24,11 +24,11 @@ const [budgetByCategory, sharedWorkspaces, friends, planAhead] = t('featureGrid.
         <div
           class="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[var(--color-mint-deep)]"
         >
-          <Icon name="sliders-horizontal" class="h-5 w-5" />
+          <Icon name="users-three" class="h-5 w-5" />
         </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-mint-deep)]">{budgetByCategory.title}</h3>
+        <h3 class="mt-6 text-xl font-medium text-[var(--color-mint-deep)]">{sharedTogether.title}</h3>
         <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[var(--color-mint-deep)]">
-          {budgetByCategory.body}
+          {sharedTogether.body}
         </p>
       </div>
 
@@ -40,13 +40,13 @@ const [budgetByCategory, sharedWorkspaces, friends, planAhead] = t('featureGrid.
         <div
           class="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[var(--color-cat-blue-icon)]"
         >
-          <Icon name="users-three" class="h-5 w-5" />
+          <Icon name="check-circle" class="h-5 w-5" />
         </div>
         <h3 class="mt-6 text-xl font-medium text-[var(--color-cat-blue-icon)]">
-          {sharedWorkspaces.title}
+          {simple.title}
         </h3>
         <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[var(--color-cat-blue-icon)]">
-          {sharedWorkspaces.body}
+          {simple.body}
         </p>
       </div>
 
@@ -74,11 +74,11 @@ const [budgetByCategory, sharedWorkspaces, friends, planAhead] = t('featureGrid.
         <div
           class="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[var(--color-cat-peach-icon)]"
         >
-          <Icon name="calendar-blank" class="h-5 w-5" />
+          <Icon name="envelope-simple" class="h-5 w-5" />
         </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-cat-peach-icon)]">{planAhead.title}</h3>
+        <h3 class="mt-6 text-xl font-medium text-[var(--color-cat-peach-icon)]">{nudges.title}</h3>
         <p class="mt-2 max-w-[42ch] text-[15px] leading-relaxed text-[var(--color-cat-peach-icon)]">
-          {planAhead.body}
+          {nudges.body}
         </p>
       </div>
     </div>
