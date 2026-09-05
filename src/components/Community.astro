@@ -1,0 +1,37 @@
+---
+import Icon from './Icon.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const icons = ['chat-circle-text', 'sliders-horizontal', 'check-circle'] as const;
+const points = t('community.points').map((point, i) => ({ ...point, icon: icons[i] }));
+---
+
+<section class="bg-[var(--color-bg-elevated)] py-20 sm:py-28">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="max-w-2xl" data-reveal>
+      <h2 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+        {t('community.heading')}
+      </h2>
+      <p class="mt-4 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        {t('community.body')}
+      </p>
+    </div>
+
+    <div class="mt-14 grid grid-cols-1 gap-8 sm:grid-cols-3">
+      {
+        points.map((point, i) => (
+          <div data-reveal style={`transition-delay:${i * 80}ms`}>
+            <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+              <Icon name={point.icon} class="h-5 w-5" />
+            </div>
+            <h3 class="mt-5 text-lg font-medium text-[var(--color-ink)]">{point.title}</h3>
+            <p class="mt-2 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">{point.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
