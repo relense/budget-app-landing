@@ -38,6 +38,11 @@ const t = useTranslations(lang);
           <Icon name="arrow-right" class="h-4 w-4" />
         </a>
       </div>
+
+      <div class="mt-10 flex items-center gap-2 text-[13px] font-medium text-[var(--color-ink-faint)] lg:hidden">
+        <span>{t('hero.scrollHint')}</span>
+        <Icon name="caret-down" class="h-4 w-4 animate-bounce" />
+      </div>
     </div>
 
     <div class="relative" data-reveal style="transition-delay: 120ms">
