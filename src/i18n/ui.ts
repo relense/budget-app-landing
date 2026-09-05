@@ -85,7 +85,7 @@ export const ui = {
       'Home, in dark mode',
       'Budget by category',
       'Savings funds',
-      'Currency settings',
+      'Categorize expenses',
     ],
 
     'getTheApp.heading': 'Web, iOS, and Android are all in progress',
@@ -131,6 +131,24 @@ export const ui = {
         question: 'When can I actually use it?',
         answer:
           "The web app is in staging and the iOS and Android apps are still in progress. Join the waitlist and we'll email you the moment any of them are ready.",
+      },
+    ],
+
+    'community.heading': 'Built with the people who use it',
+    'community.body':
+      "We don't want to build another bloated budget app with a feature for everything and a reason to use none of them. So the plan is to build what couples actually ask for, not what looks good on a features page.",
+    'community.points': [
+      {
+        title: 'Feedback, built in',
+        body: "A feedback option lives right in the app, so telling us what's missing or broken takes seconds, not a support ticket.",
+      },
+      {
+        title: 'You shape what comes next',
+        body: "The roadmap follows what people actually ask for. If enough of you need something, it moves up, if no one does, we don't build it just to have it.",
+      },
+      {
+        title: 'No bloat, on purpose',
+        body: "Every feature has to earn its place. If it doesn't help you manage money together, it doesn't make the cut.",
       },
     ],
 
@@ -240,7 +258,7 @@ export const ui = {
       'Início, em modo escuro',
       'Orçamento por categoria',
       'Fundos de poupança',
-      'Definições de moeda',
+      'Categorizar despesas',
     ],
 
     'getTheApp.heading': 'Web, iOS e Android estão todos em desenvolvimento',
@@ -286,6 +304,24 @@ export const ui = {
         question: 'Quando é que posso realmente usá-la?',
         answer:
           'A aplicação web está em staging e as aplicações iOS e Android ainda estão em desenvolvimento. Junta-te à lista de espera e enviamos-te um email assim que alguma delas estiver pronta.',
+      },
+    ],
+
+    'community.heading': 'Feita com quem a usa',
+    'community.body':
+      'Não queremos construir mais uma app de orçamento inchada, com uma funcionalidade para tudo e um motivo para não usar nenhuma delas. Por isso a ideia é construir o que os casais realmente pedem, não o que fica bem numa lista de funcionalidades.',
+    'community.points': [
+      {
+        title: 'Feedback, integrado',
+        body: 'Uma opção de feedback está mesmo dentro da app, para que dizer-nos o que falta ou está avariado demore segundos, não um pedido de suporte.',
+      },
+      {
+        title: 'Ajudas a decidir o que vem a seguir',
+        body: 'O roadmap segue o que as pessoas realmente pedem. Se muitos de vocês precisarem de algo, sobe na lista, se ninguém precisar, não o construímos só por construir.',
+      },
+      {
+        title: 'Sem inchaço, de propósito',
+        body: 'Cada funcionalidade tem de justificar o seu lugar. Se não ajudar a gerir o dinheiro em conjunto, não entra.',
       },
     ],
 
