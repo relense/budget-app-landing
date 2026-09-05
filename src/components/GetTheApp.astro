@@ -5,35 +5,61 @@ import { getLangFromUrl, useTranslations } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const icons = ['desktop', 'apple-logo', 'google-play-logo'] as const;
-const platforms = t('getTheApp.platforms').map((platform, i) => ({ ...platform, icon: icons[i] }));
+const icons = ['apple-logo', 'google-play-logo', 'desktop'] as const;
+const hrefs = [
+  undefined,
+  'https://expo.dev/accounts/budgeterinfo/projects/budgeter-mobile/builds/46e31c38-4d5f-4531-8db9-25ced4e01ff0',
+  'https://budget-app-web-sjzr.onrender.com/login',
+] as const;
+const platforms = t('getTheApp.platforms').map((platform, i) => ({
+  ...platform,
+  icon: icons[i],
+  href: hrefs[i],
+}));
 ---
 
 <section class="bg-[var(--color-bg)] py-20 sm:py-28">
-  <div class="mx-auto max-w-7xl px-5 sm:px-8">
-    <h2
-      class="max-w-[24ch] text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl"
-      data-reveal
-    >
-      {t('getTheApp.heading')}
-    </h2>
-    <p class="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]" data-reveal>
-      {t('getTheApp.body')}
-    </p>
+  <div
+    class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-5 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10"
+  >
+    <div data-reveal>
+      <h2 class="max-w-[24ch] text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+        {t('getTheApp.heading')}
+      </h2>
+      <p class="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        {t('getTheApp.body')}
+      </p>
+    </div>
 
-    <div class="mt-12 flex flex-wrap gap-x-12 gap-y-8" data-reveal style="transition-delay: 80ms">
+    <div class="flex flex-col gap-4" data-reveal style="transition-delay: 80ms">
       {
-        platforms.map((platform) => (
-          <div class="flex items-center gap-3">
-            <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-bg-elevated)] text-[var(--color-ink-soft)]">
-              <Icon name={platform.icon} class="h-5 w-5" />
-            </div>
-            <div>
-              <p class="text-[15px] font-medium text-[var(--color-ink)]">{platform.label}</p>
-              <p class="text-sm text-[var(--color-ink-faint)]">{platform.status}</p>
-            </div>
-          </div>
-        ))
+        platforms.map((platform) => {
+          const Tag = platform.href ? 'a' : 'div';
+          return (
+            <Tag
+              href={platform.href}
+              target={platform.href ? '_blank' : undefined}
+              rel={platform.href ? 'noopener noreferrer' : undefined}
+              class={`flex items-center gap-4 rounded-2xl border border-[var(--color-line)] bg-[var(--color-bg-elevated)] px-5 py-4 ${platform.href ? 'transition-colors hover:border-[var(--color-mint)]' : ''}`}
+            >
+              <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[var(--color-bg)] text-[var(--color-ink)]">
+                <Icon name={platform.icon} class="h-6 w-6" />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-medium tracking-wide text-[var(--color-ink-faint)]">
+                  {platform.status}
+                </p>
+                <p class="text-lg font-medium text-[var(--color-ink)]">{platform.label}</p>
+              </div>
+              {platform.href && (
+                <Icon
+                  name="arrow-square-out"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-faint)]"
+                />
+              )}
+            </Tag>
+          );
+        })
       }
     </div>
   </div>

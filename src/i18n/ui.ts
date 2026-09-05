@@ -17,7 +17,7 @@ export const ui = {
   en: {
     'meta.title': 'Arwen: a shared budget and savings tracker',
     'meta.description':
-      'A multi-currency budget and savings tracker you can share with your household. No ads, no data-selling, no bank-sync creepiness.',
+      'A shared budget for couples and people who live together. Plan the month together, log expenses as they happen, and split the work of categorizing. No ads, no data-selling.',
 
     'nav.features': 'Features',
     'nav.howItWorks': 'How it works',
@@ -28,7 +28,7 @@ export const ui = {
 
     'hero.title': 'One budget. Actually shared.',
     'hero.subtitle':
-      'Log expenses, track recurring bills, and grow savings funds with the people you trust, in any of 10 currencies.',
+      'Plan the month with your partner, log expenses as they happen, and let each other pick up the categorizing. Personal and shared workspaces, side by side.',
     'hero.cta': 'Join the waitlist',
     'hero.desktopAlt':
       "Arwen home dashboard on the web, showing total balance, this month's spending, and an emergency fund goal",
@@ -36,37 +36,46 @@ export const ui = {
 
     'trustStrip.text': 'No ads. No data-selling. No bank-sync creepiness.',
 
+    'problem.text':
+      "Most budgeting apps are built for one person. Your life isn't. Arwen is built for the month to be seen, planned, and managed by both of you.",
+
     'howItWorks.heading': 'How it works',
     'howItWorks.steps': [
-      { title: 'Set the budget', body: 'Create categories and set a monthly budget for each one.' },
       {
-        title: 'Log expenses',
-        body: 'Add them as they happen, or let recurring bills track themselves.',
+        title: 'Plan the month together',
+        body: 'Income, fixed and recurring expenses, all visible to both of you in the same space.',
       },
       {
-        title: 'Watch your balance',
-        body: "See what's left this month, updated the moment you add something.",
+        title: 'Log expenses as they happen',
+        body: 'No waiting on the other person, no "how much did you spend at the supermarket?" texts.',
       },
       {
-        title: 'Grow your savings',
-        body: 'Set a goal and build dedicated funds alongside your monthly budget.',
+        title: 'Split the work, not just the bill',
+        body: 'One partner logs it, the other categorizes later. No one has to do both, and nothing falls through the cracks.',
+      },
+      {
+        title: 'Personal and shared, side by side',
+        body: 'Keep a private budget, or share one with your partner, roommates, or a trip group.',
       },
     ],
 
-    'featureGrid.heading': 'Everything a shared budget actually needs',
+    'featureGrid.heading': 'Built for two, not adapted for two',
     'featureGrid.cards': [
       {
-        title: 'Budget by category',
-        body: "Set a monthly budget for each category, and watch what's left update as you spend.",
+        title: 'Personal and shared, together',
+        body: 'Keep your own budget private, or share one with your partner, roommates, or a trip group. Up to 4 people per workspace for now, and everyone can belong to as many workspaces as they need.',
       },
       {
-        title: 'Shared workspaces',
-        body: 'Invite people you trust as an Editor with full access, or a read-only Viewer.',
+        title: 'Simple enough for someone who doesn’t care',
+        body: 'Not a disguised spreadsheet or an accounting tool. Just add an expense, and you’re done.',
       },
-      { title: 'Friends', body: 'Connect once, then invite them into any workspace.' },
       {
-        title: 'Plan ahead',
-        body: "Lock a month once it's settled, and plan your budget up to 24 months ahead.",
+        title: 'Connect once',
+        body: 'Add someone as a friend once, then invite them into any workspace, personal or shared, whenever it makes sense.',
+      },
+      {
+        title: 'The app nudges, you don’t have to remember',
+        body: 'Notifications for uncategorized expenses, friend requests, and workspace invites, so it doesn’t all fall on one of you.',
       },
     ],
 
@@ -76,30 +85,25 @@ export const ui = {
       'Home, in dark mode',
       'Budget by category',
       'Savings funds',
-      'Currency settings',
-    ],
-
-    'portfolioNote.heading': 'Built like a real product',
-    'portfolioNote.body':
-      'Test-driven development and a proper three-repo architecture, not a weekend prototype. This is a solo portfolio project, engineered the way a team would ship it.',
-    'portfolioNote.stats': [
-      { value: '1,800+', label: 'Commits across three repos' },
-      { value: '1,000+', label: 'Backend tests' },
-      { value: '3', label: 'Independent repos: API, web, mobile' },
-      { value: 'GraphQL', label: 'Fully typed API layer' },
+      'Categorize expenses',
     ],
 
     'getTheApp.heading': 'Web, iOS, and Android are all in progress',
     'getTheApp.body':
-      "Nothing is public yet: the web app is still in staging and the mobile apps haven't shipped. Join the waitlist below and we'll email you the moment any of them are ready.",
+      "The web app and Android build are already live in staging, so you can try them today. iOS is still coming together. Join the waitlist and we'll email you the moment everything's ready.",
     'getTheApp.platforms': [
-      { label: 'Web app', status: 'In staging' },
       { label: 'iOS app', status: 'Coming soon' },
-      { label: 'Android app', status: 'Coming soon' },
+      { label: 'Android app', status: 'In staging' },
+      { label: 'Web app', status: 'In staging' },
     ],
 
     'faq.heading': 'Frequently asked questions',
     'faq.items': [
+      {
+        question: 'Who is Arwen for?',
+        answer:
+          'Couples and people who live together who want to plan and track money as a team, not just split bills after the fact. It also works well for a group budgeting a shared trip.',
+      },
       {
         question: 'Is Arwen free?',
         answer:
@@ -108,7 +112,7 @@ export const ui = {
       {
         question: 'Can I share a budget with someone else?',
         answer:
-          'Yes. Invite people you trust into a shared workspace, as an Editor with full access or a Viewer with read-only access.',
+          'Yes. Keep a personal budget private, or share one with your partner, roommates, or a trip group, as an Editor with full access or a Viewer with read-only access. Up to 4 people per workspace for now, and you can belong to as many workspaces as you need.',
       },
       {
         question: 'What currencies does it support?',
@@ -130,9 +134,28 @@ export const ui = {
       },
     ],
 
+    'community.heading': 'Built with the people who use it',
+    'community.body':
+      "We don't want to build another bloated budget app with a feature for everything and a reason to use none of them. So the plan is to build what couples actually ask for, not what looks good on a features page.",
+    'community.points': [
+      {
+        title: 'Feedback, built in',
+        body: "A feedback option lives right in the app, so telling us what's missing or broken takes seconds, not a support ticket.",
+      },
+      {
+        title: 'You shape what comes next',
+        body: "The roadmap follows what people actually ask for. If enough of you need something, it moves up, if no one does, we don't build it just to have it.",
+      },
+      {
+        title: 'No bloat, on purpose',
+        body: "Every feature has to earn its place. If it doesn't help you manage money together, it doesn't make the cut.",
+      },
+    ],
+
     'waitlist.heading': "Get notified when it's ready",
     'waitlist.body':
       "Leave your email and we'll let you know the moment web, iOS, or Android launches. One email, no spam.",
+    'waitlist.closingLine': 'Invite your person. See the same budget. That’s the whole idea.',
     'waitlist.emailLabel': 'Email address',
     'waitlist.placeholder': 'you@example.com',
     'waitlist.submit': 'Join the waitlist',
@@ -167,7 +190,7 @@ export const ui = {
   'pt-pt': {
     'meta.title': 'Arwen: um orçamento e poupanças partilhados',
     'meta.description':
-      'Um controlo de orçamento e poupanças multi-moeda que podes partilhar com a tua casa. Sem anúncios, sem venda de dados, sem sincronização bancária invasiva.',
+      'Um orçamento partilhado para casais e pessoas que vivem juntas. Planeiem o mês em conjunto, registem despesas à medida que acontecem, e dividam o trabalho de categorizar. Sem anúncios, sem venda de dados.',
 
     'nav.features': 'Funcionalidades',
     'nav.howItWorks': 'Como funciona',
@@ -178,7 +201,7 @@ export const ui = {
 
     'hero.title': 'Um orçamento. Verdadeiramente partilhado.',
     'hero.subtitle':
-      'Regista despesas, acompanha contas recorrentes e faz crescer fundos de poupança com as pessoas em quem confias, em qualquer uma de 10 moedas.',
+      'Planeia o mês com o teu parceiro, regista despesas à medida que acontecem, e ajudem-se um ao outro a categorizá-las. Espaços pessoais e partilhados, lado a lado.',
     'hero.cta': 'Junta-te à lista de espera',
     'hero.desktopAlt':
       'Painel principal da Arwen na web, mostrando o saldo total, os gastos deste mês e um objetivo de fundo de emergência',
@@ -186,37 +209,46 @@ export const ui = {
 
     'trustStrip.text': 'Sem anúncios. Sem venda de dados. Sem sincronização bancária invasiva.',
 
+    'problem.text':
+      'A maioria das apps de orçamento é feita para uma pessoa. A tua vida não é. A Arwen é feita para que o mês seja visto, planeado e gerido pelos dois.',
+
     'howItWorks.heading': 'Como funciona',
     'howItWorks.steps': [
-      { title: 'Define o orçamento', body: 'Cria categorias e define um orçamento mensal para cada uma.' },
       {
-        title: 'Regista despesas',
-        body: 'Adiciona-as à medida que acontecem, ou deixa que as contas recorrentes se registem sozinhas.',
+        title: 'Planeiem o mês em conjunto',
+        body: 'Rendimentos, despesas fixas e recorrentes, tudo visível para os dois no mesmo espaço.',
       },
       {
-        title: 'Acompanha o teu saldo',
-        body: 'Vê o que resta este mês, atualizado no momento em que adicionas algo.',
+        title: 'Regista despesas à medida que acontecem',
+        body: 'Sem esperar pela outra pessoa, sem mensagens do tipo "quanto gastaste no supermercado?".',
       },
       {
-        title: 'Faz crescer as tuas poupanças',
-        body: 'Define um objetivo e cria fundos dedicados a par do teu orçamento mensal.',
+        title: 'Dividam o trabalho, não só a conta',
+        body: 'Um regista, o outro categoriza mais tarde. Ninguém tem de fazer as duas coisas, e nada fica esquecido.',
+      },
+      {
+        title: 'Pessoal e partilhado, lado a lado',
+        body: 'Mantém um orçamento privado, ou partilha um com o teu parceiro, colegas de casa, ou um grupo de viagem.',
       },
     ],
 
-    'featureGrid.heading': 'Tudo o que um orçamento partilhado realmente precisa',
+    'featureGrid.heading': 'Pensada para dois, não adaptada para dois',
     'featureGrid.cards': [
       {
-        title: 'Orçamento por categoria',
-        body: 'Define um orçamento mensal para cada categoria, e vê o que resta a atualizar-se à medida que gastas.',
+        title: 'Pessoal e partilhado, juntos',
+        body: 'Mantém o teu orçamento privado, ou partilha um com o teu parceiro, colegas de casa, ou um grupo de viagem. Até 4 pessoas por espaço, por agora, e podes pertencer a quantos espaços precisares.',
       },
       {
-        title: 'Espaços partilhados',
-        body: 'Convida pessoas em quem confias como Editor com acesso total, ou como Visualizador só de leitura.',
+        title: 'Simples que chegue para quem não liga a isto',
+        body: 'Não é uma folha de cálculo disfarçada nem uma ferramenta de contabilidade. Adicionas uma despesa, e está feito.',
       },
-      { title: 'Amigos', body: 'Liga-te uma vez e depois convida-os para qualquer espaço.' },
       {
-        title: 'Planeia com antecedência',
-        body: 'Bloqueia um mês assim que estiver fechado, e planeia o teu orçamento até 24 meses à frente.',
+        title: 'Liga-te uma vez',
+        body: 'Adiciona alguém como amigo uma vez, e depois convida-o para qualquer espaço, pessoal ou partilhado, quando fizer sentido.',
+      },
+      {
+        title: 'A app lembra-te, tu não precisas',
+        body: 'Notificações para despesas por categorizar, pedidos de amizade e convites para espaços, para que a coordenação não caia só em cima de um de vocês.',
       },
     ],
 
@@ -226,30 +258,25 @@ export const ui = {
       'Início, em modo escuro',
       'Orçamento por categoria',
       'Fundos de poupança',
-      'Definições de moeda',
-    ],
-
-    'portfolioNote.heading': 'Construído como um produto a sério',
-    'portfolioNote.body':
-      'Desenvolvimento orientado a testes e uma arquitetura a sério com três repositórios, não um protótipo de fim de semana. Este é um projeto de portefólio a solo, construído da forma como uma equipa o lançaria.',
-    'portfolioNote.stats': [
-      { value: '1,800+', label: 'Commits em três repositórios' },
-      { value: '1,000+', label: 'Testes de backend' },
-      { value: '3', label: 'Repositórios independentes: API, web, mobile' },
-      { value: 'GraphQL', label: 'Camada de API totalmente tipada' },
+      'Categorizar despesas',
     ],
 
     'getTheApp.heading': 'Web, iOS e Android estão todos em desenvolvimento',
     'getTheApp.body':
-      'Nada está ainda público: a aplicação web está em staging e as aplicações móveis ainda não foram lançadas. Junta-te à lista de espera abaixo e enviamos-te um email assim que alguma delas estiver pronta.',
+      'A aplicação web e a build de Android já estão disponíveis em staging, já podes experimentá-las. O iOS ainda está a ser preparado. Junta-te à lista de espera e enviamos-te um email assim que tudo estiver pronto.',
     'getTheApp.platforms': [
-      { label: 'Aplicação web', status: 'Em staging' },
       { label: 'Aplicação iOS', status: 'Brevemente' },
-      { label: 'Aplicação Android', status: 'Brevemente' },
+      { label: 'Aplicação Android', status: 'Em staging' },
+      { label: 'Aplicação web', status: 'Em staging' },
     ],
 
     'faq.heading': 'Perguntas frequentes',
     'faq.items': [
+      {
+        question: 'Para quem é a Arwen?',
+        answer:
+          'Para casais e pessoas que vivem juntas e querem planear e acompanhar o dinheiro em equipa, não apenas dividir contas depois de gastar. Também funciona bem para um grupo a orçamentar uma viagem em conjunto.',
+      },
       {
         question: 'A Arwen é gratuita?',
         answer:
@@ -258,7 +285,7 @@ export const ui = {
       {
         question: 'Posso partilhar um orçamento com outra pessoa?',
         answer:
-          'Sim. Convida pessoas em quem confias para um espaço partilhado, como Editor com acesso total ou como Visualizador com acesso só de leitura.',
+          'Sim. Mantém um orçamento pessoal privado, ou partilha um com o teu parceiro, colegas de casa, ou um grupo de viagem, como Editor com acesso total ou como Visualizador com acesso só de leitura. Até 4 pessoas por espaço, por agora, e podes pertencer a quantos espaços precisares.',
       },
       {
         question: 'Que moedas são suportadas?',
@@ -280,9 +307,28 @@ export const ui = {
       },
     ],
 
+    'community.heading': 'Feita com quem a usa',
+    'community.body':
+      'Não queremos construir mais uma app de orçamento inchada, com uma funcionalidade para tudo e um motivo para não usar nenhuma delas. Por isso a ideia é construir o que os casais realmente pedem, não o que fica bem numa lista de funcionalidades.',
+    'community.points': [
+      {
+        title: 'Feedback, integrado',
+        body: 'Uma opção de feedback está mesmo dentro da app, para que dizer-nos o que falta ou está avariado demore segundos, não um pedido de suporte.',
+      },
+      {
+        title: 'Ajudas a decidir o que vem a seguir',
+        body: 'O roadmap segue o que as pessoas realmente pedem. Se muitos de vocês precisarem de algo, sobe na lista, se ninguém precisar, não o construímos só por construir.',
+      },
+      {
+        title: 'Sem inchaço, de propósito',
+        body: 'Cada funcionalidade tem de justificar o seu lugar. Se não ajudar a gerir o dinheiro em conjunto, não entra.',
+      },
+    ],
+
     'waitlist.heading': 'Recebe uma notificação quando estiver pronta',
     'waitlist.body':
       'Deixa o teu email e avisamos-te assim que a versão web, iOS ou Android for lançada. Um único email, sem spam.',
+    'waitlist.closingLine': 'Convida a tua pessoa. Vejam o mesmo orçamento. É essa a ideia toda.',
     'waitlist.emailLabel': 'Endereço de email',
     'waitlist.placeholder': 'tu@example.com',
     'waitlist.submit': 'Junta-te à lista de espera',
