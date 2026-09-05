@@ -33,6 +33,7 @@ export const ui = {
     'hero.desktopAlt':
       "Arwen home dashboard on the web, showing total balance, this month's spending, and an emergency fund goal",
     'hero.mobileAlt': 'Arwen home screen on mobile in dark mode, showing recent activity and quick actions',
+    'hero.scrollHint': 'See it in action',
 
     'trustStrip.text': 'No ads. No data-selling. No bank-sync creepiness.',
 
@@ -63,7 +64,7 @@ export const ui = {
     'featureGrid.cards': [
       {
         title: 'Personal and shared, together',
-        body: 'Keep your own budget private, or share one with your partner, roommates, or a trip group. Up to 4 people per workspace for now, and everyone can belong to as many workspaces as they need.',
+        body: 'Keep your own budget private, or share one with your partner, roommates, or a trip group, with as many people in it as you need. Everyone can belong to up to 4 workspaces for now.',
       },
       {
         title: 'Simple enough for someone who doesn’t care',
@@ -112,7 +113,7 @@ export const ui = {
       {
         question: 'Can I share a budget with someone else?',
         answer:
-          'Yes. Keep a personal budget private, or share one with your partner, roommates, or a trip group, as an Editor with full access or a Viewer with read-only access. Up to 4 people per workspace for now, and you can belong to as many workspaces as you need.',
+          'Yes. Keep a personal budget private, or share one with your partner, roommates, or a trip group, as an Editor with full access or a Viewer with read-only access, with as many people in it as you need. You can belong to up to 4 workspaces for now.',
       },
       {
         question: 'What currencies does it support?',
@@ -160,6 +161,7 @@ export const ui = {
     'waitlist.placeholder': 'you@example.com',
     'waitlist.submit': 'Join the waitlist',
     'waitlist.joining': 'Joining...',
+    'waitlist.joined': "You're on the list",
     'waitlist.msg.invalidEmail': 'Enter a valid email address.',
     'waitlist.msg.notConnected': "Signups aren't connected yet, check back soon.",
     'waitlist.msg.success': "You're on the list. We'll email you when it's ready.",
@@ -206,6 +208,7 @@ export const ui = {
     'hero.desktopAlt':
       'Painel principal da Arwen na web, mostrando o saldo total, os gastos deste mês e um objetivo de fundo de emergência',
     'hero.mobileAlt': 'Ecrã principal da Arwen no telemóvel em modo escuro, mostrando atividade recente e ações rápidas',
+    'hero.scrollHint': 'Vê a app em ação',
 
     'trustStrip.text': 'Sem anúncios. Sem venda de dados. Sem sincronização bancária invasiva.',
 
@@ -236,7 +239,7 @@ export const ui = {
     'featureGrid.cards': [
       {
         title: 'Pessoal e partilhado, juntos',
-        body: 'Mantém o teu orçamento privado, ou partilha um com o teu parceiro, colegas de casa, ou um grupo de viagem. Até 4 pessoas por espaço, por agora, e podes pertencer a quantos espaços precisares.',
+        body: 'Mantém o teu orçamento privado, ou partilha um com o teu parceiro, colegas de casa, ou um grupo de viagem, com quantas pessoas precisares. Podes pertencer a até 4 espaços, por agora.',
       },
       {
         title: 'Simples que chegue para quem não liga a isto',
@@ -285,7 +288,7 @@ export const ui = {
       {
         question: 'Posso partilhar um orçamento com outra pessoa?',
         answer:
-          'Sim. Mantém um orçamento pessoal privado, ou partilha um com o teu parceiro, colegas de casa, ou um grupo de viagem, como Editor com acesso total ou como Visualizador com acesso só de leitura. Até 4 pessoas por espaço, por agora, e podes pertencer a quantos espaços precisares.',
+          'Sim. Mantém um orçamento pessoal privado, ou partilha um com o teu parceiro, colegas de casa, ou um grupo de viagem, como Editor com acesso total ou como Visualizador com acesso só de leitura, com quantas pessoas precisares. Podes pertencer a até 4 espaços, por agora.',
       },
       {
         question: 'Que moedas são suportadas?',
@@ -333,6 +336,7 @@ export const ui = {
     'waitlist.placeholder': 'tu@example.com',
     'waitlist.submit': 'Junta-te à lista de espera',
     'waitlist.joining': 'A juntar-te...',
+    'waitlist.joined': 'Já estás na lista',
     'waitlist.msg.invalidEmail': 'Introduz um endereço de email válido.',
     'waitlist.msg.notConnected': 'As inscrições ainda não estão ligadas, volta a verificar em breve.',
     'waitlist.msg.success': 'Já estás na lista. Enviamos-te um email quando estiver pronta.',
