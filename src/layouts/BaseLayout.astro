@@ -22,7 +22,7 @@ const defaultLocaleURL = lang === 'en' ? canonicalURL : alternateURL;
 const websiteJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'Arwen',
+  name: 'Otterbond',
   url: Astro.site,
 };
 ---
@@ -45,7 +45,7 @@ const websiteJsonLd = {
     <meta name="description" content={description} />
 
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Arwen" />
+    <meta property="og:site_name" content="Otterbond" />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -91,7 +91,7 @@ const websiteJsonLd = {
       // one-directional: someone who lands on (or follows a link to) a /pt-pt/ page is never
       // redirected away from it, so shared pt-pt links always work as sent.
       try {
-        const DONE_KEY = 'arwen-locale-redirect-done';
+        const DONE_KEY = 'otterbond-locale-redirect-done';
         if (!localStorage.getItem(DONE_KEY)) {
           localStorage.setItem(DONE_KEY, '1');
           if (lang === 'en') {
