@@ -85,8 +85,12 @@ export const ui = {
     'screenshotGallery.shots': [
       'Home, in dark mode',
       'Budget by category',
-      'Savings funds',
+      'Add an expense in seconds',
       'Categorize expenses',
+      'All your expenses, in one place',
+      'Recurring bills, tracked automatically',
+      'Income, logged just as easily',
+      'Savings funds',
     ],
 
     'getTheApp.heading': 'Web, iOS, and Android are all in progress',
@@ -260,8 +264,12 @@ export const ui = {
     'screenshotGallery.shots': [
       'Início, em modo escuro',
       'Orçamento por categoria',
-      'Fundos de poupança',
+      'Adiciona uma despesa em segundos',
       'Categorizar despesas',
+      'Todas as despesas, num só lugar',
+      'Despesas recorrentes, controladas automaticamente',
+      'Rendimentos, registados com a mesma facilidade',
+      'Fundos de poupança',
     ],
 
     'getTheApp.heading': 'Web, iOS e Android estão todos em desenvolvimento',

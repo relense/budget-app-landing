@@ -3,14 +3,27 @@ import { Image } from 'astro:assets';
 
 import mobileHome from '../assets/screenshots/mobile-home.png';
 import mobileBudget from '../assets/screenshots/mobile-budget.png';
-import mobileSavings from '../assets/screenshots/mobile-savings.png';
+import mobileAddExpense from '../assets/screenshots/mobile-AddExpense.png';
 import mobileCategorize from '../assets/screenshots/mobile-categorize.png';
+import mobileExpenses from '../assets/screenshots/mobile-Expenses.png';
+import mobileRecurrent from '../assets/screenshots/mobile-Recurrent.png';
+import mobileIncome from '../assets/screenshots/mobile-Income.png';
+import mobileSavings from '../assets/screenshots/mobile-savings.png';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const images = [mobileHome, mobileBudget, mobileSavings, mobileCategorize];
+const images = [
+  mobileHome,
+  mobileBudget,
+  mobileAddExpense,
+  mobileCategorize,
+  mobileExpenses,
+  mobileRecurrent,
+  mobileIncome,
+  mobileSavings,
+];
 const mobileShots = t('screenshotGallery.shots').map((caption, i) => ({ src: images[i], caption }));
 const altPrefix = t('screenshotGallery.altPrefix');
 ---
