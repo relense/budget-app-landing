@@ -1,8 +1,8 @@
-# Arwen
+# Otterbond
 
 > A shared, multi-currency budget and savings tracker. Free, no ads, no data-selling.
 
-Arwen lets people track a household budget together. Invite people you trust into a
+Otterbond lets people track a household budget together. Invite people you trust into a
 shared workspace as an Editor (full access) or a Viewer (read-only), log expenses and recurring
 bills, and grow dedicated savings funds toward a goal. Balances display in whichever of 10
 supported currencies each person actually uses. Sign-in is passwordless, a one-time code sent by

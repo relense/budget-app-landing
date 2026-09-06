@@ -15,7 +15,7 @@ export const defaultLang = 'en';
 
 export const ui = {
   en: {
-    'meta.title': 'Arwen: a shared budget and savings tracker',
+    'meta.title': 'Otterbond: a shared budget and savings tracker',
     'meta.description':
       'A shared budget for couples and people who live together. Plan the month together, log expenses as they happen, and split the work of categorizing. No ads, no data-selling.',
 
@@ -31,14 +31,14 @@ export const ui = {
       'Plan the month with your partner, log expenses as they happen, and let each other pick up the categorizing. Personal and shared workspaces, side by side.',
     'hero.cta': 'Join the waitlist',
     'hero.desktopAlt':
-      "Arwen home dashboard on the web, showing total balance, this month's spending, and an emergency fund goal",
-    'hero.mobileAlt': 'Arwen home screen on mobile in dark mode, showing recent activity and quick actions',
+      "Otterbond home dashboard on the web, showing total balance, this month's spending, and an emergency fund goal",
+    'hero.mobileAlt': 'Otterbond home screen on mobile in dark mode, showing recent activity and quick actions',
     'hero.scrollHint': 'See it in action',
 
     'trustStrip.text': 'No ads. No data-selling. No bank-sync creepiness.',
 
     'problem.text':
-      "Most budgeting apps are built for one person. Your life isn't. Arwen is built for the month to be seen, planned, and managed by both of you.",
+      "Most budgeting apps are built for one person. Your life isn't. Otterbond is built for the month to be seen, planned, and managed by both of you.",
 
     'howItWorks.heading': 'How it works',
     'howItWorks.steps': [
@@ -81,7 +81,7 @@ export const ui = {
     ],
 
     'screenshotGallery.heading': "See it, don't just take our word for it",
-    'screenshotGallery.altPrefix': 'Arwen mobile screenshot',
+    'screenshotGallery.altPrefix': 'Otterbond mobile screenshot',
     'screenshotGallery.shots': [
       'Home, in dark mode',
       'Budget by category',
@@ -101,12 +101,12 @@ export const ui = {
     'faq.heading': 'Frequently asked questions',
     'faq.items': [
       {
-        question: 'Who is Arwen for?',
+        question: 'Who is Otterbond for?',
         answer:
           'Couples and people who live together who want to plan and track money as a team, not just split bills after the fact. It also works well for a group budgeting a shared trip.',
       },
       {
-        question: 'Is Arwen free?',
+        question: 'Is Otterbond free?',
         answer:
           "Yes. It's currently free to use, with no paid tier. If that ever changes, we'll say so clearly before anything you rely on becomes paid.",
       },
@@ -175,22 +175,22 @@ export const ui = {
     'footer.terms': 'Terms of Service',
     'footer.madeBy': 'Made by relense',
 
-    'notFound.title': 'Page not found, Arwen',
+    'notFound.title': 'Page not found, Otterbond',
     'notFound.description': "This page doesn't exist.",
     'notFound.heading': 'Page not found',
     'notFound.body': "The page you're looking for doesn't exist, or the link is out of date.",
     'notFound.cta': 'Back home',
 
     'legal.lastUpdated': 'Last updated',
-    'privacyPage.title': 'Privacy Policy, Arwen',
-    'privacyPage.description': 'How Arwen collects, uses, and protects your data.',
+    'privacyPage.title': 'Privacy Policy, Otterbond',
+    'privacyPage.description': 'How Otterbond collects, uses, and protects your data.',
     'privacyPage.heading': 'Privacy Policy',
-    'termsPage.title': 'Terms of Service, Arwen',
-    'termsPage.description': 'The terms that govern your use of Arwen.',
+    'termsPage.title': 'Terms of Service, Otterbond',
+    'termsPage.description': 'The terms that govern your use of Otterbond.',
     'termsPage.heading': 'Terms of Service',
   },
   'pt-pt': {
-    'meta.title': 'Arwen: um orçamento e poupanças partilhados',
+    'meta.title': 'Otterbond: um orçamento e poupanças partilhados',
     'meta.description':
       'Um orçamento partilhado para casais e pessoas que vivem juntas. Planeiem o mês em conjunto, registem despesas à medida que acontecem, e dividam o trabalho de categorizar. Sem anúncios, sem venda de dados.',
 
@@ -206,14 +206,14 @@ export const ui = {
       'Planeia o mês com o teu parceiro, regista despesas à medida que acontecem, e ajudem-se um ao outro a categorizá-las. Espaços pessoais e partilhados, lado a lado.',
     'hero.cta': 'Junta-te à lista de espera',
     'hero.desktopAlt':
-      'Painel principal da Arwen na web, mostrando o saldo total, os gastos deste mês e um objetivo de fundo de emergência',
-    'hero.mobileAlt': 'Ecrã principal da Arwen no telemóvel em modo escuro, mostrando atividade recente e ações rápidas',
+      'Painel principal da Otterbond na web, mostrando o saldo total, os gastos deste mês e um objetivo de fundo de emergência',
+    'hero.mobileAlt': 'Ecrã principal da Otterbond no telemóvel em modo escuro, mostrando atividade recente e ações rápidas',
     'hero.scrollHint': 'Vê a app em ação',
 
     'trustStrip.text': 'Sem anúncios. Sem venda de dados. Sem sincronização bancária invasiva.',
 
     'problem.text':
-      'A maioria das apps de orçamento é feita para uma pessoa. A tua vida não é. A Arwen é feita para que o mês seja visto, planeado e gerido pelos dois.',
+      'A maioria das apps de orçamento é feita para uma pessoa. A tua vida não é. A Otterbond é feita para que o mês seja visto, planeado e gerido pelos dois.',
 
     'howItWorks.heading': 'Como funciona',
     'howItWorks.steps': [
@@ -256,7 +256,7 @@ export const ui = {
     ],
 
     'screenshotGallery.heading': 'Vê por ti mesmo, não fiques só pela nossa palavra',
-    'screenshotGallery.altPrefix': 'Captura de ecrã da Arwen no telemóvel',
+    'screenshotGallery.altPrefix': 'Captura de ecrã da Otterbond no telemóvel',
     'screenshotGallery.shots': [
       'Início, em modo escuro',
       'Orçamento por categoria',
@@ -276,12 +276,12 @@ export const ui = {
     'faq.heading': 'Perguntas frequentes',
     'faq.items': [
       {
-        question: 'Para quem é a Arwen?',
+        question: 'Para quem é a Otterbond?',
         answer:
           'Para casais e pessoas que vivem juntas e querem planear e acompanhar o dinheiro em equipa, não apenas dividir contas depois de gastar. Também funciona bem para um grupo a orçamentar uma viagem em conjunto.',
       },
       {
-        question: 'A Arwen é gratuita?',
+        question: 'A Otterbond é gratuita?',
         answer:
           'Sim. Atualmente é gratuita, sem qualquer plano pago. Se isso alguma vez mudar, diremos isso claramente antes de algo que uses passar a ser pago.',
       },
@@ -350,18 +350,18 @@ export const ui = {
     'footer.terms': 'Termos de Serviço',
     'footer.madeBy': 'Feito por relense',
 
-    'notFound.title': 'Página não encontrada, Arwen',
+    'notFound.title': 'Página não encontrada, Otterbond',
     'notFound.description': 'Esta página não existe.',
     'notFound.heading': 'Página não encontrada',
     'notFound.body': 'A página que procuras não existe, ou a hiperligação está desatualizada.',
     'notFound.cta': 'Voltar ao início',
 
     'legal.lastUpdated': 'Última atualização',
-    'privacyPage.title': 'Política de Privacidade, Arwen',
-    'privacyPage.description': 'Como a Arwen recolhe, utiliza e protege os teus dados.',
+    'privacyPage.title': 'Política de Privacidade, Otterbond',
+    'privacyPage.description': 'Como a Otterbond recolhe, utiliza e protege os teus dados.',
     'privacyPage.heading': 'Política de Privacidade',
-    'termsPage.title': 'Termos de Serviço, Arwen',
-    'termsPage.description': 'Os termos que regem a tua utilização da Arwen.',
+    'termsPage.title': 'Termos de Serviço, Otterbond',
+    'termsPage.description': 'Os termos que regem a tua utilização da Otterbond.',
     'termsPage.heading': 'Termos de Serviço',
   },
 } as const;
