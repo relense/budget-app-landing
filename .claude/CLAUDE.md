@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Marketing landing page for **Arwen** (on-page product name; repo/package name stays
-`budget-app-landing`). "Arwen" is the app name; "Project" is a separate parent/umbrella brand
+Marketing landing page for **Otterbond** (on-page product name; repo/package name stays
+`budget-app-landing`). "Otterbond" is the app name; "Project" is a separate parent/umbrella brand
 meant to eventually host multiple apps, not part of this app's own name, don't reintroduce
-"Project Arwen". A shared, multi-currency budget and savings tracker. Nothing is public yet:
+"Project Otterbond". A shared, multi-currency budget and savings tracker. Nothing is public yet:
 the web app is still in staging and the mobile apps aren't published, so the page's primary CTA is
 a waitlist email signup, not a link to the app. Hosts the product's real `/privacy` and `/terms`
 pages. No GitHub/source links on the page (removed on request). No auth, no data fetching, no
