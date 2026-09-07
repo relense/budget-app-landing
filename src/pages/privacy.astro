@@ -1,19 +1,23 @@
 ---
 import LegalLayout from '../layouts/LegalLayout.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const CONTACT_EMAIL = 'budgeterinfo@gmail.com';
 const LAST_UPDATED = 'September 1, 2026';
 ---
 
 <LegalLayout
-  title="Privacy Policy, Budget Tracker"
-  description="How Budget Tracker collects, uses, and protects your data."
-  heading="Privacy Policy"
+  title={t('privacyPage.title')}
+  description={t('privacyPage.description')}
+  heading={t('privacyPage.heading')}
   lastUpdated={LAST_UPDATED}
 >
   <h2>Who we are</h2>
   <p>
-    Budget Tracker ("the Service," "we," "us") is operated by Miguel Furtado, an individual
+    Otterbond ("the Service," "we," "us") is operated by Miguel Furtado, an individual
     based in Portugal. The Service includes both the web app and the companion mobile app, which
     share the same account and backend, so this policy applies to both.
   </p>
@@ -47,6 +51,12 @@ const LAST_UPDATED = 'September 1, 2026';
   <p>
     We do not use analytics, advertising, or third-party tracking of any kind, and we do not use
     cookies other than the single authentication cookie described above.
+  </p>
+  <p>
+    <strong>Waitlist email:</strong> if you join the waitlist on this site, we store the email
+    address you provide solely to notify you when the web, iOS, or Android app becomes available.
+    We don't use it for anything else, and you can ask us to remove it at any time by contacting
+    {CONTACT_EMAIL}.
   </p>
 
   <h2>How we use it</h2>

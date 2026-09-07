@@ -1,25 +1,63 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
+/* Self-hosted (not Google Fonts, per this repo's own performance/SEO rules): a variable-weight
+   (300-700), width-pinned, Latin-plus-currency-symbols subset built from the same source Google
+   ships, generated locally with fonttools/pyftsubset from Fredoka's OFL variable TTF. See
+   .claude/CLAUDE.md's SEO section for how to regenerate if new glyphs (e.g. new currency symbols)
+   are needed later. */
+@font-face {
+  font-family: 'Fredoka';
+  src: url('../assets/fonts/fredoka-variable.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Every color below is copied verbatim from budget-app-mobile/src/theme/colors.ts's
+   `darkColors` export, this page's single locked theme (dark, no light variant, no toggle -- see
+   .claude/CLAUDE.md). Don't hand-pick new hex values here; if a new color is needed, it should
+   come from that file (or from lightColors, for the handful of pastel surfaces mobile itself
+   keeps identical across both modes) with a comment noting which token it mirrors. */
 @theme {
   --font-sans: 'Fredoka', system-ui, sans-serif;
 
-  --color-bg: #ffffff;
-  --color-bg-mint: #eefaf1;
-  --color-ink: #16171a;
-  --color-ink-soft: #63666d;
-  --color-ink-faint: #9a9da4;
-  --color-line: #ebebe9;
+  /* darkColors.background.screen */
+  --color-bg: #1e1e1e;
+  /* darkColors.segment.track -- mobile's own "clearly lighter than the screen" elevated surface,
+     used here for banded sections and plain (non-pastel) cards. */
+  --color-bg-elevated: #3a3a3a;
+  /* darkColors.text.primary */
+  --color-ink: #f2f2f2;
+  /* darkColors.text.secondary */
+  --color-ink-soft: #b5b5b5;
+  /* darkColors.segment.inactiveText */
+  --color-ink-faint: #8c8c8c;
+  /* darkColors.navigation.border */
+  --color-line: #333333;
+  /* darkColors.text.onSurface -- identical in light/dark mode by design: text drawn on a *fixed*
+     light surface (mobile's login/OTP input, choice buttons) keeps light-mode contrast regardless
+     of scheme. Used here for the waitlist email input's typed text, the one fixed-white surface
+     on this page. */
+  --color-on-surface: #1a1a1a;
+  /* darkColors.text.placeholder -- also identical in both modes, same "fixed surface" logic. */
+  --color-placeholder: #c6c6c6;
 
+  /* category.green, unchanged between light/dark per mobile's own design (pastel surfaces stay
+     fixed regardless of scheme) */
   --color-mint: #cff3da;
   --color-mint-deep: #234d2e;
-  --color-pill: #131313;
+  /* darkColors.segment.active / keypad.confirmKeyBackground -- mobile's own fix for the exact
+     problem this page had: light mode's near-black pill (#131313) nearly vanishes on a dark
+     screen, so dark mode uses this mid-gray instead. */
+  --color-pill: #4d4d4d;
+  /* darkColors.navigation.activeIcon -- kept identical to light mode "per direct user request" */
   --color-blue: #2f80ed;
+  /* darkColors.identity.badgeBackground */
   --color-pink: #ffccdb;
+  /* darkColors.button.deleteBackground */
   --color-coral: #f2705c;
 
-  --color-cat-green-bg: #cff3da;
-  --color-cat-green-icon: #234d2e;
+  /* category.pink/purple/blue/peach/teal -- all unchanged between light/dark */
   --color-cat-pink-bg: #f7d6de;
   --color-cat-pink-icon: #a24f63;
   --color-cat-purple-bg: #e7daf5;
@@ -30,19 +68,18 @@
   --color-cat-peach-icon: #b97a4c;
   --color-cat-teal-bg: #d6f1ec;
   --color-cat-teal-icon: #327e71;
-  --color-cat-yellow-bg: #f5e27a;
-  --color-cat-yellow-icon: #8a6d1a;
 
   --radius-card: 20px;
   --radius-pill: 999px;
 
-  --shadow-soft: 0 2px 10px rgba(22, 23, 26, 0.05);
-  --shadow-lifted: 0 18px 45px rgba(22, 23, 26, 0.1);
+  --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.3);
+  --shadow-lifted: 0 18px 45px rgba(0, 0, 0, 0.45);
 }
 
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  color-scheme: dark;
 }
 
 @media (prefers-reduced-motion: reduce) {

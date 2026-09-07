@@ -1,20 +1,24 @@
 # budget-app-landing
 
-Marketing landing page for **Budget Tracker**, a shared, multi-currency budget and savings
-tracker. Points visitors to the live web app and the source repos; also hosts the product's
-`/privacy` and `/terms` pages.
+Marketing landing page for **Otterbond** (on-page product name; this repo keeps its original name),
+a shared, multi-currency budget and savings tracker. Nothing is public yet, so the page's
+primary CTA is a waitlist email signup rather than a link to the app. Also hosts the product's
+real `/privacy` and `/terms` pages.
 
 Sibling repos (same product, separate deploys): `budget-app-web`, `budget-app-api`,
 `budget-app-mobile`.
 
 ## Stack
 
-Astro + Tailwind CSS v4, static output. No framework, no client state: this page is content, plus
-one small island (the screenshot gallery's desktop/mobile tab switcher).
+Astro + Tailwind CSS v4, static output, dark mode only (colors sourced from
+`budget-app-mobile/src/theme/colors.ts`'s `darkColors`). No framework, no client state: this page
+is content, plus two small islands (the nav's mobile menu toggle and the waitlist form's submit
+handler).
 
 ## Commands
 
 ```bash
+cp .env.example .env   # set WAITLIST_API_URL, see .env.example
 npm install
 npm run dev       # http://localhost:4321
 npm run build     # astro check && astro build -> dist/
@@ -24,16 +28,13 @@ npm run preview   # serve the production build locally
 ## Structure
 
 - `src/components/` — one section per file (`Hero.astro`, `FeatureGrid.astro`, etc.)
-- `src/layouts/` — `BaseLayout.astro` (head/meta/OG) and `LegalLayout.astro` (privacy/terms)
-- `src/assets/` — brand logo + screenshots, copied from `budget-app-web` and optimized at build
-  time via `astro:assets`
-- `src/lib/constants.ts` — the web app URL, GitHub repo links, and the (currently unset) app store
-  links
+- `src/layouts/` — `BaseLayout.astro` (head/meta/OG/JSON-LD) and `LegalLayout.astro`
+  (privacy/terms)
+- `src/assets/` — brand logo, screenshots, and the self-hosted Fredoka font subset
+- `src/lib/constants.ts` — `WAITLIST_API_URL`, read from the env var of the same name (see
+  `.env.example`)
 
 ## Known TODOs
 
-- `src/lib/constants.ts`: `IOS_STORE_URL` / `ANDROID_STORE_URL` are `null` until the mobile app is
-  published. The "Get the app" section renders a clearly-labeled disabled state until then.
-- `astro.config.mjs`'s `site` and `public/robots.txt`'s sitemap URL use a placeholder domain
-  (`https://budgettracker.app`) — update both once a real domain is chosen, and add
-  `@astrojs/sitemap` at that point.
+See `.claude/CLAUDE.md`'s Known TODOs for the current, maintained list (waitlist deploy status,
+placeholder domain, OG image regeneration notes). Kept there instead of duplicated here.

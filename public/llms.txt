@@ -1,0 +1,27 @@
+# Otterbond
+
+> A shared, multi-currency budget and savings tracker. Free, no ads, no data-selling.
+
+Otterbond lets people track a household budget together. Invite people you trust into a
+shared workspace as an Editor (full access) or a Viewer (read-only), log expenses and recurring
+bills, and grow dedicated savings funds toward a goal. Balances display in whichever of 10
+supported currencies each person actually uses. Sign-in is passwordless, a one-time code sent by
+email, no password to manage.
+
+## Status
+
+Not yet publicly launched. The web app is in staging and the iOS and Android apps are still in
+progress. Visitors can join a waitlist on the site to be notified when any of them are ready.
+
+## Key facts
+
+- Pricing: free, no paid tier
+- Currencies supported: 10, including EUR, USD, GBP, JPY, CHF
+- Sign-in: passwordless (one-time email code)
+- Privacy: no ads, no data-selling, no third-party tracking
+
+## Pages
+
+- Home: /
+- Privacy Policy: /privacy
+- Terms of Service: /terms

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://budgettracker.app/sitemap.xml
+Sitemap: https://budgettracker.app/sitemap-index.xml

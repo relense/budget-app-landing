@@ -1,0 +1,149 @@
+---
+import Icon from './Icon.astro';
+import { WAITLIST_API_URL } from '../lib/constants';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const messages = {
+  invalidEmail: t('waitlist.msg.invalidEmail'),
+  notConnected: t('waitlist.msg.notConnected'),
+  joining: t('waitlist.joining'),
+  success: t('waitlist.msg.success'),
+  alreadyOnList: t('waitlist.msg.alreadyOnList'),
+  tooMany: t('waitlist.msg.tooMany'),
+  generic: t('waitlist.msg.generic'),
+  submit: t('waitlist.submit'),
+  joined: t('waitlist.joined'),
+};
+---
+
+<section id="waitlist" class="bg-[var(--color-pill)] py-20 sm:py-28">
+  <div class="mx-auto max-w-xl px-5 text-center sm:px-8" data-reveal>
+    <h2 class="text-3xl font-medium text-[var(--color-ink)] sm:text-4xl">
+      {t('waitlist.heading')}
+    </h2>
+    <p class="mt-4 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      {t('waitlist.body')}
+    </p>
+    <p class="mt-3 text-[15px] font-medium text-[var(--color-mint)]">
+      {t('waitlist.closingLine')}
+    </p>
+
+    <form id="waitlist-form" class="mt-8 text-left" novalidate>
+      <label for="waitlist-email" class="block text-sm font-medium text-[var(--color-ink-soft)]">
+        {t('waitlist.emailLabel')}
+      </label>
+      <div class="mt-2 flex flex-col gap-3 sm:flex-row">
+        <input
+          id="waitlist-email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          required
+          placeholder={t('waitlist.placeholder')}
+          class="w-full flex-1 rounded-full bg-white px-5 py-3 text-[15px] text-[var(--color-on-surface)] placeholder:text-[var(--color-placeholder)] focus:ring-2 focus:ring-[var(--color-mint)] focus:outline-none"
+        />
+        <button
+          type="submit"
+          class="inline-flex flex-shrink-0 items-center justify-center gap-2 rounded-full bg-[var(--color-mint)] px-7 py-3 text-[15px] font-medium text-[var(--color-mint-deep)] transition-transform active:scale-[0.98] disabled:active:scale-100"
+        >
+          <span
+            id="waitlist-spinner"
+            class="hidden h-4 w-4 flex-shrink-0 animate-spin rounded-full border-2 border-[var(--color-mint-deep)]/25 border-t-[var(--color-mint-deep)]"
+            aria-hidden="true"
+          ></span>
+          <Icon id="waitlist-check" name="check" class="hidden h-4 w-4 flex-shrink-0" />
+          <span id="waitlist-submit-label">{t('waitlist.submit')}</span>
+        </button>
+      </div>
+      <p
+        id="waitlist-message"
+        role="status"
+        class="mt-3 min-h-[1.25rem] text-sm text-[var(--color-ink-faint)]"
+      >
+      </p>
+    </form>
+  </div>
+</section>
+
+<script is:inline define:vars={{ WAITLIST_API_URL, messages }}>
+  const form = document.getElementById('waitlist-form');
+  const message = document.getElementById('waitlist-message');
+  const emailInput = document.getElementById('waitlist-email');
+  const submitButton = form?.querySelector('button[type="submit"]');
+  const spinner = document.getElementById('waitlist-spinner');
+  const check = document.getElementById('waitlist-check');
+  const label = document.getElementById('waitlist-submit-label');
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function setMessage(text, tone) {
+    if (!message) return;
+    message.textContent = text;
+    message.className =
+      tone === 'error'
+        ? 'mt-3 min-h-[1.25rem] text-sm text-[var(--color-coral)]'
+        : tone === 'success'
+          ? 'mt-3 min-h-[1.25rem] text-sm text-[var(--color-mint)]'
+          : 'mt-3 min-h-[1.25rem] text-sm text-[var(--color-ink-faint)]';
+  }
+
+  function setButtonState(state) {
+    if (!(submitButton instanceof HTMLButtonElement) || !spinner || !check || !label) return;
+    spinner.classList.toggle('hidden', state !== 'loading');
+    check.classList.toggle('hidden', state !== 'success');
+    submitButton.disabled = state === 'loading' || state === 'success';
+    label.textContent =
+      state === 'loading' ? messages.joining : state === 'success' ? messages.joined : messages.submit;
+  }
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const email = emailInput instanceof HTMLInputElement ? emailInput.value.trim() : '';
+
+    if (!emailPattern.test(email)) {
+      setMessage(messages.invalidEmail, 'error');
+      return;
+    }
+
+    if (!(submitButton instanceof HTMLButtonElement)) return;
+
+    if (!WAITLIST_API_URL) {
+      setMessage(messages.notConnected, 'idle');
+      return;
+    }
+
+    setButtonState('loading');
+    setMessage('', 'idle');
+
+    try {
+      const response = await fetch(WAITLIST_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        setButtonState('success');
+        setMessage(messages.success, 'success');
+        form.reset();
+      } else if (response.status === 409) {
+        setButtonState('success');
+        setMessage(messages.alreadyOnList, 'idle');
+      } else if (response.status === 400) {
+        setButtonState('idle');
+        setMessage(messages.invalidEmail, 'error');
+      } else if (response.status === 429) {
+        setButtonState('idle');
+        setMessage(messages.tooMany, 'error');
+      } else {
+        setButtonState('idle');
+        setMessage(messages.generic, 'error');
+      }
+    } catch {
+      setButtonState('idle');
+      setMessage(messages.generic, 'error');
+    }
+  });
+</script>

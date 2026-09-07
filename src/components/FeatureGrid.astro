@@ -1,21 +1,24 @@
 ---
 import Icon from './Icon.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
-const currencies = ['EUR', 'USD', 'GBP', 'JPY', 'CHF', '+5 more'];
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const [sharedTogether, simple, friends, nudges] = t('featureGrid.cards');
 ---
 
-<section id="features" class="bg-white py-20 sm:py-28">
+<section id="features" class="bg-[var(--color-bg)] py-20 sm:py-28">
   <div class="mx-auto max-w-7xl px-5 sm:px-8">
     <h2
       class="max-w-[22ch] text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl"
       data-reveal
     >
-      Everything a shared budget actually needs
+      {t('featureGrid.heading')}
     </h2>
 
     <div class="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <div
-        class="rounded-[var(--radius-card)] bg-[var(--color-bg-mint)] p-7 sm:col-span-2 lg:col-span-2"
+        class="rounded-[var(--radius-card)] bg-[var(--color-mint)] p-7 sm:col-span-2 lg:col-span-2"
         data-reveal
       >
         <div
@@ -23,9 +26,9 @@ const currencies = ['EUR', 'USD', 'GBP', 'JPY', 'CHF', '+5 more'];
         >
           <Icon name="users-three" class="h-5 w-5" />
         </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">Shared workspaces</h3>
-        <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[#2b4a35]">
-          Invite people you trust as an Editor with full access, or a read-only Viewer.
+        <h3 class="mt-6 text-xl font-medium text-[var(--color-mint-deep)]">{sharedTogether.title}</h3>
+        <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[var(--color-mint-deep)]">
+          {sharedTogether.body}
         </p>
       </div>
 
@@ -37,116 +40,45 @@ const currencies = ['EUR', 'USD', 'GBP', 'JPY', 'CHF', '+5 more'];
         <div
           class="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[var(--color-cat-blue-icon)]"
         >
-          <Icon name="globe" class="h-5 w-5" />
+          <Icon name="check-circle" class="h-5 w-5" />
         </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">Ten currencies</h3>
-        <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[#2c4b6b]">
-          See balances in whichever currency you use day to day.
+        <h3 class="mt-6 text-xl font-medium text-[var(--color-cat-blue-icon)]">
+          {simple.title}
+        </h3>
+        <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[var(--color-cat-blue-icon)]">
+          {simple.body}
         </p>
-        <div class="mt-4 flex flex-wrap gap-2">
-          {
-            currencies.map((c) => (
-              <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-[var(--color-cat-blue-icon)]">
-                {c}
-              </span>
-            ))
-          }
-        </div>
       </div>
 
       <div
-        class="rounded-[var(--radius-card)] border border-[var(--color-line)] p-7"
+        class="rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:col-span-1 lg:col-span-1"
         data-reveal
         style="transition-delay: 120ms"
       >
         <div
-          class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-bg-mint)] text-[var(--color-mint-deep)]"
+          class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]"
         >
-          <Icon name="piggy-bank" class="h-5 w-5" />
+          <Icon name="user-plus" class="h-5 w-5" />
         </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">Savings funds</h3>
+        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">{friends.title}</h3>
         <p class="mt-2 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-          Set a goal, track progress, and grow it alongside your budget.
+          {friends.body}
         </p>
       </div>
 
       <div
-        class="rounded-[var(--radius-card)] border border-[var(--color-line)] p-7"
+        class="rounded-[var(--radius-card)] bg-[var(--color-cat-peach-bg)] p-7 sm:col-span-1 lg:col-span-3"
         data-reveal
-        style="transition-delay: 160ms"
-      >
-        <div
-          class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-bg-mint)] text-[var(--color-mint-deep)]"
-        >
-          <Icon name="arrows-clockwise" class="h-5 w-5" />
-        </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">Recurring expenses</h3>
-        <p class="mt-2 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-          Bills that repeat get tracked automatically, no re-entering.
-        </p>
-      </div>
-
-      <div
-        class="rounded-[var(--radius-card)] bg-[var(--color-cat-peach-bg)] p-7 sm:col-span-2 lg:col-span-2"
-        data-reveal
-        style="transition-delay: 200ms"
+        style="transition-delay: 180ms"
       >
         <div
           class="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[var(--color-cat-peach-icon)]"
         >
-          <Icon name="lock-simple" class="h-5 w-5" />
-        </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">Month locking</h3>
-        <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[#7a4d2c]">
-          Lock a month once it's settled, and plan up to 24 months ahead.
-        </p>
-      </div>
-
-      <div
-        class="rounded-[var(--radius-card)] border border-[var(--color-line)] p-7"
-        data-reveal
-        style="transition-delay: 240ms"
-      >
-        <div
-          class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-bg-mint)] text-[var(--color-mint-deep)]"
-        >
           <Icon name="envelope-simple" class="h-5 w-5" />
         </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">Passwordless login</h3>
-        <p class="mt-2 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-          Sign in with a one-time code by email. No password to lose.
-        </p>
-      </div>
-
-      <div
-        class="rounded-[var(--radius-card)] border border-[var(--color-line)] p-7"
-        data-reveal
-        style="transition-delay: 280ms"
-      >
-        <div
-          class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-bg-mint)] text-[var(--color-mint-deep)]"
-        >
-          <Icon name="moon-stars" class="h-5 w-5" />
-        </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">Light, dark, or system</h3>
-        <p class="mt-2 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-          The app follows your device, or you can just pick one.
-        </p>
-      </div>
-
-      <div
-        class="rounded-[var(--radius-card)] bg-[var(--color-cat-pink-bg)] p-7 sm:col-span-2 lg:col-span-2"
-        data-reveal
-        style="transition-delay: 320ms"
-      >
-        <div
-          class="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[var(--color-cat-pink-icon)]"
-        >
-          <Icon name="export" class="h-5 w-5" />
-        </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">Export or delete anytime</h3>
-        <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[#7d3d4f]">
-          Download everything as a file, or erase your account completely.
+        <h3 class="mt-6 text-xl font-medium text-[var(--color-cat-peach-icon)]">{nudges.title}</h3>
+        <p class="mt-2 max-w-[42ch] text-[15px] leading-relaxed text-[var(--color-cat-peach-icon)]">
+          {nudges.body}
         </p>
       </div>
     </div>

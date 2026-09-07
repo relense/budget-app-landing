@@ -1,88 +1,95 @@
 ---
 import Icon from './Icon.astro';
-import { WEB_APP_URL, IOS_STORE_URL, ANDROID_STORE_URL } from '../lib/constants';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const icons = ['desktop', 'google-play-logo', 'apple-logo'] as const;
+const hrefs = [
+  'https://staging.app.otterbond.app/',
+  'https://expo.dev/accounts/budgeterinfo/projects/budgeter-mobile/builds/46e31c38-4d5f-4531-8db9-25ced4e01ff0',
+  '#waitlist',
+] as const;
+// Web is the most complete experience today, so it gets the largest card; Android is equally
+// live but secondary; iOS is visually muted since it's not installable yet, just a waitlist link.
+const spans = ['lg:col-span-2', 'lg:col-span-1', 'lg:col-span-1'] as const;
+const styles = [
+  {
+    card: 'bg-[var(--color-mint)]',
+    iconWrap: 'bg-white text-[var(--color-mint-deep)]',
+    status: 'text-[var(--color-mint-deep)]/70',
+    title: 'text-[var(--color-mint-deep)]',
+    body: 'text-[var(--color-mint-deep)]/80',
+    cta: 'bg-white text-[var(--color-mint-deep)]',
+  },
+  {
+    card: 'bg-[var(--color-cat-blue-bg)]',
+    iconWrap: 'bg-white text-[var(--color-cat-blue-icon)]',
+    status: 'text-[var(--color-cat-blue-icon)]/70',
+    title: 'text-[var(--color-cat-blue-icon)]',
+    body: 'text-[var(--color-cat-blue-icon)]/80',
+    cta: 'bg-white text-[var(--color-cat-blue-icon)]',
+  },
+  {
+    card: 'border border-dashed border-[var(--color-line)] bg-transparent',
+    iconWrap: 'bg-[var(--color-bg-elevated)] text-[var(--color-ink-soft)]',
+    status: 'text-[var(--color-ink-faint)]',
+    title: 'text-[var(--color-ink)]',
+    body: 'text-[var(--color-ink-soft)]',
+    cta: 'border border-[var(--color-mint)] text-[var(--color-mint)]',
+  },
+] as const;
+
+const platforms = t('getTheApp.platforms').map((platform, i) => ({
+  ...platform,
+  icon: icons[i],
+  href: hrefs[i],
+  span: spans[i],
+  style: styles[i],
+  external: i < 2,
+}));
 ---
 
-<section class="bg-white py-20 sm:py-28">
+<section id="get-the-app" class="bg-[var(--color-bg)] py-20 sm:py-28">
   <div class="mx-auto max-w-7xl px-5 sm:px-8">
-    <h2 class="max-w-[24ch] text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl" data-reveal>
-      Use it on the web today, or wait for the app
-    </h2>
+    <div class="max-w-[52ch]" data-reveal>
+      <h2 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+        {t('getTheApp.heading')}
+      </h2>
+      <p class="mt-4 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        {t('getTheApp.body')}
+      </p>
+    </div>
 
-    <div class="mt-12 grid grid-cols-1 gap-5 lg:grid-cols-2">
-      <div
-        class="rounded-[var(--radius-card)] bg-[var(--color-bg-mint)] p-8 sm:p-10"
-        data-reveal
-      >
-        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[var(--color-mint-deep)]">
-          <Icon name="desktop" class="h-6 w-6" />
-        </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">Web app</h3>
-        <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[#2b4a35]">
-          Works right now, no install needed. Sign in with your email and you're straight in.
-        </p>
-        <a
-          href={WEB_APP_URL}
-          class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-6 py-3 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
-        >
-          Get started
-          <Icon name="arrow-right" class="h-4 w-4" />
-        </a>
-      </div>
-
-      <div
-        class="rounded-[var(--radius-card)] border border-dashed border-[var(--color-line)] p-8 sm:p-10"
-        data-reveal
-        style="transition-delay: 80ms"
-      >
-        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-[#f0f0ee] text-[var(--color-ink-soft)]">
-          <Icon name="device-mobile" class="h-6 w-6" />
-        </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">iOS &amp; Android app</h3>
-        <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-          Built and working, not yet published to the app stores. Link coming soon.
-        </p>
-        <div class="mt-6 flex flex-wrap gap-3">
-          {
-            IOS_STORE_URL ? (
-              <a
-                href={IOS_STORE_URL}
-                class="inline-flex items-center gap-2 rounded-full border border-[var(--color-ink)] px-6 py-3 text-[15px] font-medium text-[var(--color-ink)]"
-              >
-                <Icon name="apple-logo" class="h-4 w-4" />
-                App Store
-              </a>
-            ) : (
-              <span
-                aria-disabled="true"
-                class="inline-flex cursor-not-allowed items-center gap-2 rounded-full border border-[var(--color-line)] px-6 py-3 text-[15px] font-medium text-[var(--color-ink-faint)]"
-              >
-                <Icon name="apple-logo" class="h-4 w-4" />
-                App Store
-              </span>
-            )
-          }
-          {
-            ANDROID_STORE_URL ? (
-              <a
-                href={ANDROID_STORE_URL}
-                class="inline-flex items-center gap-2 rounded-full border border-[var(--color-ink)] px-6 py-3 text-[15px] font-medium text-[var(--color-ink)]"
-              >
-                <Icon name="google-play-logo" class="h-4 w-4" />
-                Google Play
-              </a>
-            ) : (
-              <span
-                aria-disabled="true"
-                class="inline-flex cursor-not-allowed items-center gap-2 rounded-full border border-[var(--color-line)] px-6 py-3 text-[15px] font-medium text-[var(--color-ink-faint)]"
-              >
-                <Icon name="google-play-logo" class="h-4 w-4" />
-                Google Play
-              </span>
-            )
-          }
-        </div>
-      </div>
+    <div class="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        platforms.map((platform, i) => (
+          <a
+            href={platform.href}
+            target={platform.external ? '_blank' : undefined}
+            rel={platform.external ? 'noopener noreferrer' : undefined}
+            class={`group flex flex-col rounded-[var(--radius-card)] p-7 transition-transform hover:-translate-y-1 ${platform.span} ${platform.style.card}`}
+            data-reveal
+            style={`transition-delay:${i * 80}ms`}
+          >
+            <div class={`flex h-11 w-11 items-center justify-center rounded-full ${platform.style.iconWrap}`}>
+              <Icon name={platform.icon} class="h-5 w-5" />
+            </div>
+            <p class={`mt-6 text-xs font-medium tracking-wide ${platform.style.status}`}>{platform.status}</p>
+            <h3 class={`mt-1 text-xl font-medium ${platform.style.title}`}>{platform.label}</h3>
+            <p class={`mt-2 max-w-[30ch] text-[15px] leading-relaxed ${platform.style.body}`}>
+              {platform.description}
+            </p>
+            <span
+              class={`mt-6 inline-flex w-fit items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-transform group-active:scale-[0.98] ${platform.style.cta}`}
+            >
+              {platform.cta}
+              <Icon name={platform.external ? 'arrow-square-out' : 'arrow-right'} class="h-4 w-4" />
+            </span>
+          </a>
+        ))
+      }
     </div>
   </div>
 </section>

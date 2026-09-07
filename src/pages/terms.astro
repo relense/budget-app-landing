@@ -1,19 +1,23 @@
 ---
 import LegalLayout from '../layouts/LegalLayout.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const CONTACT_EMAIL = 'budgeterinfo@gmail.com';
 const LAST_UPDATED = 'September 1, 2026';
 ---
 
 <LegalLayout
-  title="Terms of Service, Budget Tracker"
-  description="The terms that govern your use of Budget Tracker."
-  heading="Terms of Service"
+  title={t('termsPage.title')}
+  description={t('termsPage.description')}
+  heading={t('termsPage.heading')}
   lastUpdated={LAST_UPDATED}
 >
   <h2>Agreement to these terms</h2>
   <p>
-    These Terms of Service ("Terms") govern your use of Budget Tracker ("the Service," "we,"
+    These Terms of Service ("Terms") govern your use of Otterbond ("the Service," "we,"
     "us"), operated by Miguel Furtado, an individual based in Portugal. The Service includes both
     the web app and the companion mobile app, which share the same account and backend. By
     creating an account or using the Service, you agree to these Terms. If you don't agree, don't
@@ -22,7 +26,7 @@ const LAST_UPDATED = 'September 1, 2026';
 
   <h2>What the Service is</h2>
   <p>
-    Budget Tracker is a personal budgeting and expense-tracking tool: you record budgets,
+    Otterbond is a personal budgeting and expense-tracking tool: you record budgets,
     expenses, recurring bills, and savings, optionally shared with people you invite into a
     workspace. It is a record-keeping tool, not financial, tax, or investment advice. Any decision
     you make based on what you enter or see in the app is your own responsibility.
