@@ -3,12 +3,12 @@ import { Image } from 'astro:assets';
 
 import mobileHome from '../assets/screenshots/mobile-home.png';
 import mobileBudget from '../assets/screenshots/mobile-budget.png';
-import mobileAddExpense from '../assets/screenshots/mobile-AddExpense.png';
-import mobileCategorize from '../assets/screenshots/mobile-categorize.png';
+import mobileCalculator from '../assets/screenshots/mobile-calculator.png';
 import mobileExpenses from '../assets/screenshots/mobile-Expenses.png';
-import mobileRecurrent from '../assets/screenshots/mobile-Recurrent.png';
+import mobileRecurrent from '../assets/screenshots/mobile-recurrent-expenses.png';
 import mobileIncome from '../assets/screenshots/mobile-Income.png';
-import mobileSavings from '../assets/screenshots/mobile-savings.png';
+import mobileSavings from '../assets/screenshots/mobile--savings.png';
+import Icon from './Icon.astro';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
@@ -17,8 +17,7 @@ const t = useTranslations(lang);
 const images = [
   mobileHome,
   mobileBudget,
-  mobileAddExpense,
-  mobileCategorize,
+  mobileCalculator,
   mobileExpenses,
   mobileRecurrent,
   mobileIncome,
@@ -26,6 +25,7 @@ const images = [
 ];
 const mobileShots = t('screenshotGallery.shots').map((caption, i) => ({ src: images[i], caption }));
 const altPrefix = t('screenshotGallery.altPrefix');
+const expandHint = t('screenshotGallery.expandHint');
 ---
 
 <section id="screens" class="bg-[var(--color-bg)] py-20 sm:py-28">
@@ -43,22 +43,155 @@ const altPrefix = t('screenshotGallery.altPrefix');
       style="transition-delay: 80ms"
     >
       {
-        mobileShots.map((shot) => (
-          <figure class="w-[52vw] flex-shrink-0 snap-start sm:w-[240px]">
-            <div class="overflow-hidden rounded-[24px] border-4 border-[var(--color-bg-elevated)] shadow-[var(--shadow-soft)]">
-              <Image
-                src={shot.src}
-                alt={`${altPrefix}: ${shot.caption}`}
-                width={420}
-                class="w-full"
-              />
+        mobileShots.map((shot, i) => (
+          <button
+            type="button"
+            class="w-[52vw] flex-shrink-0 snap-start text-left sm:w-[240px]"
+            data-lightbox-index={i}
+            aria-label={`${altPrefix}: ${shot.caption}. ${expandHint}`}
+          >
+            <div class="cursor-zoom-in overflow-hidden rounded-[24px] border-4 border-[var(--color-bg-elevated)] shadow-[var(--shadow-soft)] transition-transform active:scale-[0.98]">
+              <Image src={shot.src} alt="" width={420} class="w-full" />
             </div>
-            <figcaption class="mt-3 text-sm text-[var(--color-ink-soft)]">
-              {shot.caption}
-            </figcaption>
-          </figure>
+            <p class="mt-3 text-sm text-[var(--color-ink-soft)]">{shot.caption}</p>
+          </button>
         ))
       }
     </div>
   </div>
 </section>
+
+<div
+  id="lightbox"
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-black/97 p-4"
+  role="dialog"
+  aria-modal="true"
+  aria-label={altPrefix}
+>
+  <button
+    type="button"
+    id="lightbox-close"
+    aria-label={t('screenshotGallery.close')}
+    class="absolute top-4 right-4 flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+  >
+    <Icon name="x" class="h-5 w-5" />
+  </button>
+
+  <button
+    type="button"
+    id="lightbox-prev"
+    aria-label={t('screenshotGallery.previous')}
+    class="absolute left-2 flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 sm:left-6"
+  >
+    <Icon name="caret-left" class="h-5 w-5" />
+  </button>
+
+  <button
+    type="button"
+    id="lightbox-next"
+    aria-label={t('screenshotGallery.next')}
+    class="absolute right-2 flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 sm:right-6"
+  >
+    <Icon name="caret-right" class="h-5 w-5" />
+  </button>
+
+  <div class="flex max-h-full max-w-full flex-col items-center">
+    <div id="lightbox-stage" class="relative flex max-h-[70vh] items-center justify-center">
+      {
+        mobileShots.map((shot, i) => (
+          <div class="lightbox-slide hidden" data-index={i} data-caption={shot.caption}>
+            <Image
+              src={shot.src}
+              alt={`${altPrefix}: ${shot.caption}`}
+              width={480}
+              class="max-h-[70vh] w-auto rounded-[28px] border-4 border-[var(--color-bg-elevated)] shadow-[var(--shadow-lifted)]"
+            />
+          </div>
+        ))
+      }
+    </div>
+    <p id="lightbox-caption" class="mt-5 text-center text-[15px] text-white">
+      &nbsp;
+    </p>
+    <p id="lightbox-counter" class="mt-1 text-center text-xs text-white/60">&nbsp;</p>
+  </div>
+</div>
+
+<script>
+  const openers = document.querySelectorAll<HTMLButtonElement>('[data-lightbox-index]');
+  const lightbox = document.getElementById('lightbox');
+  const stage = document.getElementById('lightbox-stage');
+  const slides = document.querySelectorAll<HTMLElement>('.lightbox-slide');
+  const captionEl = document.getElementById('lightbox-caption');
+  const counterEl = document.getElementById('lightbox-counter');
+  const closeButton = document.getElementById('lightbox-close');
+  const prevButton = document.getElementById('lightbox-prev');
+  const nextButton = document.getElementById('lightbox-next');
+
+  const total = slides.length;
+  let current = 0;
+
+  function show(index: number) {
+    current = ((index % total) + total) % total;
+    slides.forEach((slide, i) => slide.classList.toggle('hidden', i !== current));
+    if (captionEl) captionEl.textContent = slides[current]?.dataset.caption ?? '';
+    if (counterEl) counterEl.textContent = `${current + 1} / ${total}`;
+  }
+
+  function open(index: number) {
+    show(index);
+    lightbox?.classList.remove('hidden');
+    lightbox?.classList.add('flex');
+    document.body.classList.add('overflow-hidden');
+  }
+
+  function close() {
+    lightbox?.classList.add('hidden');
+    lightbox?.classList.remove('flex');
+    document.body.classList.remove('overflow-hidden');
+  }
+
+  function isOpen() {
+    return !lightbox?.classList.contains('hidden');
+  }
+
+  openers.forEach((opener) => {
+    opener.addEventListener('click', () => {
+      const index = Number(opener.dataset.lightboxIndex);
+      open(index);
+    });
+  });
+
+  closeButton?.addEventListener('click', close);
+  prevButton?.addEventListener('click', () => show(current - 1));
+  nextButton?.addEventListener('click', () => show(current + 1));
+
+  lightbox?.addEventListener('click', (event) => {
+    if (event.target === lightbox) close();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (!isOpen()) return;
+    if (event.key === 'Escape') close();
+    if (event.key === 'ArrowLeft') show(current - 1);
+    if (event.key === 'ArrowRight') show(current + 1);
+  });
+
+  let touchStartX = 0;
+  stage?.addEventListener(
+    'touchstart',
+    (event) => {
+      touchStartX = event.touches[0].clientX;
+    },
+    { passive: true }
+  );
+  stage?.addEventListener(
+    'touchend',
+    (event) => {
+      const deltaX = event.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(deltaX) < 40) return;
+      show(deltaX > 0 ? current - 1 : current + 1);
+    },
+    { passive: true }
+  );
+</script>
