@@ -81,7 +81,11 @@ export const ui = {
     ],
 
     'screenshotGallery.heading': "See it, don't just take our word for it",
-    'screenshotGallery.altPrefix': 'Otterbond mobile screenshot',
+    'screenshotGallery.tabMobile': 'Mobile',
+    'screenshotGallery.tabWeb': 'Web',
+    'screenshotGallery.altPrefixMobile': 'Otterbond mobile screenshot',
+    'screenshotGallery.altPrefixWeb': 'Otterbond web app screenshot',
+    'screenshotGallery.viewerLabel': 'Screenshot viewer',
     'screenshotGallery.expandHint': 'Tap to view larger',
     'screenshotGallery.close': 'Close',
     'screenshotGallery.previous': 'Previous screenshot',
@@ -94,6 +98,11 @@ export const ui = {
       'Recurring bills, tracked automatically',
       'Income, logged just as easily',
       'Savings funds',
+    ],
+    'screenshotGallery.webShots': [
+      'Your balance and recent activity, at a glance',
+      'Budgets, expenses, and recurring bills together',
+      'Savings funds and goals',
     ],
 
     'getTheApp.heading': 'Already live on web and Android',
@@ -278,7 +287,11 @@ export const ui = {
     ],
 
     'screenshotGallery.heading': 'Vê por ti mesmo, não fiques só pela nossa palavra',
-    'screenshotGallery.altPrefix': 'Captura de ecrã da Otterbond no telemóvel',
+    'screenshotGallery.tabMobile': 'Telemóvel',
+    'screenshotGallery.tabWeb': 'Web',
+    'screenshotGallery.altPrefixMobile': 'Captura de ecrã da Otterbond no telemóvel',
+    'screenshotGallery.altPrefixWeb': 'Captura de ecrã da Otterbond na aplicação web',
+    'screenshotGallery.viewerLabel': 'Visualizador de capturas de ecrã',
     'screenshotGallery.expandHint': 'Toca para ver em maior',
     'screenshotGallery.close': 'Fechar',
     'screenshotGallery.previous': 'Captura de ecrã anterior',
@@ -291,6 +304,11 @@ export const ui = {
       'Despesas recorrentes, controladas automaticamente',
       'Rendimentos, registados com a mesma facilidade',
       'Fundos de poupança',
+    ],
+    'screenshotGallery.webShots': [
+      'O teu saldo e atividade recente, num relance',
+      'Orçamentos, despesas e recorrentes juntos',
+      'Fundos de poupança e objetivos',
     ],
 
     'getTheApp.heading': 'Já disponível na web e Android',

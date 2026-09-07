@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import desktopHome from '../assets/screenshots/desktop-home.png';
+import webExpenses from '../assets/screenshots/web-expenses.png';
 import mobileHome from '../assets/screenshots/mobile-home.png';
 import Icon from './Icon.astro';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
@@ -50,7 +50,7 @@ const t = useTranslations(lang);
         class="relative mx-auto max-w-[560px] rotate-[-2deg] overflow-hidden rounded-2xl border border-[var(--color-line)] shadow-[var(--shadow-lifted)] sm:rounded-[28px]"
       >
         <Image
-          src={desktopHome}
+          src={webExpenses}
           alt={t('hero.desktopAlt')}
           width={800}
           loading="eager"
