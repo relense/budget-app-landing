@@ -20,3 +20,7 @@
 export const WAITLIST_API_URL: string | null = import.meta.env.WAITLIST_API_URL ?? null;
 
 export const CREATOR_GITHUB_URL = 'https://github.com/relense';
+
+// Plus subscription checkout, hosted on the web app (not this static site) -- purchases happen
+// there, never in an app store, so both locales link to the same URL.
+export const PRICING_URL = 'https://otterbond.app/plans';

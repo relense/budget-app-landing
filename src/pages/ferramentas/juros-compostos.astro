@@ -1,0 +1,238 @@
+---
+// Standalone, Portuguese-only, single-language SEO tool page -- see the sibling
+// recibos-verdes.astro / salario-liquido.astro for the shared rationale ("its own front door, not
+// a feature of the app"). BaseLayout gets `lang="pt-pt"` + `noAlternate` explicitly since this
+// page's URL doesn't carry the `/pt-pt/` prefix `getLangFromUrl` looks for, and there's no true
+// bilingual counterpart at a mirrored path (the English version lives at the unrelated
+// /tools/compound-interest, not /pt-pt/ferramentas/juros-compostos).
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Calculadora de Juros Compostos 2026: simula a tua poupança';
+const description =
+  'Calcula quanto o teu dinheiro pode valer com juros compostos: capital inicial, contribuições mensais, taxa de juro e prazo. Resultado imediato, sem registo.';
+---
+
+<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+  <NavBar lang="pt-pt" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Calculadora de Juros Compostos 2026
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Insere o capital inicial, o que consegues poupar por mês e a taxa de juro esperada. O
+      resultado atualiza-se automaticamente, sem criares conta.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Capital inicial (€)</span>
+        <input
+          type="number"
+          id="principal"
+          value="1000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Contribuição mensal (€)</span>
+        <input
+          type="number"
+          id="monthlyContribution"
+          value="100"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Taxa de juro anual (%)</span>
+        <input
+          type="number"
+          id="annualRatePercent"
+          value="4"
+          min="0"
+          step="0.1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Prazo (anos)</span>
+        <input
+          type="number"
+          id="years"
+          value="10"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Quando entra a contribuição mensal</span>
+        <select
+          id="contributionTiming"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="end" selected>No fim do mês (mais comum)</option>
+          <option value="start">No início do mês</option>
+        </select>
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-sm font-medium text-[var(--color-mint-deep)]/70">Valor final estimado</p>
+      <p class="mt-1 text-4xl font-medium text-[var(--color-mint-deep)]" id="result-future-value">
+        €0
+      </p>
+      <div class="mt-5 grid grid-cols-2 gap-4 text-[15px] text-[var(--color-mint-deep)]">
+        <div>
+          <p class="text-[var(--color-mint-deep)]/70">Total contribuído</p>
+          <p class="font-medium" id="result-contributions">€0</p>
+        </div>
+        <div>
+          <p class="text-[var(--color-mint-deep)]/70">Total em juros</p>
+          <p class="font-medium" id="result-interest">€0</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="mt-6 overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead>
+          <tr class="border-b border-[var(--color-line)] text-[var(--color-ink-faint)]">
+            <th class="py-2 pr-4 font-medium">Ano</th>
+            <th class="py-2 pr-4 font-medium">Saldo</th>
+            <th class="py-2 pr-4 font-medium">Contribuído</th>
+            <th class="py-2 font-medium">Juros</th>
+          </tr>
+        </thead>
+        <tbody id="result-table-body" class="text-[var(--color-ink-soft)]"></tbody>
+      </table>
+    </div>
+
+    <div class="legal-body mt-14">
+      <h2>Como funcionam os juros compostos</h2>
+      <p>
+        Juros compostos significa que os juros de um período passam a fazer parte do capital do
+        período seguinte, e também eles começam a render juros. Ao fim de vários anos, essa
+        diferença face a juros simples (onde só o capital inicial rende) torna-se grande, mesmo
+        com a mesma taxa de juro.
+      </p>
+      <p>
+        Esta calculadora assume capitalização mensal: a taxa de juro anual que indicas é dividida
+        por 12, e aplicada todos os meses ao saldo acumulado. Se escolheres contribuir "no fim do
+        mês" (a opção mais comum em contas poupança e ETFs com entregas mensais), o juro desse mês
+        é calculado antes de a tua contribuição entrar, e só começa a render juros no mês
+        seguinte. Se escolheres "no início do mês", a contribuição já conta para o juro desse
+        mesmo mês.
+      </p>
+
+      <h2>Porque é que começar cedo importa mais do que a quantia</h2>
+      <p>
+        Numa progressão de juros compostos, o tempo pesa mais do que o valor mensal. Duplicar a
+        contribuição mensal duplica, no máximo, a parte que vem das tuas entregas; duplicar o
+        número de anos pode multiplicar o resultado final por muito mais do que isso, porque cada
+        euro investido mais cedo passa por mais ciclos de capitalização. Por isso é que "começar
+        já, com pouco" costuma superar "esperar e começar com mais" mais tarde.
+      </p>
+
+      <h2>Regra dos 72</h2>
+      <p>
+        Uma forma rápida de estimar quanto tempo demora um capital a duplicar (sem contribuições
+        mensais) é dividir 72 pela taxa de juro anual. A uma taxa de 4%, por exemplo, 72 ÷ 4 = 18
+        anos. É uma aproximação, mas suficientemente próxima do valor exato para decisões
+        rápidas, e é um bom atalho para comparar diferentes taxas de juro entre si.
+      </p>
+
+      <h2>O que esta calculadora não faz</h2>
+      <p>
+        Não desconta impostos sobre os juros (em Portugal, mais-valias e juros são normalmente
+        tributados, com taxas e regras que variam consoante o produto financeiro), não ajusta para
+        inflação, e assume uma taxa de juro constante durante todo o período, o que raramente
+        acontece em mercados voláteis. Serve para teres uma ideia clara da mecânica dos juros
+        compostos, não para prever com exatidão o valor de um investimento real.
+      </p>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="piggy-bank" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        Já sabes o que a tua poupança pode valer. Sabes o que podes gastar hoje?
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        O Otterbond diz-te, todas as manhãs, o que é seguro gastar hoje, depois de já ter
+        reservado o que precisas para as tuas contas e para os teus fundos de poupança.
+      </p>
+      <a
+        href="/pt-pt/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Experimentar grátis
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+  </main>
+
+  <Footer lang="pt-pt" />
+</BaseLayout>
+
+<script>
+  import { calculateCompoundInterest, type ContributionTiming } from '../../lib/calculators/compoundInterest';
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+
+  function recalc() {
+    const result = calculateCompoundInterest({
+      principal: num('principal'),
+      monthlyContribution: num('monthlyContribution'),
+      annualRatePercent: num('annualRatePercent'),
+      years: num('years'),
+      contributionTiming: (document.getElementById('contributionTiming') as HTMLSelectElement)
+        .value as ContributionTiming,
+    });
+
+    document.getElementById('result-future-value')!.textContent = euro.format(result.futureValue);
+    document.getElementById('result-contributions')!.textContent = euro.format(result.totalContributions);
+    document.getElementById('result-interest')!.textContent = euro.format(result.totalInterest);
+
+    const tbody = document.getElementById('result-table-body')!;
+    tbody.innerHTML = result.yearlyBreakdown
+      .map(
+        (row) => `
+          <tr class="border-b border-[var(--color-line)]/60">
+            <td class="py-2 pr-4">${row.year}</td>
+            <td class="py-2 pr-4">${euro.format(row.balance)}</td>
+            <td class="py-2 pr-4">${euro.format(row.totalContributions)}</td>
+            <td class="py-2">${euro.format(row.totalInterest)}</td>
+          </tr>`,
+      )
+      .join('');
+  }
+
+  form.addEventListener('input', recalc);
+  recalc();
+</script>

@@ -1,12 +1,18 @@
 ---
 import { Image } from 'astro:assets';
-import webExpenses from '../assets/screenshots/web-expenses.png';
-import mobileHome from '../assets/screenshots/mobile-home.png';
+import webExpensesEn from '../assets/screenshots/web-expenses.png';
+import webExpensesPt from '../assets/screenshots/web-expenses-pt.png';
+import mobileSafeToSpendEn from '../assets/screenshots/mobile-safe-to-spend.png';
+import mobileSafeToSpendPt from '../assets/screenshots/mobile-safe-to-spend-pt.png';
 import Icon from './Icon.astro';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+// One language per page version -- the app screenshot itself must match the page's own language,
+// not just the surrounding copy.
+const webExpenses = lang === 'pt-pt' ? webExpensesPt : webExpensesEn;
+const mobileSafeToSpend = lang === 'pt-pt' ? mobileSafeToSpendPt : mobileSafeToSpendEn;
 ---
 
 <section class="relative overflow-hidden bg-[var(--color-bg)] pt-14 pb-20 sm:pt-20 sm:pb-28">
@@ -63,7 +69,7 @@ const t = useTranslations(lang);
         class="absolute -bottom-10 -left-4 w-[150px] rotate-[4deg] overflow-hidden rounded-[22px] border-4 border-[var(--color-bg-elevated)] shadow-[var(--shadow-lifted)] sm:-bottom-12 sm:-left-8 sm:w-[190px]"
       >
         <Image
-          src={mobileHome}
+          src={mobileSafeToSpend}
           alt={t('hero.mobileAlt')}
           width={420}
           loading="eager"

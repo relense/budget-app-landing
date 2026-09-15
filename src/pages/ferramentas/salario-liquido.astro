@@ -1,0 +1,309 @@
+---
+// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
+// shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Calculadora de Salário Líquido 2026: IRS, Segurança Social e subsídios';
+const description =
+  'Calcula o teu salário líquido em 2026: retenção de IRS, Segurança Social, subsídio de alimentação e de férias/Natal. Continente, Açores e Madeira. Sem registo.';
+---
+
+<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+  <NavBar lang="pt-pt" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Calculadora de Salário Líquido 2026
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Calcula o teu salário líquido a partir do bruto, ou o bruto que precisas para um líquido
+      específico, com as tabelas de retenção de 2026 para Continente, Açores e Madeira.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Calcular a partir de</span>
+        <select
+          id="direction"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="grossToNet" selected>Salário bruto → líquido</option>
+          <option value="netToGross">Líquido pretendido → bruto necessário</option>
+        </select>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]" id="amount-label">Vencimento base mensal (€)</span>
+        <input
+          type="number"
+          id="amount"
+          value="1500"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Região</span>
+        <select
+          id="region"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="continente" selected>Continente</option>
+          <option value="acores">Açores</option>
+          <option value="madeira">Madeira</option>
+        </select>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Situação</span>
+        <select
+          id="filingStatus"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="single" selected>Não casado / casado, dois titulares</option>
+          <option value="marriedOneEarner">Casado, um único titular</option>
+        </select>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Nº de dependentes</span>
+        <input
+          type="number"
+          id="dependents"
+          value="0"
+          min="0"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <details class="sm:col-span-2">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
+          Opções avançadas (subsídio de alimentação, deficiência)
+        </summary>
+
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label class="mt-1 flex items-center gap-2.5 text-sm sm:col-span-2">
+            <input type="checkbox" id="mealAllowanceEnabled" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
+            <span class="text-[var(--color-ink)]">Recebo subsídio de alimentação</span>
+          </label>
+
+          <label class="block text-sm" id="meal-amount-wrap" hidden>
+            <span class="font-medium text-[var(--color-ink)]">Valor diário (€)</span>
+            <input
+              type="number"
+              id="mealAllowanceDaily"
+              value="7.63"
+              min="0"
+              step="0.01"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+
+          <label class="block text-sm" id="meal-type-wrap" hidden>
+            <span class="font-medium text-[var(--color-ink)]">Forma de pagamento</span>
+            <select
+              id="mealAllowanceType"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            >
+              <option value="card" selected>Cartão refeição</option>
+              <option value="cash">Dinheiro / transferência</option>
+            </select>
+          </label>
+
+          <label class="mt-1 flex items-center gap-2.5 text-sm sm:col-span-2">
+            <input type="checkbox" id="disabled" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
+            <span class="text-[var(--color-ink)]">Trabalhador com deficiência (grau ≥ 60%)</span>
+          </label>
+        </div>
+      </details>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-sm font-medium text-[var(--color-mint-deep)]/70" id="result-label">
+        Salário líquido estimado / mês
+      </p>
+      <p class="mt-1 text-4xl font-medium text-[var(--color-mint-deep)]" id="result-net">€0</p>
+
+      <div class="mt-5 grid grid-cols-2 gap-4 text-[15px] text-[var(--color-mint-deep)] sm:grid-cols-3">
+        <div>
+          <p class="text-[var(--color-mint-deep)]/70">Vencimento base</p>
+          <p class="font-medium" id="result-gross">€0</p>
+        </div>
+        <div>
+          <p class="text-[var(--color-mint-deep)]/70">IRS retido</p>
+          <p class="font-medium" id="result-irs">€0</p>
+        </div>
+        <div>
+          <p class="text-[var(--color-mint-deep)]/70">Segurança Social (11%)</p>
+          <p class="font-medium" id="result-ss">€0</p>
+        </div>
+      </div>
+
+      <p class="mt-5 text-sm text-[var(--color-mint-deep)]/80" id="result-detail"></p>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>Como funciona a retenção na fonte</h2>
+      <p>
+        O valor que recebes todos os meses já vem com IRS retido na fonte, segundo tabelas oficiais
+        publicadas para cada ano (despachos específicos para Continente, Açores e Madeira, cada
+        região com a sua própria tabela). Essa retenção é uma estimativa do imposto anual, não o
+        imposto final, o valor definitivo só fica fechado com a declaração de IRS do ano seguinte,
+        que pode resultar em reembolso ou em imposto adicional a pagar. A Segurança Social, por
+        outro lado, é sempre 11% sobre o valor sujeito, sem escalões.
+      </p>
+      <p>
+        A tabela aplicável depende da tua situação (não casado, casado com dois titulares, ou
+        casado com um único titular a trabalhar) e do número de dependentes, cada combinação tem a
+        sua própria tabela com taxas e deduções diferentes.
+      </p>
+
+      <h2>Continente, Açores e Madeira: porque o valor muda</h2>
+      <p>
+        As regiões autónomas têm tabelas de retenção próprias, com taxas mais baixas do que no
+        Continente. Nos Açores, a redução é uma percentagem fixa (cerca de 30%) sobre todas as
+        taxas marginais do Continente. Na Madeira a redução não segue uma fórmula única, é definida
+        tabela a tabela no despacho regional, e para 2026 foi alargada a mais escalões do que em
+        anos anteriores.
+      </p>
+
+      <h2>Subsídio de alimentação: o que está isento e o que não está</h2>
+      <p>
+        O subsídio de alimentação tem um teto diário isento de IRS e Segurança Social: mais alto
+        se for pago em cartão refeição do que em dinheiro. A parte do subsídio que ultrapassa esse
+        teto é tratada como remuneração normal, entra no cálculo do IRS e da Segurança Social
+        desse mês, tal como o vencimento base.
+      </p>
+
+      <h2>Subsídio de férias e de Natal: pagamento único ou duodécimos</h2>
+      <p>
+        Por lei, tens direito a um subsídio de férias e a um subsídio de Natal, cada um
+        normalmente igual a um mês de vencimento base. Podem ser pagos de uma vez (no mês em que
+        são devidos) ou distribuídos ao longo do ano em duodécimos, 1/12 de cada subsídio somado a
+        todos os meses. O total ao longo do ano é o mesmo nos dois casos, muda apenas quando o
+        dinheiro chega. Cada subsídio pago de uma vez é retido à taxa que se aplicaria a esse valor
+        recebido de uma só vez, por isso pode parecer "mais pesado" nesse mês específico.
+      </p>
+
+      <h2>O que esta calculadora não substitui</h2>
+      <p>
+        Os valores são uma estimativa cuidada com base nas tabelas oficiais de retenção de 2026,
+        mas a tua folha de vencimento real pode incluir outros elementos que este simulador não
+        modela (subsídios específicos do teu contrato, deduções por dependentes com deficiência,
+        entre outros). Para dúvidas sobre o teu recibo de vencimento em concreto, fala com o
+        departamento de recursos humanos da tua empresa.
+      </p>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="check-circle" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        Já sabes o teu líquido. Sabes quanto disso podes gastar hoje?
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        O Otterbond diz-te quanto desse valor podes gastar hoje, depois das contas e das
+        poupanças.
+      </p>
+      <a
+        href="/pt-pt/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Experimentar grátis
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+  </main>
+
+  <Footer lang="pt-pt" />
+</BaseLayout>
+
+<script>
+  import {
+    calculateSalary,
+    type CalculationDirection,
+    type Region,
+    type FilingStatus,
+    type MealAllowanceType,
+  } from '../../lib/calculators/salaryCalculator';
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function checked(id: string): boolean {
+    return (document.getElementById(id) as HTMLInputElement).checked;
+  }
+  function val(id: string): string {
+    return (document.getElementById(id) as HTMLInputElement | HTMLSelectElement).value;
+  }
+
+  const directionSelect = document.getElementById('direction') as HTMLSelectElement;
+  const amountLabel = document.getElementById('amount-label') as HTMLElement;
+  const resultLabel = document.getElementById('result-label') as HTMLElement;
+  const mealEnabled = document.getElementById('mealAllowanceEnabled') as HTMLInputElement;
+  const mealAmountWrap = document.getElementById('meal-amount-wrap') as HTMLElement;
+  const mealTypeWrap = document.getElementById('meal-type-wrap') as HTMLElement;
+
+  function syncVisibility() {
+    const netToGross = directionSelect.value === 'netToGross';
+    amountLabel.textContent = netToGross
+      ? 'Líquido mensal pretendido (€)'
+      : 'Vencimento base mensal (€)';
+    resultLabel.textContent = netToGross
+      ? 'Vencimento bruto necessário / mês'
+      : 'Salário líquido estimado / mês';
+    mealAmountWrap.hidden = !mealEnabled.checked;
+    mealTypeWrap.hidden = !mealEnabled.checked;
+  }
+
+  function recalc() {
+    syncVisibility();
+    const netToGross = directionSelect.value === 'netToGross';
+
+    const result = calculateSalary({
+      direction: val('direction') as CalculationDirection,
+      amount: num('amount'),
+      region: val('region') as Region,
+      filingStatus: val('filingStatus') as FilingStatus,
+      dependents: num('dependents'),
+      disabled: checked('disabled'),
+      mealAllowance: mealEnabled.checked
+        ? {
+            dailyAmount: num('mealAllowanceDaily'),
+            type: val('mealAllowanceType') as MealAllowanceType,
+          }
+        : null,
+    });
+
+    const month = result.regularMonth;
+    document.getElementById('result-net')!.textContent = euro.format(
+      netToGross ? result.baseSalary : month.net,
+    );
+    document.getElementById('result-gross')!.textContent = euro.format(result.baseSalary);
+    document.getElementById('result-irs')!.textContent = euro.format(month.irs);
+    document.getElementById('result-ss')!.textContent = euro.format(month.employeeSocialSecurity);
+
+    const detail = document.getElementById('result-detail')!;
+    detail.textContent = `Líquido mensal (com subsídio de alimentação, se aplicável): ${euro.format(month.net)} · Subsídio de férias/Natal (pagamento único): ${euro.format(result.subsidyMonth.net)} cada · Líquido anual (14 pagamentos): ${euro.format(result.annual.net)}`;
+  }
+
+  form.addEventListener('input', recalc);
+  recalc();
+</script>

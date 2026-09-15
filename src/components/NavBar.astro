@@ -2,9 +2,13 @@
 import { Image } from 'astro:assets';
 import logo from '../assets/brand/logo.png';
 import Icon from './Icon.astro';
-import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { getLangFromUrl, useTranslations, type Lang } from '../i18n/utils';
 
-const lang = getLangFromUrl(Astro.url);
+// `lang` prop lets a page force the chrome's language even when its own URL doesn't carry the
+// `/pt-pt/` prefix `getLangFromUrl` looks for -- e.g. the flat, unprefixed `/ferramentas/*`
+// calculator pages, which are Portuguese-only content by design (see their own page comments).
+const { lang: langProp } = Astro.props as { lang?: Lang };
+const lang = langProp ?? getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const homeHref = lang === 'en' ? '/' : '/pt-pt/';
 ---
@@ -31,6 +35,11 @@ const homeHref = lang === 'en' ? '/' : '/pt-pt/';
         href={`${homeHref}#screens`}
         class="text-[15px] text-[var(--color-ink-soft)] transition-colors hover:text-[var(--color-ink)]"
         >{t('nav.screens')}</a
+      >
+      <a
+        href={`${homeHref}#pricing`}
+        class="text-[15px] text-[var(--color-ink-soft)] transition-colors hover:text-[var(--color-ink)]"
+        >{t('nav.pricing')}</a
       >
       <a
         href={`${homeHref}#faq`}
@@ -70,6 +79,9 @@ const homeHref = lang === 'en' ? '/' : '/pt-pt/';
       >
       <a href={`${homeHref}#screens`} class="rounded-lg px-2 py-3 text-[15px] text-[var(--color-ink)]"
         >{t('nav.screens')}</a
+      >
+      <a href={`${homeHref}#pricing`} class="rounded-lg px-2 py-3 text-[15px] text-[var(--color-ink)]"
+        >{t('nav.pricing')}</a
       >
       <a href={`${homeHref}#faq`} class="rounded-lg px-2 py-3 text-[15px] text-[var(--color-ink)]">{t('nav.faq')}</a>
       <a

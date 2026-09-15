@@ -22,17 +22,19 @@ export const ui = {
     'nav.features': 'Features',
     'nav.howItWorks': 'How it works',
     'nav.screens': 'Screens',
+    'nav.pricing': 'Pricing',
     'nav.faq': 'FAQ',
     'nav.getStarted': 'Get started',
     'nav.toggleMenu': 'Toggle menu',
 
-    'hero.title': 'One budget. Actually shared.',
+    'hero.title': 'Know what you can spend today. Both of you.',
     'hero.subtitle':
-      'Plan the month with your partner, log expenses as they happen, and let each other pick up the categorizing. Personal and shared workspaces, side by side.',
+      "One number, updated every morning: what's safe to spend until payday, after bills and savings. Share it with your partner, or keep it to yourself.",
     'hero.cta': 'Get started',
     'hero.desktopAlt':
       "Otterbond home dashboard on the web, showing total balance, this month's spending, and an emergency fund goal",
-    'hero.mobileAlt': 'Otterbond home screen on mobile in dark mode, showing recent activity and quick actions',
+    'hero.mobileAlt':
+      "Otterbond home screen on mobile in dark mode, showing today's Safe to Spend amount, the balance in the account, and the days left until payday",
     'hero.scrollHint': 'See it in action',
 
     'trustStrip.text': 'No ads. No data-selling. No bank-sync creepiness.',
@@ -43,42 +45,73 @@ export const ui = {
     'howItWorks.heading': 'How it works',
     'howItWorks.steps': [
       {
-        title: 'Plan the month together',
+        title: 'Plan the month',
         body: 'Income, fixed and recurring expenses, all visible to both of you in the same space.',
       },
       {
-        title: 'Log expenses as they happen',
+        title: 'Log as you go',
         body: 'No waiting on the other person, no "how much did you spend at the supermarket?" texts.',
       },
       {
-        title: 'Split the work, not just the bill',
-        body: 'One partner logs it, the other categorizes later. No one has to do both, and nothing falls through the cracks.',
+        title: 'Check your number every morning',
+        body: "Safe to Spend already accounts for bills and savings, so you know at a glance what's actually free to use.",
       },
       {
-        title: 'Personal and shared, side by side',
-        body: 'Keep a private budget, or share one with your partner, roommates, or a trip group.',
+        title: 'Lock the month and get your wrap',
+        body: 'Close the month and get a six-card story: what came in, where it went, and what you saved.',
       },
     ],
 
     'featureGrid.heading': 'Built for two, not adapted for two',
     'featureGrid.cards': [
       {
-        title: 'Personal and shared, together',
-        body: 'Keep your own budget private, or share one with your partner, roommates, or a trip group, with as many people in it as you need. Everyone can belong to up to 4 workspaces for now.',
+        title: 'Safe to Spend',
+        body: "A single daily number that already accounts for your bills, your savings deposits and a small buffer. If it's green, go ahead.",
       },
       {
-        title: 'Simple enough for someone who doesn’t care',
-        body: 'Not a disguised spreadsheet or an accounting tool. Just add an expense, and you’re done.',
+        title: 'See where your money goes until payday',
+        body: 'A timeline from today to payday: every bill on its date, your balance after each one, and the lowest point marked before it happens.',
       },
       {
-        title: 'Connect once',
-        body: 'Add someone as a friend once, then invite them into any workspace, personal or shared, whenever it makes sense.',
+        title: 'Goals with a date',
+        body: "Every savings fund tells you when you'll reach it, and what a few euros a day would change.",
       },
       {
-        title: 'The app nudges, you don’t have to remember',
-        body: 'Notifications for uncategorized expenses, friend requests, and workspace invites, so it doesn’t all fall on one of you.',
+        title: 'Lock the month, get your wrap',
+        body: 'Close the month and get a six-card story: what came in, where it went, what you saved, and one thing to look at next month.',
+      },
+      {
+        title: 'Personal and shared, side by side',
+        body: 'Keep a private budget, or share one with your partner. One person logs it, the other categorizes later.',
       },
     ],
+
+    'pricing.heading': 'Simple pricing',
+    'pricing.body': 'Everything you need to plan a month together is free. Plus adds the detail behind your number.',
+    'pricing.free.name': 'Free',
+    'pricing.free.price': '€0',
+    'pricing.free.period': '',
+    'pricing.free.features': [
+      'Budget, bills and savings funds',
+      'Safe to Spend daily number',
+      'Month wrap when you lock a month',
+      'Personal + shared, 2 workspaces',
+      'Current and next month',
+    ],
+    'pricing.plus.name': 'Plus',
+    'pricing.plus.price': '€2.99',
+    'pricing.plus.period': '/month',
+    'pricing.plus.trial': '15-day free trial',
+    'pricing.plus.features': [
+      'Everything in Free',
+      'Timeline, pace and insights behind your number',
+      'Full month reports and history',
+      'Savings goal projections',
+      '5 workspaces',
+      'Plan up to 24 months ahead',
+    ],
+    'pricing.cta': 'Start free trial',
+    'pricing.ctaNote': 'Purchases happen on the web. No app-store markup.',
 
     'screenshotGallery.heading': "See it, don't just take our word for it",
     'screenshotGallery.tabMobile': 'Mobile',
@@ -91,19 +124,13 @@ export const ui = {
     'screenshotGallery.previous': 'Previous screenshot',
     'screenshotGallery.next': 'Next screenshot',
     'screenshotGallery.shots': [
-      'Home, in dark mode',
-      'Budget by category',
-      'Add an expense in seconds',
-      'All your expenses, in one place',
-      'Recurring bills, tracked automatically',
-      'Income, logged just as easily',
+      'Safe to Spend, right on Home',
+      'Your timeline to payday',
       'Savings funds',
+      'Your month, wrapped',
+      'Add an expense in seconds',
     ],
-    'screenshotGallery.webShots': [
-      'Your balance and recent activity, at a glance',
-      'Budgets, expenses, and recurring bills together',
-      'Savings funds and goals',
-    ],
+    'screenshotGallery.webShots': ['Safe to Spend on the web', 'Your month, reported'],
 
     'getTheApp.heading': 'Already live on web and Android',
     'getTheApp.body':
@@ -137,14 +164,25 @@ export const ui = {
           'Couples and people who live together who want to plan and track money as a team, not just split bills after the fact. It also works well for a group budgeting a shared trip.',
       },
       {
+        question: 'What is Safe to Spend?',
+        answer:
+          "It's the one number Otterbond shows you every morning: what you can spend today without touching your bills or your savings. It updates automatically as you log expenses and payday gets closer.",
+      },
+      {
         question: 'Is Otterbond free?',
         answer:
-          "Yes. It's currently free to use, with no paid tier. If that ever changes, we'll say so clearly before anything you rely on becomes paid.",
+          'Yes, the core of Otterbond, budgeting, bills, savings funds, and your daily Safe to Spend number, is free. Plus is an optional paid tier for people who want the detail behind that number.',
+      },
+      {
+        question: "What's in Plus?",
+        answer:
+          'The timeline, pace and insights behind your Safe to Spend number, full month reports and history, savings goal projections, five workspaces instead of two, and planning up to 24 months ahead.',
+        link: { label: 'See pricing', hash: '#pricing' },
       },
       {
         question: 'Can I share a budget with someone else?',
         answer:
-          'Yes. Keep a personal budget private, or share one with your partner, roommates, or a trip group, as an Editor with full access or a Viewer with read-only access, with as many people in it as you need. You can belong to up to 4 workspaces for now.',
+          "Yes. Keep a personal budget private, or share one with your partner, as an Editor with full access or a Viewer with read-only access. Add someone as a friend once, then invite them into any workspace, personal or shared, whenever it makes sense. You'll both get notified about uncategorized expenses, friend requests, and workspace invites, so it doesn't all fall on one of you. Free includes 2 workspaces, Plus includes 5.",
       },
       {
         question: 'What currencies does it support?',
@@ -204,6 +242,10 @@ export const ui = {
     'footer.legalHeading': 'Legal',
     'footer.privacy': 'Privacy Policy',
     'footer.terms': 'Terms of Service',
+    'footer.toolsHeading': 'Free tools',
+    'footer.toolsRecibosVerdes': 'Green receipts simulator (PT)',
+    'footer.toolsSalarioLiquido': 'Net salary calculator (PT)',
+    'footer.toolsCompoundInterest': 'Compound interest calculator',
     'footer.madeBy': 'Made by relense',
 
     'notFound.title': 'Page not found, Otterbond',
@@ -228,17 +270,19 @@ export const ui = {
     'nav.features': 'Funcionalidades',
     'nav.howItWorks': 'Como funciona',
     'nav.screens': 'Ecrãs',
+    'nav.pricing': 'Preços',
     'nav.faq': 'FAQ',
     'nav.getStarted': 'Começar',
     'nav.toggleMenu': 'Alternar menu',
 
-    'hero.title': 'Um orçamento. Verdadeiramente partilhado.',
+    'hero.title': 'Sabe o que podes gastar hoje. Os dois.',
     'hero.subtitle':
-      'Planeia o mês com o teu parceiro, regista despesas à medida que acontecem, e ajudem-se um ao outro a categorizá-las. Espaços pessoais e partilhados, lado a lado.',
+      'Um número, atualizado todas as manhãs: o que podes gastar até ao dia do ordenado, depois das contas e das poupanças. Partilha-o com o teu parceiro, ou guarda-o só para ti.',
     'hero.cta': 'Começar',
     'hero.desktopAlt':
       'Painel principal da Otterbond na web, mostrando o saldo total, os gastos deste mês e um objetivo de fundo de emergência',
-    'hero.mobileAlt': 'Ecrã principal da Otterbond no telemóvel em modo escuro, mostrando atividade recente e ações rápidas',
+    'hero.mobileAlt':
+      'Ecrã principal da Otterbond no telemóvel em modo escuro, a mostrar o valor Podes Gastar de hoje, o saldo na conta e os dias que faltam até ao ordenado',
     'hero.scrollHint': 'Vê a app em ação',
 
     'trustStrip.text': 'Sem anúncios. Sem venda de dados. Sem sincronização bancária invasiva.',
@@ -249,42 +293,74 @@ export const ui = {
     'howItWorks.heading': 'Como funciona',
     'howItWorks.steps': [
       {
-        title: 'Planeiem o mês em conjunto',
+        title: 'Planeia o mês',
         body: 'Rendimentos, despesas fixas e recorrentes, tudo visível para os dois no mesmo espaço.',
       },
       {
-        title: 'Regista despesas à medida que acontecem',
+        title: 'Regista à medida que vai acontecendo',
         body: 'Sem esperar pela outra pessoa, sem mensagens do tipo "quanto gastaste no supermercado?".',
       },
       {
-        title: 'Dividam o trabalho, não só a conta',
-        body: 'Um regista, o outro categoriza mais tarde. Ninguém tem de fazer as duas coisas, e nada fica esquecido.',
+        title: 'Confere o teu número todas as manhãs',
+        body: 'O Podes Gastar já conta com as contas e as poupanças, para saberes num relance o que é mesmo livre para usar.',
       },
       {
-        title: 'Pessoal e partilhado, lado a lado',
-        body: 'Mantém um orçamento privado, ou partilha um com o teu parceiro, colegas de casa, ou um grupo de viagem.',
+        title: 'Fecha o mês e recebe o teu resumo',
+        body: 'Fecha o mês e recebe uma história de seis cartões: o que entrou, para onde foi, e quanto poupaste.',
       },
     ],
 
     'featureGrid.heading': 'Pensada para dois, não adaptada para dois',
     'featureGrid.cards': [
       {
-        title: 'Pessoal e partilhado, juntos',
-        body: 'Mantém o teu orçamento privado, ou partilha um com o teu parceiro, colegas de casa, ou um grupo de viagem, com quantas pessoas precisares. Podes pertencer a até 4 espaços, por agora.',
+        title: 'Podes Gastar',
+        body: 'Um único número diário que já conta com as tuas contas, os teus depósitos de poupança e uma pequena margem. Se estiver verde, avança.',
       },
       {
-        title: 'Simples que chegue para quem não liga a isto',
-        body: 'Não é uma folha de cálculo disfarçada nem uma ferramenta de contabilidade. Adicionas uma despesa, e está feito.',
+        title: 'Vê para onde vai o teu dinheiro até ao ordenado',
+        body: 'Uma linha do tempo desde hoje até ao ordenado: cada conta na sua data, o teu saldo depois de cada uma, e o ponto mais baixo marcado antes de acontecer.',
       },
       {
-        title: 'Liga-te uma vez',
-        body: 'Adiciona alguém como amigo uma vez, e depois convida-o para qualquer espaço, pessoal ou partilhado, quando fizer sentido.',
+        title: 'Objetivos com data',
+        body: 'Cada fundo de poupança diz-te quando o vais alcançar, e o que uns euros por dia mudariam.',
       },
       {
-        title: 'A app lembra-te, tu não precisas',
-        body: 'Notificações para despesas por categorizar, pedidos de amizade e convites para espaços, para que a coordenação não caia só em cima de um de vocês.',
+        title: 'Fecha o mês, recebe o teu resumo',
+        body: 'Fecha o mês e recebe uma história de seis cartões: o que entrou, para onde foi, quanto poupaste, e uma coisa a olhar no mês seguinte.',
+      },
+      {
+        title: 'Pessoal e partilhado, lado a lado',
+        body: 'Mantém um orçamento privado, ou partilha um com o teu parceiro. Um regista, o outro categoriza mais tarde.',
       },
     ],
+
+    'pricing.heading': 'Preços simples',
+    'pricing.body':
+      'Tudo o que precisas para planear o mês em conjunto é grátis. O Plus acrescenta o detalhe por trás do teu número.',
+    'pricing.free.name': 'Grátis',
+    'pricing.free.price': '€0',
+    'pricing.free.period': '',
+    'pricing.free.features': [
+      'Orçamento, contas e fundos de poupança',
+      'Número diário Podes Gastar',
+      'Resumo do mês ao fechares um mês',
+      'Pessoal + partilhado, 2 espaços',
+      'Mês atual e o seguinte',
+    ],
+    'pricing.plus.name': 'Plus',
+    'pricing.plus.price': '€2.99',
+    'pricing.plus.period': '/mês',
+    'pricing.plus.trial': '15 dias grátis',
+    'pricing.plus.features': [
+      'Tudo o que há no Grátis',
+      'Linha do tempo, ritmo e informações por trás do teu número',
+      'Relatórios de mês completos e histórico',
+      'Projeções dos objetivos de poupança',
+      '5 espaços',
+      'Planeia até 24 meses à frente',
+    ],
+    'pricing.cta': 'Começar avaliação grátis',
+    'pricing.ctaNote': 'As compras acontecem na web. Sem sobretaxa de loja de aplicações.',
 
     'screenshotGallery.heading': 'Vê por ti mesmo, não fiques só pela nossa palavra',
     'screenshotGallery.tabMobile': 'Telemóvel',
@@ -297,19 +373,13 @@ export const ui = {
     'screenshotGallery.previous': 'Captura de ecrã anterior',
     'screenshotGallery.next': 'Próxima captura de ecrã',
     'screenshotGallery.shots': [
-      'Início, em modo escuro',
-      'Orçamento por categoria',
-      'Adiciona uma despesa em segundos',
-      'Todas as despesas, num só lugar',
-      'Despesas recorrentes, controladas automaticamente',
-      'Rendimentos, registados com a mesma facilidade',
+      'Podes Gastar, mesmo no Início',
+      'A tua linha do tempo até ao ordenado',
       'Fundos de poupança',
+      'O teu mês, resumido',
+      'Adiciona uma despesa em segundos',
     ],
-    'screenshotGallery.webShots': [
-      'O teu saldo e atividade recente, num relance',
-      'Orçamentos, despesas e recorrentes juntos',
-      'Fundos de poupança e objetivos',
-    ],
+    'screenshotGallery.webShots': ['Podes Gastar na web', 'O teu mês, em relatório'],
 
     'getTheApp.heading': 'Já disponível na web e Android',
     'getTheApp.body':
@@ -343,14 +413,25 @@ export const ui = {
           'Para casais e pessoas que vivem juntas e querem planear e acompanhar o dinheiro em equipa, não apenas dividir contas depois de gastar. Também funciona bem para um grupo a orçamentar uma viagem em conjunto.',
       },
       {
+        question: 'O que é o Podes Gastar?',
+        answer:
+          'É o único número que a Otterbond te mostra todas as manhãs: o que podes gastar hoje sem tocar nas tuas contas ou nas tuas poupanças. Atualiza-se automaticamente à medida que registas despesas e o ordenado se aproxima.',
+      },
+      {
         question: 'A Otterbond é gratuita?',
         answer:
-          'Sim. Atualmente é gratuita, sem qualquer plano pago. Se isso alguma vez mudar, diremos isso claramente antes de algo que uses passar a ser pago.',
+          'Sim, o essencial da Otterbond, orçamento, contas e fundos de poupança, e o teu número diário Podes Gastar, é gratuito. O Plus é um plano pago opcional para quem quer o detalhe por trás desse número.',
+      },
+      {
+        question: 'O que tem o Plus?',
+        answer:
+          'A linha do tempo, o ritmo e as informações por trás do teu número Podes Gastar, relatórios de mês completos e histórico, projeções dos objetivos de poupança, cinco espaços em vez de dois, e planeamento até 24 meses à frente.',
+        link: { label: 'Ver preços', hash: '#pricing' },
       },
       {
         question: 'Posso partilhar um orçamento com outra pessoa?',
         answer:
-          'Sim. Mantém um orçamento pessoal privado, ou partilha um com o teu parceiro, colegas de casa, ou um grupo de viagem, como Editor com acesso total ou como Visualizador com acesso só de leitura, com quantas pessoas precisares. Podes pertencer a até 4 espaços, por agora.',
+          'Sim. Mantém um orçamento pessoal privado, ou partilha um com o teu parceiro, como Editor com acesso total ou como Visualizador com acesso só de leitura. Adiciona alguém como amigo uma vez, e depois convida-o para qualquer espaço, pessoal ou partilhado, quando fizer sentido. Os dois recebem notificações sobre despesas por categorizar, pedidos de amizade e convites para espaços, para que a coordenação não caia só em cima de um de vocês. O plano Grátis inclui 2 espaços, o Plus inclui 5.',
       },
       {
         question: 'Que moedas são suportadas?',
@@ -410,6 +491,10 @@ export const ui = {
     'footer.legalHeading': 'Legal',
     'footer.privacy': 'Política de Privacidade',
     'footer.terms': 'Termos de Serviço',
+    'footer.toolsHeading': 'Ferramentas gratuitas',
+    'footer.toolsRecibosVerdes': 'Simulador recibos verdes',
+    'footer.toolsSalarioLiquido': 'Calculadora salário líquido',
+    'footer.toolsCompoundInterest': 'Calculadora de juros compostos',
     'footer.madeBy': 'Feito por relense',
 
     'notFound.title': 'Página não encontrada, Otterbond',

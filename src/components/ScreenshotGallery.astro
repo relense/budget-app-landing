@@ -1,32 +1,42 @@
 ---
 import { Image } from 'astro:assets';
 
-import mobileHome from '../assets/screenshots/mobile-home.png';
-import mobileBudget from '../assets/screenshots/mobile-budget.png';
-import mobileCalculator from '../assets/screenshots/mobile-calculator.png';
-import mobileExpenses from '../assets/screenshots/mobile-Expenses.png';
-import mobileRecurrent from '../assets/screenshots/mobile-recurrent-expenses.png';
-import mobileIncome from '../assets/screenshots/mobile-Income.png';
-import mobileSavings from '../assets/screenshots/mobile--savings.png';
-import webHome from '../assets/screenshots/web-home.png';
-import webExpenses from '../assets/screenshots/web-expenses.png';
-import webSavings from '../assets/screenshots/web-savings.png';
+import mobileSafeToSpendEn from '../assets/screenshots/mobile-safe-to-spend.png';
+import mobileSafeToSpendPt from '../assets/screenshots/mobile-safe-to-spend-pt.png';
+import mobileTimelineEn from '../assets/screenshots/mobile-timeline.png';
+import mobileTimelinePt from '../assets/screenshots/mobile-timeline-pt.png';
+// Savings fund projections aren't live yet, so this slot falls back to the plain savings screen.
+import mobileSavingsEn from '../assets/screenshots/mobile--savings.png';
+import mobileSavingsPt from '../assets/screenshots/mobile-savings-pt.png';
+import mobileWrapEn from '../assets/screenshots/mobile-wrap.png';
+import mobileWrapPt from '../assets/screenshots/mobile-wrap-pt.png';
+import mobileCalculatorEn from '../assets/screenshots/mobile-calculator.png';
+import mobileCalculatorPt from '../assets/screenshots/mobile-calculator-pt.png';
+import webSafeToSpendEn from '../assets/screenshots/web-safe-to-spend.png';
+import webSafeToSpendPt from '../assets/screenshots/web-safe-to-spend-pt.png';
+import webMonthReportEn from '../assets/screenshots/web-month-report.png';
+import webMonthReportPt from '../assets/screenshots/web-month-report-pt.png';
 import Icon from './Icon.astro';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const mobileImages = [
-  mobileHome,
-  mobileBudget,
-  mobileCalculator,
-  mobileExpenses,
-  mobileRecurrent,
-  mobileIncome,
-  mobileSavings,
-];
-const webImages = [webHome, webExpenses, webSavings];
+// One language per page version -- the app screenshots themselves must match the page's own
+// language, not just the surrounding copy.
+const isPt = lang === 'pt-pt';
+const mobileSafeToSpend = isPt ? mobileSafeToSpendPt : mobileSafeToSpendEn;
+const mobileTimeline = isPt ? mobileTimelinePt : mobileTimelineEn;
+const mobileSavings = isPt ? mobileSavingsPt : mobileSavingsEn;
+const mobileWrap = isPt ? mobileWrapPt : mobileWrapEn;
+const mobileCalculator = isPt ? mobileCalculatorPt : mobileCalculatorEn;
+const webSafeToSpend = isPt ? webSafeToSpendPt : webSafeToSpendEn;
+const webMonthReport = isPt ? webMonthReportPt : webMonthReportEn;
+
+// Order matches screenshotGallery.shots in src/i18n/ui.ts: Home (Safe to Spend), timeline,
+// savings fund, month wrap, then the expense keypad last.
+const mobileImages = [mobileSafeToSpend, mobileTimeline, mobileSavings, mobileWrap, mobileCalculator];
+const webImages = [webSafeToSpend, webMonthReport];
 
 const expandHint = t('screenshotGallery.expandHint');
 
