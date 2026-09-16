@@ -3,9 +3,11 @@ import { Image } from 'astro:assets';
 import logo from '../assets/brand/logo.png';
 import Icon from './Icon.astro';
 import { CREATOR_GITHUB_URL } from '../lib/constants';
-import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { getLangFromUrl, useTranslations, type Lang } from '../i18n/utils';
 
-const lang = getLangFromUrl(Astro.url);
+// See NavBar.astro's own comment: same override, same reason (unprefixed `/ferramentas/*` pages).
+const { lang: langProp } = Astro.props as { lang?: Lang };
+const lang = langProp ?? getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const prefix = lang === 'en' ? '' : '/pt-pt';
 const year = new Date().getFullYear();
@@ -24,12 +26,38 @@ const year = new Date().getFullYear();
         </p>
       </div>
 
-      <div>
-        <h3 class="text-sm font-medium text-[var(--color-ink)]">{t('footer.legalHeading')}</h3>
-        <ul class="mt-3 space-y-2 text-sm text-[var(--color-ink-soft)]">
-          <li><a href={`${prefix}/privacy`} class="hover:text-[var(--color-ink)]">{t('footer.privacy')}</a></li>
-          <li><a href={`${prefix}/terms`} class="hover:text-[var(--color-ink)]">{t('footer.terms')}</a></li>
-        </ul>
+      <div class="flex gap-14">
+        <div>
+          <h3 class="text-sm font-medium text-[var(--color-ink)]">{t('footer.legalHeading')}</h3>
+          <ul class="mt-3 space-y-2 text-sm text-[var(--color-ink-soft)]">
+            <li><a href={`${prefix}/privacy`} class="hover:text-[var(--color-ink)]">{t('footer.privacy')}</a></li>
+            <li><a href={`${prefix}/terms`} class="hover:text-[var(--color-ink)]">{t('footer.terms')}</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-[var(--color-ink)]">{t('footer.toolsHeading')}</h3>
+          <ul class="mt-3 space-y-2 text-sm text-[var(--color-ink-soft)]">
+            <li>
+              <a href="/ferramentas/recibos-verdes" class="hover:text-[var(--color-ink)]">
+                {t('footer.toolsRecibosVerdes')}
+              </a>
+            </li>
+            <li>
+              <a href="/ferramentas/salario-liquido" class="hover:text-[var(--color-ink)]">
+                {t('footer.toolsSalarioLiquido')}
+              </a>
+            </li>
+            <li>
+              <a
+                href={lang === 'en' ? '/tools/compound-interest' : '/ferramentas/juros-compostos'}
+                class="hover:text-[var(--color-ink)]"
+              >
+                {t('footer.toolsCompoundInterest')}
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
 

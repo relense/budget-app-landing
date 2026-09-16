@@ -1,0 +1,235 @@
+---
+// English counterpart of /ferramentas/juros-compostos.astro -- see that file's own comment for
+// the shared rationale. Deliberately NOT at a /pt-pt/-mirrored path (its Portuguese equivalent
+// lives at the unrelated /ferramentas/juros-compostos), so BaseLayout gets `noAlternate` too.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Compound Interest Calculator 2026: project your savings';
+const description =
+  'Calculate what your money could be worth with compound interest: starting balance, monthly contributions, interest rate and time. Instant result, no sign-up.';
+---
+
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Compound Interest Calculator 2026
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Enter your starting balance, what you can save each month, and the interest rate you
+      expect. The result updates automatically, no account needed.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Starting balance</span>
+        <input
+          type="number"
+          id="principal"
+          value="1000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Monthly contribution</span>
+        <input
+          type="number"
+          id="monthlyContribution"
+          value="100"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Annual interest rate (%)</span>
+        <input
+          type="number"
+          id="annualRatePercent"
+          value="4"
+          min="0"
+          step="0.1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Years</span>
+        <input
+          type="number"
+          id="years"
+          value="10"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">When the monthly contribution lands</span>
+        <select
+          id="contributionTiming"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="end" selected>End of the month (most common)</option>
+          <option value="start">Start of the month</option>
+        </select>
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-sm font-medium text-[var(--color-mint-deep)]/70">Estimated future value</p>
+      <p class="mt-1 text-4xl font-medium text-[var(--color-mint-deep)]" id="result-future-value">
+        €0
+      </p>
+      <div class="mt-5 grid grid-cols-2 gap-4 text-[15px] text-[var(--color-mint-deep)]">
+        <div>
+          <p class="text-[var(--color-mint-deep)]/70">Total contributed</p>
+          <p class="font-medium" id="result-contributions">€0</p>
+        </div>
+        <div>
+          <p class="text-[var(--color-mint-deep)]/70">Total interest</p>
+          <p class="font-medium" id="result-interest">€0</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="mt-6 overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead>
+          <tr class="border-b border-[var(--color-line)] text-[var(--color-ink-faint)]">
+            <th class="py-2 pr-4 font-medium">Year</th>
+            <th class="py-2 pr-4 font-medium">Balance</th>
+            <th class="py-2 pr-4 font-medium">Contributed</th>
+            <th class="py-2 font-medium">Interest</th>
+          </tr>
+        </thead>
+        <tbody id="result-table-body" class="text-[var(--color-ink-soft)]"></tbody>
+      </table>
+    </div>
+
+    <div class="legal-body mt-14">
+      <h2>How compound interest works</h2>
+      <p>
+        Compound interest means the interest earned in one period becomes part of the capital for
+        the next period, and starts earning interest of its own. Over enough years, that
+        difference against simple interest (where only the original balance earns anything)
+        becomes large, even at the same rate.
+      </p>
+      <p>
+        This calculator assumes monthly compounding: the annual rate you enter is divided by 12
+        and applied to the running balance every month. If you choose "end of the month" (the
+        common case for savings accounts and monthly ETF contributions), that month's interest is
+        calculated before your contribution lands, so the contribution only starts earning
+        interest the following month. "Start of the month" means the contribution counts toward
+        that same month's interest.
+      </p>
+
+      <h2>Why starting early matters more than the amount</h2>
+      <p>
+        In a compound-interest projection, time matters more than the monthly amount. Doubling
+        your monthly contribution can at most double the portion that comes from your own
+        deposits; doubling the number of years can multiply the final result by far more than
+        that, because every euro invested earlier passes through more compounding cycles. That's
+        why "start now, with less" usually beats "wait and start with more" later on.
+      </p>
+
+      <h2>The rule of 72</h2>
+      <p>
+        A quick way to estimate how long a lump sum takes to double (with no further
+        contributions) is to divide 72 by the annual interest rate. At a 4% rate, for example,
+        72 ÷ 4 = 18 years. It's an approximation, but close enough for quick decisions, and a
+        handy shortcut for comparing different interest rates against each other.
+      </p>
+
+      <h2>What this calculator doesn't do</h2>
+      <p>
+        It doesn't account for tax on the interest earned (rules and rates vary a lot by country
+        and by financial product), doesn't adjust for inflation, and assumes a constant interest
+        rate for the whole period, which real, volatile markets rarely deliver. It's meant to give
+        you a clear picture of the mechanics of compound interest, not to predict the exact value
+        of a real investment.
+      </p>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="piggy-bank" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        You know what your savings could be worth. Do you know what you can spend today?
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        Otterbond tells you, every morning, what's safe to spend today, after it's already set
+        aside what you need for your bills and your savings funds.
+      </p>
+      <a
+        href="/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Try it free
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</BaseLayout>
+
+<script>
+  import { calculateCompoundInterest, type ContributionTiming } from '../../lib/calculators/compoundInterest';
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+
+  function recalc() {
+    const result = calculateCompoundInterest({
+      principal: num('principal'),
+      monthlyContribution: num('monthlyContribution'),
+      annualRatePercent: num('annualRatePercent'),
+      years: num('years'),
+      contributionTiming: (document.getElementById('contributionTiming') as HTMLSelectElement)
+        .value as ContributionTiming,
+    });
+
+    document.getElementById('result-future-value')!.textContent = euro.format(result.futureValue);
+    document.getElementById('result-contributions')!.textContent = euro.format(result.totalContributions);
+    document.getElementById('result-interest')!.textContent = euro.format(result.totalInterest);
+
+    const tbody = document.getElementById('result-table-body')!;
+    tbody.innerHTML = result.yearlyBreakdown
+      .map(
+        (row) => `
+          <tr class="border-b border-[var(--color-line)]/60">
+            <td class="py-2 pr-4">${row.year}</td>
+            <td class="py-2 pr-4">${euro.format(row.balance)}</td>
+            <td class="py-2 pr-4">${euro.format(row.totalContributions)}</td>
+            <td class="py-2">${euro.format(row.totalInterest)}</td>
+          </tr>`,
+      )
+      .join('');
+  }
+
+  form.addEventListener('input', recalc);
+  recalc();
+</script>

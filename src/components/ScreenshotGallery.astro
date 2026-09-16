@@ -1,31 +1,61 @@
 ---
 import { Image } from 'astro:assets';
 
-import mobileHome from '../assets/screenshots/mobile-home.png';
-import mobileBudget from '../assets/screenshots/mobile-budget.png';
-import mobileCalculator from '../assets/screenshots/mobile-calculator.png';
-import mobileExpenses from '../assets/screenshots/mobile-Expenses.png';
-import mobileRecurrent from '../assets/screenshots/mobile-recurrent-expenses.png';
-import mobileIncome from '../assets/screenshots/mobile-Income.png';
-import mobileSavings from '../assets/screenshots/mobile--savings.png';
+import mobileSafeToSpendEn from '../assets/screenshots/mobile-safe-to-spend.png';
+import mobileSafeToSpendPt from '../assets/screenshots/mobile-safe-to-spend-pt.png';
+import mobileTimelineEn from '../assets/screenshots/mobile-timeline.png';
+import mobileTimelinePt from '../assets/screenshots/mobile-timeline-pt.png';
+// Savings fund projections aren't live yet, so this slot falls back to the plain savings screen.
+import mobileSavingsEn from '../assets/screenshots/mobile--savings.png';
+import mobileSavingsPt from '../assets/screenshots/mobile-savings-pt.png';
+import mobileWrapEn from '../assets/screenshots/mobile-wrap.png';
+import mobileWrapPt from '../assets/screenshots/mobile-wrap-pt.png';
+import mobileCalculatorEn from '../assets/screenshots/mobile-calculator.png';
+import mobileCalculatorPt from '../assets/screenshots/mobile-calculator-pt.png';
+import webSafeToSpendEn from '../assets/screenshots/web-safe-to-spend.png';
+import webSafeToSpendPt from '../assets/screenshots/web-safe-to-spend-pt.png';
+import webMonthReportEn from '../assets/screenshots/web-month-report.png';
+import webMonthReportPt from '../assets/screenshots/web-month-report-pt.png';
 import Icon from './Icon.astro';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const images = [
-  mobileHome,
-  mobileBudget,
-  mobileCalculator,
-  mobileExpenses,
-  mobileRecurrent,
-  mobileIncome,
-  mobileSavings,
-];
-const mobileShots = t('screenshotGallery.shots').map((caption, i) => ({ src: images[i], caption }));
-const altPrefix = t('screenshotGallery.altPrefix');
+// One language per page version -- the app screenshots themselves must match the page's own
+// language, not just the surrounding copy.
+const isPt = lang === 'pt-pt';
+const mobileSafeToSpend = isPt ? mobileSafeToSpendPt : mobileSafeToSpendEn;
+const mobileTimeline = isPt ? mobileTimelinePt : mobileTimelineEn;
+const mobileSavings = isPt ? mobileSavingsPt : mobileSavingsEn;
+const mobileWrap = isPt ? mobileWrapPt : mobileWrapEn;
+const mobileCalculator = isPt ? mobileCalculatorPt : mobileCalculatorEn;
+const webSafeToSpend = isPt ? webSafeToSpendPt : webSafeToSpendEn;
+const webMonthReport = isPt ? webMonthReportPt : webMonthReportEn;
+
+// Order matches screenshotGallery.shots in src/i18n/ui.ts: Home (Safe to Spend), timeline,
+// savings fund, month wrap, then the expense keypad last.
+const mobileImages = [mobileSafeToSpend, mobileTimeline, mobileSavings, mobileWrap, mobileCalculator];
+const webImages = [webSafeToSpend, webMonthReport];
+
 const expandHint = t('screenshotGallery.expandHint');
+
+const platforms = [
+  {
+    key: 'mobile',
+    label: t('screenshotGallery.tabMobile'),
+    altPrefix: t('screenshotGallery.altPrefixMobile'),
+    cardClass: 'w-[52vw] sm:w-[240px]',
+    shots: t('screenshotGallery.shots').map((caption, i) => ({ src: mobileImages[i], caption })),
+  },
+  {
+    key: 'web',
+    label: t('screenshotGallery.tabWeb'),
+    altPrefix: t('screenshotGallery.altPrefixWeb'),
+    cardClass: 'w-[85vw] sm:w-[420px]',
+    shots: t('screenshotGallery.webShots').map((caption, i) => ({ src: webImages[i], caption })),
+  },
+];
 ---
 
 <section id="screens" class="bg-[var(--color-bg)] py-20 sm:py-28">
@@ -37,24 +67,53 @@ const expandHint = t('screenshotGallery.expandHint');
       {t('screenshotGallery.heading')}
     </h2>
 
-    <div
-      class="mt-10 -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 sm:mx-0 sm:px-0"
-      data-reveal
-      style="transition-delay: 80ms"
-    >
+    <div data-reveal style="transition-delay: 80ms">
+      <div
+        class="mt-8 inline-flex rounded-[var(--radius-pill)] bg-[var(--color-bg-elevated)] p-1"
+        role="tablist"
+      >
+        {
+          platforms.map((platform, i) => (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={i === 0 ? 'true' : 'false'}
+              data-platform-tab={platform.key}
+              class:list={[
+                'rounded-[var(--radius-pill)] px-5 py-2 text-sm font-medium transition-colors',
+                i === 0
+                  ? 'bg-[var(--color-pill)] text-[var(--color-ink)]'
+                  : 'text-[var(--color-ink-faint)]',
+              ]}
+            >
+              {platform.label}
+            </button>
+          ))
+        }
+      </div>
+
       {
-        mobileShots.map((shot, i) => (
-          <button
-            type="button"
-            class="w-[52vw] flex-shrink-0 snap-start text-left sm:w-[240px]"
-            data-lightbox-index={i}
-            aria-label={`${altPrefix}: ${shot.caption}. ${expandHint}`}
+        platforms.map((platform, i) => (
+          <div
+            class="mt-10 -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 sm:mx-0 sm:px-0"
+            data-platform-panel={platform.key}
+            hidden={i !== 0}
           >
-            <div class="cursor-zoom-in overflow-hidden rounded-[24px] border-4 border-[var(--color-bg-elevated)] shadow-[var(--shadow-soft)] transition-transform active:scale-[0.98]">
-              <Image src={shot.src} alt="" width={420} class="w-full" />
-            </div>
-            <p class="mt-3 text-sm text-[var(--color-ink-soft)]">{shot.caption}</p>
-          </button>
+            {platform.shots.map((shot, j) => (
+              <button
+                type="button"
+                class={`${platform.cardClass} flex-shrink-0 snap-start text-left`}
+                data-lightbox-platform={platform.key}
+                data-lightbox-index={j}
+                aria-label={`${platform.altPrefix}: ${shot.caption}. ${expandHint}`}
+              >
+                <div class="cursor-zoom-in overflow-hidden rounded-[24px] border-4 border-[var(--color-bg-elevated)] shadow-[var(--shadow-soft)] transition-transform active:scale-[0.98]">
+                  <Image src={shot.src} alt="" width={420} class="w-full" />
+                </div>
+                <p class="mt-3 text-sm text-[var(--color-ink-soft)]">{shot.caption}</p>
+              </button>
+            ))}
+          </div>
         ))
       }
     </div>
@@ -63,10 +122,10 @@ const expandHint = t('screenshotGallery.expandHint');
 
 <div
   id="lightbox"
-  class="fixed inset-0 z-50 hidden items-center justify-center bg-black/97 p-4"
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-black/97 p-2"
   role="dialog"
   aria-modal="true"
-  aria-label={altPrefix}
+  aria-label={t('screenshotGallery.viewerLabel')}
 >
   <button
     type="button"
@@ -96,21 +155,28 @@ const expandHint = t('screenshotGallery.expandHint');
   </button>
 
   <div class="flex max-h-full max-w-full flex-col items-center">
-    <div id="lightbox-stage" class="relative flex max-h-[70vh] items-center justify-center">
+    <div id="lightbox-stage" class="relative flex max-h-[88vh] items-center justify-center">
       {
-        mobileShots.map((shot, i) => (
-          <div class="lightbox-slide hidden" data-index={i} data-caption={shot.caption}>
-            <Image
-              src={shot.src}
-              alt={`${altPrefix}: ${shot.caption}`}
-              width={480}
-              class="max-h-[70vh] w-auto rounded-[28px] border-4 border-[var(--color-bg-elevated)] shadow-[var(--shadow-lifted)]"
-            />
-          </div>
-        ))
+        platforms.map((platform) =>
+          platform.shots.map((shot, j) => (
+            <div
+              class="lightbox-slide hidden"
+              data-platform={platform.key}
+              data-index={j}
+              data-caption={shot.caption}
+            >
+              <Image
+                src={shot.src}
+                alt={`${platform.altPrefix}: ${shot.caption}`}
+                width={1200}
+                class="max-h-[88vh] w-auto max-w-[95vw] rounded-[28px] border-4 border-[var(--color-bg-elevated)] shadow-[var(--shadow-lifted)]"
+              />
+            </div>
+          ))
+        )
       }
     </div>
-    <p id="lightbox-caption" class="mt-5 text-center text-[15px] text-white">
+    <p id="lightbox-caption" class="mt-4 text-center text-[15px] text-white">
       &nbsp;
     </p>
     <p id="lightbox-counter" class="mt-1 text-center text-xs text-white/60">&nbsp;</p>
@@ -118,27 +184,57 @@ const expandHint = t('screenshotGallery.expandHint');
 </div>
 
 <script>
+  const tabButtons = document.querySelectorAll<HTMLButtonElement>('[data-platform-tab]');
+  const panels = document.querySelectorAll<HTMLElement>('[data-platform-panel]');
+
+  tabButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const platform = button.dataset.platformTab;
+      tabButtons.forEach((b) => {
+        const active = b === button;
+        b.classList.toggle('bg-[var(--color-pill)]', active);
+        b.classList.toggle('text-[var(--color-ink)]', active);
+        b.classList.toggle('text-[var(--color-ink-faint)]', !active);
+        b.setAttribute('aria-selected', String(active));
+      });
+      panels.forEach((panel) => {
+        panel.hidden = panel.dataset.platformPanel !== platform;
+      });
+    });
+  });
+
   const openers = document.querySelectorAll<HTMLButtonElement>('[data-lightbox-index]');
   const lightbox = document.getElementById('lightbox');
   const stage = document.getElementById('lightbox-stage');
-  const slides = document.querySelectorAll<HTMLElement>('.lightbox-slide');
   const captionEl = document.getElementById('lightbox-caption');
   const counterEl = document.getElementById('lightbox-counter');
   const closeButton = document.getElementById('lightbox-close');
   const prevButton = document.getElementById('lightbox-prev');
   const nextButton = document.getElementById('lightbox-next');
 
-  const total = slides.length;
+  let currentPlatform = 'mobile';
   let current = 0;
 
+  function slidesFor(platform: string) {
+    return Array.from(
+      document.querySelectorAll<HTMLElement>(`.lightbox-slide[data-platform="${platform}"]`)
+    );
+  }
+
   function show(index: number) {
+    const slides = slidesFor(currentPlatform);
+    const total = slides.length;
     current = ((index % total) + total) % total;
-    slides.forEach((slide, i) => slide.classList.toggle('hidden', i !== current));
+    document.querySelectorAll<HTMLElement>('.lightbox-slide').forEach((slide) => {
+      const isActive = slide.dataset.platform === currentPlatform && Number(slide.dataset.index) === current;
+      slide.classList.toggle('hidden', !isActive);
+    });
     if (captionEl) captionEl.textContent = slides[current]?.dataset.caption ?? '';
     if (counterEl) counterEl.textContent = `${current + 1} / ${total}`;
   }
 
-  function open(index: number) {
+  function open(platform: string, index: number) {
+    currentPlatform = platform;
     show(index);
     lightbox?.classList.remove('hidden');
     lightbox?.classList.add('flex');
@@ -157,8 +253,9 @@ const expandHint = t('screenshotGallery.expandHint');
 
   openers.forEach((opener) => {
     opener.addEventListener('click', () => {
+      const platform = opener.dataset.lightboxPlatform ?? 'mobile';
       const index = Number(opener.dataset.lightboxIndex);
-      open(index);
+      open(platform, index);
     });
   });
 
@@ -195,3 +292,4 @@ const expandHint = t('screenshotGallery.expandHint');
     { passive: true }
   );
 </script>
+</content>

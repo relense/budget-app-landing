@@ -1,10 +1,66 @@
 ---
+import { Image } from 'astro:assets';
+import mobileSafeToSpendEn from '../assets/screenshots/mobile-safe-to-spend.png';
+import mobileSafeToSpendPt from '../assets/screenshots/mobile-safe-to-spend-pt.png';
+import mobileTimelineEn from '../assets/screenshots/mobile-timeline.png';
+import mobileTimelinePt from '../assets/screenshots/mobile-timeline-pt.png';
+// Savings fund projections aren't live yet, so this card falls back to the plain savings
+// screen per the brief ("use the fund screen as is and leave the copy") instead of a dedicated
+// projection-line screenshot.
+import mobileSavingsEn from '../assets/screenshots/mobile--savings.png';
+import mobileSavingsPt from '../assets/screenshots/mobile-savings-pt.png';
+import mobileWrapEn from '../assets/screenshots/mobile-wrap.png';
+import mobileWrapPt from '../assets/screenshots/mobile-wrap-pt.png';
 import Icon from './Icon.astro';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const [sharedTogether, simple, friends, nudges] = t('featureGrid.cards');
+const [safeToSpend, timeline, goals, wrap, shared] = t('featureGrid.cards');
+
+// One language per page version -- the app screenshots themselves must match the page's own
+// language, not just the surrounding copy.
+const isPt = lang === 'pt-pt';
+const mobileSafeToSpend = isPt ? mobileSafeToSpendPt : mobileSafeToSpendEn;
+const mobileTimeline = isPt ? mobileTimelinePt : mobileTimelineEn;
+const mobileSavings = isPt ? mobileSavingsPt : mobileSavingsEn;
+const mobileWrap = isPt ? mobileWrapPt : mobileWrapEn;
+
+const shotCards = [
+  {
+    ...safeToSpend,
+    image: mobileSafeToSpend,
+    // The Safe to Spend line sits right under the header, so the top crop already shows it.
+    objectPosition: 'center top',
+    bg: 'bg-[var(--color-mint)]',
+    text: 'text-[var(--color-mint-deep)]',
+  },
+  {
+    ...timeline,
+    image: mobileTimeline,
+    // A top crop only shows the "Timeline" heading with none of the actual timeline below it;
+    // shift down to bring the bill rows into frame.
+    objectPosition: 'center 30%',
+    bg: 'bg-[var(--color-cat-blue-bg)]',
+    text: 'text-[var(--color-cat-blue-icon)]',
+  },
+  {
+    ...goals,
+    image: mobileSavings,
+    // A top crop cuts off right after "New Saving Fund", before the Emergency Fund row it's
+    // meant to show; shift down to bring that into frame.
+    objectPosition: 'center 24%',
+    bg: 'bg-[var(--color-cat-peach-bg)]',
+    text: 'text-[var(--color-cat-peach-icon)]',
+  },
+  {
+    ...wrap,
+    image: mobileWrap,
+    objectPosition: 'center top',
+    bg: 'bg-[var(--color-cat-purple-bg)]',
+    text: 'text-[var(--color-cat-purple-icon)]',
+  },
+];
 ---
 
 <section id="features" class="bg-[var(--color-bg)] py-20 sm:py-28">
@@ -17,68 +73,41 @@ const [sharedTogether, simple, friends, nudges] = t('featureGrid.cards');
     </h2>
 
     <div class="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        shotCards.map((card, i) => (
+          <div
+            class={`overflow-hidden rounded-[var(--radius-card)] ${card.bg}`}
+            data-reveal
+            style={`transition-delay:${i * 60}ms`}
+          >
+            <div class="h-44 w-full overflow-hidden sm:h-52">
+              <Image
+                src={card.image}
+                alt=""
+                width={420}
+                class="h-full w-full object-cover"
+                style={`object-position:${card.objectPosition}`}
+              />
+            </div>
+            <div class="p-6">
+              <h3 class={`text-lg font-medium ${card.text}`}>{card.title}</h3>
+              <p class={`mt-2 text-[15px] leading-relaxed ${card.text}`}>{card.body}</p>
+            </div>
+          </div>
+        ))
+      }
+
       <div
-        class="rounded-[var(--radius-card)] bg-[var(--color-mint)] p-7 sm:col-span-2 lg:col-span-2"
+        class="rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:col-span-2 lg:col-span-4"
         data-reveal
+        style="transition-delay: 240ms"
       >
-        <div
-          class="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[var(--color-mint-deep)]"
-        >
+        <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
           <Icon name="users-three" class="h-5 w-5" />
         </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-mint-deep)]">{sharedTogether.title}</h3>
-        <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[var(--color-mint-deep)]">
-          {sharedTogether.body}
-        </p>
-      </div>
-
-      <div
-        class="rounded-[var(--radius-card)] bg-[var(--color-cat-blue-bg)] p-7 sm:col-span-2 lg:col-span-2"
-        data-reveal
-        style="transition-delay: 60ms"
-      >
-        <div
-          class="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[var(--color-cat-blue-icon)]"
-        >
-          <Icon name="check-circle" class="h-5 w-5" />
-        </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-cat-blue-icon)]">
-          {simple.title}
-        </h3>
-        <p class="mt-2 max-w-[38ch] text-[15px] leading-relaxed text-[var(--color-cat-blue-icon)]">
-          {simple.body}
-        </p>
-      </div>
-
-      <div
-        class="rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:col-span-1 lg:col-span-1"
-        data-reveal
-        style="transition-delay: 120ms"
-      >
-        <div
-          class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]"
-        >
-          <Icon name="user-plus" class="h-5 w-5" />
-        </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">{friends.title}</h3>
-        <p class="mt-2 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-          {friends.body}
-        </p>
-      </div>
-
-      <div
-        class="rounded-[var(--radius-card)] bg-[var(--color-cat-peach-bg)] p-7 sm:col-span-1 lg:col-span-3"
-        data-reveal
-        style="transition-delay: 180ms"
-      >
-        <div
-          class="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[var(--color-cat-peach-icon)]"
-        >
-          <Icon name="envelope-simple" class="h-5 w-5" />
-        </div>
-        <h3 class="mt-6 text-xl font-medium text-[var(--color-cat-peach-icon)]">{nudges.title}</h3>
-        <p class="mt-2 max-w-[42ch] text-[15px] leading-relaxed text-[var(--color-cat-peach-icon)]">
-          {nudges.body}
+        <h3 class="mt-6 text-xl font-medium text-[var(--color-ink)]">{shared.title}</h3>
+        <p class="mt-2 max-w-[52ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+          {shared.body}
         </p>
       </div>
     </div>

@@ -1,13 +1,21 @@
 ---
 import '../styles/global.css';
-import { getLangFromUrl, getAlternatePath, useTranslations, htmlLang } from '../i18n/utils';
+import { getLangFromUrl, getAlternatePath, useTranslations, htmlLang, type Lang } from '../i18n/utils';
 
 interface Props {
   title?: string;
   description?: string;
+  lang?: Lang;
+  /** Set for a standalone page with no true bilingual counterpart at the mirrored `/pt-pt/...`
+   * path (e.g. the `/ferramentas/*` calculator pages, which are Portuguese-only by design, or an
+   * English-only tool page whose PT equivalent lives at an unrelated URL). Suppresses the
+   * hreflang alternate links (there's nothing valid to point them at) and the first-visit
+   * PT-browser redirect script (there's no `/pt-pt/...` version to redirect a visitor to). */
+  noAlternate?: boolean;
 }
 
-const lang = getLangFromUrl(Astro.url);
+const { lang: langProp, noAlternate = false } = Astro.props;
+const lang = langProp ?? getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 const { title = t('meta.title'), description = t('meta.description') } = Astro.props;
@@ -36,9 +44,15 @@ const websiteJsonLd = {
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="canonical" href={canonicalURL} />
-    <link rel="alternate" hreflang={htmlLang[lang]} href={canonicalURL} />
-    <link rel="alternate" hreflang={alternateLang} href={alternateURL} />
-    <link rel="alternate" hreflang="x-default" href={defaultLocaleURL} />
+    {
+      !noAlternate && (
+        <>
+          <link rel="alternate" hreflang={htmlLang[lang]} href={canonicalURL} />
+          <link rel="alternate" hreflang={alternateLang} href={alternateURL} />
+          <link rel="alternate" hreflang="x-default" href={defaultLocaleURL} />
+        </>
+      )
+    }
     <meta name="generator" content={Astro.generator} />
 
     <title>{title}</title>
@@ -84,28 +98,35 @@ const websiteJsonLd = {
       }
     </script>
 
-    <script is:inline define:vars={{ lang, alternatePath: getAlternatePath(Astro.url.pathname, lang) }}>
-      // First-visit-only language redirect: if the visitor's browser is set to Portuguese and
-      // they land on the English (default-locale) site, send them to the pt-PT equivalent page
-      // once. Remembered in localStorage so it never fires again after that. Deliberately
-      // one-directional: someone who lands on (or follows a link to) a /pt-pt/ page is never
-      // redirected away from it, so shared pt-pt links always work as sent.
-      try {
-        const DONE_KEY = 'otterbond-locale-redirect-done';
-        if (!localStorage.getItem(DONE_KEY)) {
-          localStorage.setItem(DONE_KEY, '1');
-          if (lang === 'en') {
-            const browserIsPortuguese = navigator.languages
-              ? navigator.languages.some((l) => l.toLowerCase().startsWith('pt'))
-              : navigator.language.toLowerCase().startsWith('pt');
-            if (browserIsPortuguese) {
-              window.location.replace(alternatePath + window.location.search + window.location.hash);
+    {
+      !noAlternate && (
+        <script
+          is:inline
+          define:vars={{ lang, alternatePath: getAlternatePath(Astro.url.pathname, lang) }}
+        >
+          // First-visit-only language redirect: if the visitor's browser is set to Portuguese and
+          // they land on the English (default-locale) site, send them to the pt-PT equivalent page
+          // once. Remembered in localStorage so it never fires again after that. Deliberately
+          // one-directional: someone who lands on (or follows a link to) a /pt-pt/ page is never
+          // redirected away from it, so shared pt-pt links always work as sent.
+          try {
+            const DONE_KEY = 'otterbond-locale-redirect-done';
+            if (!localStorage.getItem(DONE_KEY)) {
+              localStorage.setItem(DONE_KEY, '1');
+              if (lang === 'en') {
+                const browserIsPortuguese = navigator.languages
+                  ? navigator.languages.some((l) => l.toLowerCase().startsWith('pt'))
+                  : navigator.language.toLowerCase().startsWith('pt');
+                if (browserIsPortuguese) {
+                  window.location.replace(alternatePath + window.location.search + window.location.hash);
+                }
+              }
             }
+          } catch {
+            // localStorage unavailable (private mode, disabled storage, etc.) -- skip detection.
           }
-        }
-      } catch {
-        // localStorage unavailable (private mode, disabled storage, etc.) -- skip detection.
-      }
-    </script>
+        </script>
+      )
+    }
   </body>
 </html>
