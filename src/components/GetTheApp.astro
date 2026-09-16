@@ -6,14 +6,18 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 const icons = ['desktop', 'google-play-logo', 'apple-logo'] as const;
-const hrefs = [
-  'https://staging.app.otterbond.app/',
-  'https://expo.dev/accounts/otterbond/projects/otterbond-mobile/builds/69ae6502-4431-402c-8944-7910ca58af88',
-  '#waitlist',
-] as const;
-// Web is the most complete experience today, so it gets the largest card; Android is equally
-// live but secondary; iOS is visually muted since it's not installable yet, just a waitlist link.
+const hrefs = ['https://app.otterbond.app/', '#waitlist', '#waitlist'] as const;
+// Web is the only one live today, so it gets the largest card; Android and iOS are both still
+// coming, so they're visually muted with just a waitlist link.
 const spans = ['lg:col-span-2', 'lg:col-span-1', 'lg:col-span-1'] as const;
+const mutedStyle = {
+  card: 'border border-dashed border-[var(--color-line)] bg-transparent',
+  iconWrap: 'bg-[var(--color-bg-elevated)] text-[var(--color-ink-soft)]',
+  status: 'text-[var(--color-ink-faint)]',
+  title: 'text-[var(--color-ink)]',
+  body: 'text-[var(--color-ink-soft)]',
+  cta: 'border border-[var(--color-mint)] text-[var(--color-mint)]',
+} as const;
 const styles = [
   {
     card: 'bg-[var(--color-mint)]',
@@ -23,22 +27,8 @@ const styles = [
     body: 'text-[var(--color-mint-deep)]/80',
     cta: 'bg-white text-[var(--color-mint-deep)]',
   },
-  {
-    card: 'bg-[var(--color-cat-blue-bg)]',
-    iconWrap: 'bg-white text-[var(--color-cat-blue-icon)]',
-    status: 'text-[var(--color-cat-blue-icon)]/70',
-    title: 'text-[var(--color-cat-blue-icon)]',
-    body: 'text-[var(--color-cat-blue-icon)]/80',
-    cta: 'bg-white text-[var(--color-cat-blue-icon)]',
-  },
-  {
-    card: 'border border-dashed border-[var(--color-line)] bg-transparent',
-    iconWrap: 'bg-[var(--color-bg-elevated)] text-[var(--color-ink-soft)]',
-    status: 'text-[var(--color-ink-faint)]',
-    title: 'text-[var(--color-ink)]',
-    body: 'text-[var(--color-ink-soft)]',
-    cta: 'border border-[var(--color-mint)] text-[var(--color-mint)]',
-  },
+  mutedStyle,
+  mutedStyle,
 ] as const;
 
 const platforms = t('getTheApp.platforms').map((platform, i) => ({
@@ -47,7 +37,7 @@ const platforms = t('getTheApp.platforms').map((platform, i) => ({
   href: hrefs[i],
   span: spans[i],
   style: styles[i],
-  external: i < 2,
+  external: i === 0,
 }));
 ---
 

@@ -1,0 +1,90 @@
+---
+import Icon from './Icon.astro';
+import { PRICING_URL } from '../lib/constants';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const free = {
+  name: t('pricing.free.name'),
+  price: t('pricing.free.price'),
+  period: t('pricing.free.period'),
+  features: t('pricing.free.features'),
+};
+const plus = {
+  name: t('pricing.plus.name'),
+  price: t('pricing.plus.price'),
+  period: t('pricing.plus.period'),
+  trial: t('pricing.plus.trial'),
+  features: t('pricing.plus.features'),
+};
+---
+
+<section id="pricing" class="bg-[var(--color-bg)] py-20 sm:py-28">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="max-w-2xl" data-reveal>
+      <h2 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+        {t('pricing.heading')}
+      </h2>
+      <p class="mt-4 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        {t('pricing.body')}
+      </p>
+    </div>
+
+    <div class="mt-12 grid grid-cols-1 gap-5 lg:grid-cols-2">
+      <div class="rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-8" data-reveal>
+        <h3 class="text-lg font-medium text-[var(--color-ink)]">{free.name}</h3>
+        <p class="mt-3 flex items-baseline gap-1">
+          <span class="text-4xl font-medium text-[var(--color-ink)]">{free.price}</span>
+        </p>
+
+        <ul class="mt-7 space-y-3">
+          {
+            free.features.map((feature) => (
+              <li class="flex items-start gap-3 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                <Icon name="check" class="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--color-ink-faint)]" />
+                {feature}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div
+        class="relative rounded-[var(--radius-card)] bg-[var(--color-mint)] p-8"
+        data-reveal
+        style="transition-delay: 80ms"
+      >
+        <h3 class="text-lg font-medium text-[var(--color-mint-deep)]">{plus.name}</h3>
+        <p class="mt-3 flex items-baseline gap-1">
+          <span class="text-4xl font-medium text-[var(--color-mint-deep)]">{plus.price}</span>
+          <span class="text-[15px] text-[var(--color-mint-deep)]/70">{plus.period}</span>
+        </p>
+        <p class="mt-1 text-[13px] font-medium text-[var(--color-mint-deep)]/70">{plus.trial}</p>
+
+        <ul class="mt-7 space-y-3">
+          {
+            plus.features.map((feature) => (
+              <li class="flex items-start gap-3 text-[15px] leading-relaxed text-[var(--color-mint-deep)]">
+                <Icon name="check" class="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--color-mint-deep)]" />
+                {feature}
+              </li>
+            ))
+          }
+        </ul>
+
+        <a
+          href={PRICING_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-[15px] font-medium text-[var(--color-mint-deep)] shadow-[var(--shadow-lifted)] transition-transform active:scale-[0.98]"
+        >
+          {t('pricing.cta')}
+          <Icon name="arrow-square-out" class="h-4 w-4" />
+        </a>
+        <p class="mt-3 text-center text-[13px] text-[var(--color-mint-deep)]/70">{t('pricing.ctaNote')}</p>
+      </div>
+    </div>
+  </div>
+</section>

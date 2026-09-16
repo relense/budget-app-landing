@@ -47,6 +47,15 @@ const jsonLd = {
             <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
               {faq.answer}
             </p>
+            {'link' in faq && faq.link && (
+              <a
+                href={faq.link.hash}
+                class="mt-2 inline-flex items-center gap-1 text-[15px] font-medium text-[var(--color-mint)] hover:underline"
+              >
+                {faq.link.label}
+                <Icon name="arrow-right" class="h-3.5 w-3.5" />
+              </a>
+            )}
           </details>
         ))
       }

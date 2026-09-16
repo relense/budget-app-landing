@@ -5,7 +5,7 @@ import { getLangFromUrl, useTranslations } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const icons = ['calendar-blank', 'coins', 'arrows-clockwise', 'users-three'] as const;
+const icons = ['calendar-blank', 'coins', 'check-circle', 'lock-simple'] as const;
 const steps = t('howItWorks.steps').map((step, i) => ({ ...step, icon: icons[i] }));
 ---
 

@@ -1,5 +1,7 @@
 import { ui, defaultLang, type Lang, type UiKey } from './ui';
 
+export type { Lang };
+
 export function getLangFromUrl(url: URL): Lang {
   const [, first] = url.pathname.split('/');
   if (first === 'pt-pt') return 'pt-pt';
