@@ -132,9 +132,9 @@ export const ui = {
     ],
     'screenshotGallery.webShots': ['Safe to Spend on the web', 'Your month, reported'],
 
-    'getTheApp.heading': 'Already live on web and Android',
+    'getTheApp.heading': 'Already live on web',
     'getTheApp.body':
-      "Otterbond is free and working today, right in your browser or on Android. iOS is close behind: join the list below and we'll email you the moment it lands.",
+      "Otterbond is free and working today, right in your browser. iOS and Android are close behind: join the list below and we'll email you the moment they land.",
     'getTheApp.platforms': [
       {
         label: 'Web app',
@@ -144,9 +144,9 @@ export const ui = {
       },
       {
         label: 'Android app',
-        status: 'Ready now',
-        description: 'Install the build straight from Expo.',
-        cta: 'Get the app',
+        status: 'Coming soon',
+        description: 'Join the list below to be first to know.',
+        cta: 'Get notified',
       },
       {
         label: 'iOS app',
@@ -200,7 +200,7 @@ export const ui = {
       {
         question: 'When can I actually use it?',
         answer:
-          "The web app is in staging and the iOS and Android apps are still in progress. Join the waitlist and we'll email you the moment any of them are ready.",
+          "The web app is live today, free to use right in your browser. The iOS and Android apps are still in progress. Join the waitlist and we'll email you the moment either is ready.",
       },
     ],
 
@@ -222,10 +222,11 @@ export const ui = {
       },
     ],
 
-    'waitlist.heading': 'iOS is almost here',
+    'waitlist.heading': 'iOS and Android are almost here',
     'waitlist.body':
-      "Leave your email and we'll let you know the moment Otterbond lands on the App Store. One email, no spam.",
-    'waitlist.closingLine': 'Already on web or Android? You’re all set, this one’s just for iOS.',
+      "Leave your email and we'll let you know the moment Otterbond lands on the App Store or Google Play. One email, no spam.",
+    'waitlist.closingLine':
+      "Already using Otterbond on the web? You're all set, this waitlist is just for the iOS and Android apps.",
     'waitlist.emailLabel': 'Email address',
     'waitlist.placeholder': 'you@example.com',
     'waitlist.submit': 'Notify me',
@@ -233,7 +234,7 @@ export const ui = {
     'waitlist.joined': "You're on the list",
     'waitlist.msg.invalidEmail': 'Enter a valid email address.',
     'waitlist.msg.notConnected': "Signups aren't connected yet, check back soon.",
-    'waitlist.msg.success': "You're on the list. We'll email you the moment iOS is ready.",
+    'waitlist.msg.success': "You're on the list. We'll email you the moment iOS or Android is ready.",
     'waitlist.msg.alreadyOnList': "You're already on the list.",
     'waitlist.msg.tooMany': 'Too many attempts. Try again later.',
     'waitlist.msg.generic': 'Something went wrong. Try again in a moment.',
@@ -381,9 +382,9 @@ export const ui = {
     ],
     'screenshotGallery.webShots': ['Podes Gastar na web', 'O teu mês, em relatório'],
 
-    'getTheApp.heading': 'Já disponível na web e Android',
+    'getTheApp.heading': 'Já disponível na web',
     'getTheApp.body':
-      'A Otterbond já é gratuita e funciona hoje, direto no teu navegador ou no Android. O iOS está quase a chegar: junta-te à lista abaixo e enviamos-te um email assim que estiver pronta.',
+      'A Otterbond já é gratuita e funciona hoje, direto no teu navegador. O iOS e o Android estão quase a chegar: junta-te à lista abaixo e enviamos-te um email assim que estiverem prontas.',
     'getTheApp.platforms': [
       {
         label: 'Aplicação web',
@@ -393,9 +394,9 @@ export const ui = {
       },
       {
         label: 'Aplicação Android',
-        status: 'Pronta a usar',
-        description: 'Instala a build diretamente a partir do Expo.',
-        cta: 'Obter a aplicação',
+        status: 'Brevemente',
+        description: 'Junta-te à lista abaixo para seres o primeiro a saber.',
+        cta: 'Recebe uma notificação',
       },
       {
         label: 'Aplicação iOS',
@@ -449,7 +450,7 @@ export const ui = {
       {
         question: 'Quando é que posso realmente usá-la?',
         answer:
-          'A aplicação web está em staging e as aplicações iOS e Android ainda estão em desenvolvimento. Junta-te à lista de espera e enviamos-te um email assim que alguma delas estiver pronta.',
+          'A aplicação web já está disponível, gratuita e direto no teu navegador. As aplicações iOS e Android ainda estão em desenvolvimento. Junta-te à lista de espera e enviamos-te um email assim que alguma delas estiver pronta.',
       },
     ],
 
@@ -471,10 +472,11 @@ export const ui = {
       },
     ],
 
-    'waitlist.heading': 'O iOS está quase a chegar',
+    'waitlist.heading': 'O iOS e o Android estão quase a chegar',
     'waitlist.body':
-      'Deixa o teu email e avisamos-te assim que a Otterbond chegar à App Store. Um único email, sem spam.',
-    'waitlist.closingLine': 'Já usas a versão web ou Android? Está tudo certo, isto é só para o iOS.',
+      'Deixa o teu email e avisamos-te assim que a Otterbond chegar à App Store ou à Google Play. Um único email, sem spam.',
+    'waitlist.closingLine':
+      'Já usas a Otterbond na web? Está tudo certo, esta lista de espera é só para as aplicações iOS e Android.',
     'waitlist.emailLabel': 'Endereço de email',
     'waitlist.placeholder': 'tu@example.com',
     'waitlist.submit': 'Avisa-me',
@@ -482,7 +484,7 @@ export const ui = {
     'waitlist.joined': 'Já estás na lista',
     'waitlist.msg.invalidEmail': 'Introduz um endereço de email válido.',
     'waitlist.msg.notConnected': 'As inscrições ainda não estão ligadas, volta a verificar em breve.',
-    'waitlist.msg.success': 'Já estás na lista. Enviamos-te um email assim que o iOS estiver pronto.',
+    'waitlist.msg.success': 'Já estás na lista. Enviamos-te um email assim que o iOS ou o Android estiver pronto.',
     'waitlist.msg.alreadyOnList': 'Já estás na lista.',
     'waitlist.msg.tooMany': 'Demasiadas tentativas. Tenta novamente mais tarde.',
     'waitlist.msg.generic': 'Algo correu mal. Tenta novamente dentro de momentos.',
