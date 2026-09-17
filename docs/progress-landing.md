@@ -50,13 +50,13 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 | 9 | Calculadora de horas extra e trabalho nocturno | `calculadora-horas-extra` | **Done** | `src/lib/calculators/overtimePay.ts`. Art. 268º/266º CT percentages (Lei 13/2023), two-tier 100h/year threshold. CCT caveat flagged in explainer. |
 | 10 | Simulador de baixa médica | `simulador-baixa-medica` | **Done** | `src/lib/calculators/sickLeaveBenefit.ts`. 3-day waiting period, 55/60/70/75% bands by leave-day, RR=salary/30 approximation. Employees only (self-employed have a 10-day wait, not modeled). |
 | 11 | IMT e Imposto do Selo | `imt-imposto-selo` | **Done** | `src/lib/calculators/imtStampDuty.ts`. Mainland only (Açores/Madeira scope-cut, flagged). 2026 bracket tables + IMT Jovem thresholds sourced via WebSearch/WebFetch (APCMC practical tables, cross-checked). |
-| 12 | Calculadora de IVA | `calculadora-iva` | Todo | Trivial add/extract VAT, regional rates (mainland/Açores/Madeira). Lowest effort. |
+| 12 | Calculadora de IVA | `calculadora-iva` | **Done** | `src/lib/calculators/vatCalculator.ts`. Trivial add/extract, all 3 regions' rates sourced via WebSearch (OCC table). |
 | 13 | Calculadora de inflação | `calculadora-inflacao` | Todo | CPI series multiplication. Source: INE annual CPI table. |
 
 ## Build order (this round)
 
-Per the brief's stated priority + current scope decision: 7, 4, 6, 11, 5, 8, 9, 10 all done.
-Remaining: **12, 13**.
+Per the brief's stated priority + current scope decision: 7, 4, 6, 11, 5, 8, 9, 10, 12 all done.
+Remaining: **13** (Calculadora de inflação) — the last one.
 
 ## Deferred (explicitly not this round)
 
@@ -116,3 +116,6 @@ source (AT / Segurança Social / Banco de Portugal / Código do Trabalho), not a
 - 2026-09-17: Tool 10 (Simulador de Baixa Médica) shipped. 3-day waiting period (0 for
   hospitalisation) + 55/60/70/75% bands by calendar day of leave, sourced via WebSearch against
   Segurança Social's own published rules. 6 new tests, 113/113 total passing.
+- 2026-09-17: Tool 12 (Calculadora de IVA) shipped. Simplest tool in the batch — trivial add/
+  extract arithmetic, 3 regions' rate tables (Continente/Açores/Madeira) sourced via WebSearch. 5
+  new tests, 118/118 total passing.
