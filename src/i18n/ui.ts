@@ -247,8 +247,8 @@ export const ui = {
     'footer.privacy': 'Privacy Policy',
     'footer.terms': 'Terms of Service',
     'footer.toolsHeading': 'Free tools',
-    'footer.toolsRecibosVerdes': 'Green receipts simulator (PT)',
-    'footer.toolsSalarioLiquido': 'Net salary calculator (PT)',
+    'footer.toolsRecibosVerdes': 'Portugal freelancer tax calculator',
+    'footer.toolsSalarioLiquido': 'Portugal net salary calculator',
     'footer.toolsCompoundInterest': 'Compound interest calculator',
     'footer.madeBy': 'Made by relense',
 

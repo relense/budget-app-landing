@@ -1,13 +1,13 @@
-import { defineConfig } from 'astro/config';
-import tailwindcss from '@tailwindcss/vite';
-import sitemap from '@astrojs/sitemap';
+import { defineConfig } from "astro/config";
+import tailwindcss from "@tailwindcss/vite";
+import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
-  site: 'https://budgettracker.app',
-  output: 'static',
+  site: "https://otterbond.app",
+  output: "static",
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en', { path: 'pt-pt', codes: ['pt-PT'] }],
+    defaultLocale: "en",
+    locales: ["en", { path: "pt-pt", codes: ["pt-PT"] }],
     routing: {
       prefixDefaultLocale: false,
     },
@@ -15,10 +15,10 @@ export default defineConfig({
   integrations: [
     sitemap({
       i18n: {
-        defaultLocale: 'en',
+        defaultLocale: "en",
         locales: {
-          en: 'en',
-          'pt-pt': 'pt-PT',
+          en: "en",
+          "pt-pt": "pt-PT",
         },
       },
     }),
