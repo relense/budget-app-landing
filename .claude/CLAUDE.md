@@ -140,11 +140,11 @@ the single source of tokens; don't reintroduce a `tailwind.config.js`.
   whatever's providing env vars for the actual production build (Cloudflare Pages' dashboard, not
   a committed file). CORS on their end is a placeholder any-origin until this site has a real
   domain, at which point tell that session the domain so they can lock it down.
-- `astro.config.mjs`'s `site` and `public/robots.txt`'s sitemap line use a placeholder domain
-  (`https://budgettracker.app`). `@astrojs/sitemap` is already wired up and generates
-  `sitemap-index.xml` from whatever `site` is set to, so updating that one value once a real
-  domain exists is all that's needed, no further sitemap work. Same domain also needs to go back
-  to `budget-app-api` for its CORS lock-down, see the `WAITLIST_API_URL` TODO above.
+- `astro.config.mjs`'s `site` and `public/robots.txt`'s sitemap line are set to the real domain
+  (`https://otterbond.app`) as of 2026-09-17. `@astrojs/sitemap` generates `sitemap-index.xml`
+  from that `site` value, no further sitemap work needed. `budget-app-api`'s CORS still needs
+  locking down to this domain, see the `WAITLIST_API_URL` TODO above — that's a change in that
+  sibling repo, not this one.
 - `public/og-image.png` was composed locally with Pillow (logo + Fredoka + brand palette). Not
   screenshotted from a live design tool, regenerate the same way (script isn't checked in, rebuild
   it from `og-image.png`'s own content if it needs to change again) if the hero copy, palette, or
