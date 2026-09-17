@@ -37,7 +37,7 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 | 1 | Fundo de emergência | `fundo-de-emergencia` | **Done** | `src/lib/calculators/emergencyFund.ts` |
 | 2 | Dividir despesas em casal | `dividir-despesas-casal` | **Done** | `src/lib/calculators/splitExpensesCouple.ts` |
 | 3 | Regra 50/30/20 | `regra-50-30-20` | **Done** | `src/lib/calculators/rule502030.ts` |
-| 4 | Subsídio de férias e Natal / duodécimos | `subsidio-ferias-natal-duodecimos` | Todo | Reuses `salaryCalculator.ts`'s IRS retention tables + SS 11%. Source: AT retention tables. |
+| 4 | Subsídio de férias e Natal / duodécimos | `subsidio-ferias-natal-duodecimos` | **Done** | `src/lib/calculators/paySchedule.ts` — thin 12-month calendar wrapper over `salaryCalculator.ts`'s existing `calculateSalary` (no new tax logic needed, it already modeled subsidy withholding + duodécimos). |
 | 5 | Custo real de um carro | `custo-real-carro` | Todo | Depreciation + fuel + loan amortisation. No official tax data, mostly arithmetic — low sourcing risk. |
 | 6 | Amortização antecipada do crédito habitação | `amortizacao-antecipada-credito-habitacao` | Todo | French-system amortisation + early-repayment fee. Source: Banco de Portugal (fee %). |
 
@@ -55,9 +55,9 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 
 ## Build order (this round)
 
-Per the brief's stated priority + current scope decision: 7 (IRS) done first (urgent, highest
-sourcing risk). Next: **4, 6, 11** (the ones needing real sourcing but smaller), then **5, 8, 9,
-10, 12, 13** (lower risk / smaller effort) in any order.
+Per the brief's stated priority + current scope decision: 7 (IRS), then 4 (subsídios), done. Next:
+**6, 11** (the ones needing real sourcing but smaller), then **5, 8, 9, 10, 12, 13** (lower risk /
+smaller effort) in any order.
 
 ## Deferred (explicitly not this round)
 
@@ -89,3 +89,7 @@ source (AT / Segurança Social / Banco de Portugal / Código do Trabalho), not a
   since the official formula is published as an image, not text). Exported `computeProgressiveIrs`
   from `taxCalculator.ts` (previously private) so this tool reuses the exact same bracket-
   application method instead of a second implementation. 15 new tests, 62/62 total passing.
+- 2026-09-17: Tool 4 (Subsídio de Férias e Natal / duodécimos) shipped. No new tax logic —
+  `salaryCalculator.ts`'s `calculateSalary` already modeled subsidy withholding and duodécimos
+  correctly; this tool is just `paySchedule.ts` turning that into a 12-month calendar. 5 new tests,
+  67/67 total passing.
