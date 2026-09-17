@@ -1,0 +1,409 @@
+---
+// English counterpart of /ferramentas/amortizacao-antecipada-credito-habitacao.astro -- see
+// recibos-verdes.astro's own comment for the shared "front door, not a feature of the app"
+// rationale and the `lang`/`noAlternate` reasoning. Framed as a *Portugal* calculator since the
+// fee caps are Portugal-specific (Banco de Portugal), targeting English-speaking homeowners in
+// Portugal, same as portugal-net-salary-calculator.astro's own framing.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Portugal Mortgage Prepayment Calculator';
+const description =
+  'Calculate how much you save in interest, and how much sooner you pay off your mortgage, by prepaying early. Compare reducing the term or the instalment. No sign-up.';
+
+const faqs = [
+  {
+    question: 'Reduce the term or reduce the instalment, which saves more?',
+    answer:
+      "Reducing the term always saves more interest in total, for the same amount prepaid -- you keep the instalment the same, but pay off the loan faster, so there are fewer months accruing interest. Reducing the instalment saves less interest overall, but eases your monthly budget right away. The choice depends on what you need more: fewer years of mortgage, or more breathing room every month.",
+  },
+  {
+    question: 'Is early repayment always worth it?',
+    answer:
+      "It depends on comparing your mortgage rate against what that same money would earn elsewhere, after the prepayment fee. If you don't have an emergency fund yet, it usually makes more sense to build that first -- prepaying a mortgage doesn't give you the money back if you suddenly need it. This isn't a recommendation, it's a comparison of numbers.",
+  },
+  {
+    question: 'Does the fee always apply?',
+    answer:
+      "The legal maximum fee is 0.5% of the amount prepaid on variable-rate mortgages and 2% on fixed-rate ones, but that's exactly it -- a maximum. Your contract may have a lower fee or an exemption, for example if you're a long-standing customer or have a specific bank product. Always confirm the exact figure with your bank before deciding.",
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Portugal Mortgage Prepayment Calculator
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Enter what's left on your mortgage and how much you want to prepay, and see how much you
+      save in interest -- and how many months sooner you finish, or how much the instalment drops.
+    </p>
+    <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+      A generic prepayment calculator, not advice on whether you should prepay or not.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Outstanding balance (€)</span>
+        <input
+          type="number"
+          id="outstandingBalance"
+          value="150000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Remaining term (months)</span>
+        <input
+          type="number"
+          id="remainingMonths"
+          value="300"
+          min="1"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Annual rate (TAN) (%)</span>
+        <input
+          type="number"
+          id="annualRatePercent"
+          value="3.5"
+          min="0"
+          step="0.01"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Rate type</span>
+        <select
+          id="rateType"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="variable" selected>Variable (max. fee 0.5%)</option>
+          <option value="fixed">Fixed (max. fee 2%)</option>
+        </select>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Amount to prepay (€)</span>
+        <input
+          type="number"
+          id="extraAmount"
+          value="10000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Frequency</span>
+        <select
+          id="mode"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="oneOff" selected>One-off payment</option>
+          <option value="monthly">Every month</option>
+        </select>
+      </label>
+
+      <label class="block text-sm sm:col-span-2" id="strategy-wrap">
+        <span class="font-medium text-[var(--color-ink)]">Goal</span>
+        <select
+          id="strategy"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="reduceTerm" selected>Reduce the term (same instalment)</option>
+          <option value="reduceInstallment">Reduce the instalment (same term)</option>
+        </select>
+      </label>
+
+      <details class="sm:col-span-2">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
+          Prepayment fee
+        </summary>
+        <label class="mt-4 block text-sm">
+          <span class="font-medium text-[var(--color-ink)]">Fee (%)</span>
+          <input
+            type="number"
+            id="feeRatePercent"
+            value="0.5"
+            min="0"
+            step="0.01"
+            class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+          />
+          <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">
+            Auto-filled from the rate type (0.5% variable / 2% fixed) -- adjust it if your
+            contract has a different figure or an exemption.
+          </p>
+        </label>
+      </details>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail-1"></p>
+      <p class="mt-1 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail-2"></p>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          How we calculated this
+        </summary>
+        <p class="mt-2 max-w-[58ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          Constant-instalment system (Portugal's standard method): the monthly instalment covers
+          principal and interest for the remaining term, at the monthly rate (TAN ÷ 12). When you
+          prepay, we reduce the outstanding balance and recalculate -- reducing the term keeps the
+          instalment the same and shortens the months; reducing the instalment keeps the term and
+          lowers the monthly amount. The fee is the chosen percentage of the amount prepaid.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>Reducing the term vs. reducing the instalment</h2>
+      <p>
+        Prepaying an amount toward your outstanding balance always gives you two options. Reducing
+        the term keeps the monthly instalment exactly the same, but shortens the number of months
+        until the mortgage ends -- since you're paying the same amount for less time, the total
+        interest paid is always lower with this option. Reducing the instalment keeps the original
+        term, but lowers what you pay every month from now on -- you save less interest overall,
+        but the relief in your monthly budget is immediate. There's no universally right choice:
+        it depends on whether what you need most is having the mortgage paid off sooner, or more
+        breathing room in next month's budget already.
+      </p>
+
+      <h2>The prepayment fee</h2>
+      <p>
+        Since 1 January 2026, the temporary fee exemption for variable-rate mortgages on primary
+        residences (created in 2022) is no longer in force, so the legal maximum caps apply again
+        by default: 0.5% of the amount prepaid on variable-rate mortgages, 2% on fixed-rate ones.
+        These are the maximums a bank can charge -- your contract may set a lower figure, or even
+        an exemption, so it's always worth confirming the exact amount before deciding.
+      </p>
+
+      <h2>When prepaying is worth it</h2>
+      <p>
+        Prepaying only pays off when your mortgage rate, net of the fee, is higher than what that
+        same money would earn if you left it invested or in savings. With relatively low mortgage
+        rates, the calculation isn't always obvious -- which is why this calculator only shows you
+        the prepayment numbers themselves, without comparing against any specific investment
+        product. It's also worth having your emergency fund already built before prepaying -- money
+        you've prepaid is no longer available if you suddenly need it.
+      </p>
+
+      <h2>What this calculator doesn't do</h2>
+      <p>
+        It assumes the constant-instalment system, the most common in Portugal, but doesn't model
+        mixed rates that switch regime partway through the term, nor insurance tied to the loan.
+        It doesn't replace your bank's official simulation, which has access to your contract's
+        actual amortisation schedule.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Related tools</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/tools/emergency-fund-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Emergency Fund</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Make sure you already have a cushion before prepaying your mortgage.
+          </p>
+        </a>
+        <a
+          href="/tools/50-30-20-rule-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="chart-pie" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">50/30/20 Rule</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            See how much of your budget can actually go toward extra prepayments.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="house-line" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        You know how much you'll save. Now it just needs setting aside.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        Otterbond helps you create a Prepayment fund and track progress until you have the full
+        amount saved up.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Try it free
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimate based on 2026 public rules, not financial, legal or tax advice.
+    </p>
+  </main>
+
+  <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import {
+    calculateMortgagePrepayment,
+    type PrepaymentMode,
+    type PrepaymentStrategy,
+  } from '../../lib/calculators/mortgagePrepayment';
+
+  const TOOL_SLUG = 'portugal-mortgage-prepayment-calculator';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function val(id: string): string {
+    return (document.getElementById(id) as HTMLSelectElement).value;
+  }
+
+  const rateTypeSelect = document.getElementById('rateType') as HTMLSelectElement;
+  const feeInput = document.getElementById('feeRatePercent') as HTMLInputElement;
+  const modeSelect = document.getElementById('mode') as HTMLSelectElement;
+  const strategyWrap = document.getElementById('strategy-wrap') as HTMLElement;
+  let feeManuallyEdited = false;
+  feeInput.addEventListener('input', () => {
+    feeManuallyEdited = true;
+  });
+
+  function syncVisibility() {
+    if (!feeManuallyEdited) {
+      feeInput.value = rateTypeSelect.value === 'fixed' ? '2' : '0.5';
+    }
+    strategyWrap.hidden = modeSelect.value === 'monthly';
+  }
+
+  function recalc() {
+    syncVisibility();
+
+    const mode = val('mode') as PrepaymentMode;
+    const strategy = val('strategy') as PrepaymentStrategy;
+
+    const result = calculateMortgagePrepayment({
+      outstandingBalance: num('outstandingBalance'),
+      remainingMonths: num('remainingMonths'),
+      annualRatePercent: num('annualRatePercent'),
+      extraAmount: num('extraAmount'),
+      mode,
+      strategy,
+      feeRatePercent: num('feeRatePercent'),
+    });
+
+    const headline = document.getElementById('result-headline')!;
+    if (mode === 'monthly' || strategy === 'reduceTerm') {
+      const months = Math.round(result.monthsSaved);
+      headline.textContent = `You save ${euro.format(result.interestSaved)} in interest and finish ${months} ${months === 1 ? 'month' : 'months'} sooner.`;
+    } else {
+      headline.textContent = `The instalment drops to ${euro.format(result.newMonthlyPayment)}, saving ${euro.format(result.interestSaved)} in interest.`;
+    }
+
+    document.getElementById('result-detail-1')!.textContent =
+      `Current instalment: ${euro.format(result.baselineMonthlyPayment)} · New instalment: ${euro.format(result.newMonthlyPayment)}`;
+    document.getElementById('result-detail-2')!.textContent =
+      `Prepayment fee: ${euro.format(result.fee)} · Total interest: ${euro.format(result.baselineTotalInterest)} → ${euro.format(result.newTotalInterest)}`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>
