@@ -6,7 +6,7 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 const CONTACT_EMAIL = 'budgeterinfo@gmail.com';
-const LAST_UPDATED = 'September 1, 2026';
+const LAST_UPDATED = 'September 17, 2026';
 ---
 
 <LegalLayout
@@ -26,7 +26,7 @@ const LAST_UPDATED = 'September 1, 2026';
   <h2>What we collect</h2>
   <p>
     <strong>Account data:</strong> the email address you sign in with, an optional display name,
-    and your currency preference.
+    your currency preference, and your billing plan (Free or Plus).
   </p>
   <p>
     <strong>Financial data you enter:</strong> budgets, categories, transactions, recurring
@@ -36,6 +36,24 @@ const LAST_UPDATED = 'September 1, 2026';
   <p>
     <strong>Workspace & social data:</strong> workspace memberships and roles, friend connections,
     and pending invites/requests between accounts.
+  </p>
+  <p>
+    <strong>Ideas Board content:</strong> posts, comments, and votes you submit to the in-app Ideas
+    Board, our public feedback board. Posts and comments are shown to other signed-in users under
+    your account; votes are never shown to anyone else, only as an aggregate count.
+  </p>
+  <p>
+    <strong>Payment data, if you subscribe to Plus:</strong> Stripe, our payment processor,
+    collects and stores your payment details directly — we never see or store your card number.
+    We keep only that you have a subscription, which plan, and a Stripe customer reference, so we
+    can manage it on your behalf.
+  </p>
+  <p>
+    <strong>Product usage data:</strong> a curated set of in-app actions (for example signing in,
+    adding a transaction, or creating a workspace) and which app screens you open, so we can
+    understand how the Service is used and improve it. This is first-party only — never shared
+    with any third party and never used for advertising — and is deleted automatically after 90
+    days, or immediately if you delete your account.
   </p>
   <p>
     <strong>Authentication data:</strong> one-time login codes (stored as a hash, short-lived) and
@@ -49,8 +67,9 @@ const LAST_UPDATED = 'September 1, 2026';
     we hold.
   </p>
   <p>
-    We do not use analytics, advertising, or third-party tracking of any kind, and we do not use
-    cookies other than the single authentication cookie described above.
+    We do not use third-party analytics, advertising, or tracking of any kind — the only analytics
+    we run is the first-party product usage data described above — and we do not use cookies other
+    than the single authentication cookie described below.
   </p>
   <p>
     <strong>Waitlist email:</strong> if you join the waitlist on this site, we store the email
@@ -73,25 +92,37 @@ const LAST_UPDATED = 'September 1, 2026';
 
   <h2>Who we share it with</h2>
   <p>
-    We use a small number of infrastructure providers to run the Service, each acting as a data
-    processor on our behalf, under their own security and privacy commitments:
+    We use a small number of infrastructure and payment providers to run the Service, each acting
+    as a data processor on our behalf, under their own security and privacy commitments:
   </p>
   <p>
     <strong>SendGrid</strong> - delivers the one-time login codes we email you.<br />
-    <strong>Render</strong> - hosts our application servers and database.
+    <strong>Render</strong> - hosts our application servers and database.<br />
+    <strong>Stripe</strong> - processes payments if you subscribe to Plus, and handles your payment
+    details directly; we never see your card number.<br />
+    <strong>Sentry</strong> - receives automatic reports of unexpected server errors, so we can
+    find and fix bugs. Routine failures like invalid input or rate limiting are never reported,
+    only genuine, unexpected bugs.
   </p>
   <p>
-    We may in the future enable error tracking (e.g. Sentry) to catch and fix bugs faster; if and
-    when that happens, this policy will be updated first. We do not otherwise share your data with
-    any third party, and we never sell it.
+    We do not otherwise share your data with any third party, and we never sell it.
   </p>
 
   <h2>Data retention</h2>
   <p>
     Your account data and everything you've entered is kept for as long as your account exists.
     Login codes and refresh tokens expire automatically and are cleaned up shortly after they're
-    no longer valid. If you delete your account, all of your data is permanently removed in a
-    single operation. See "Your rights" below.
+    no longer valid. Product usage data (see "What we collect" above) is kept for 90 days on a
+    rolling basis and pruned automatically.
+  </p>
+  <p>
+    If you delete your account, everything that's exclusively yours — your account, your personal
+    workspace data, and your product usage history — is permanently removed immediately, and any
+    active Plus subscription is cancelled immediately as part of the same operation. Two narrow,
+    deliberate exceptions: data you contributed to a workspace shared with others stays in that
+    workspace for the remaining members, with your name removed from it; and anything you posted
+    to the public Ideas Board (a post or comment) stays visible, with your name replaced. See
+    "Your rights" below.
   </p>
 
   <h2>Your rights</h2>
@@ -103,8 +134,9 @@ const LAST_UPDATED = 'September 1, 2026';
   <p>
     <strong>Export my data</strong> - download a complete copy of your account and everything
     you've stored with us, as a single file.<br />
-    <strong>Delete my account</strong> - permanently and immediately erase your account and all
-    associated data. This cannot be undone.
+    <strong>Delete my account</strong> - permanently and immediately erase your account and
+    everything exclusively yours. This cannot be undone. See "Data retention" above for two narrow
+    exceptions involving content shared with others or posted publicly.
   </p>
   <p>
     For any other request (correction, objection, or a question about how your data is handled),
@@ -133,7 +165,7 @@ const LAST_UPDATED = 'September 1, 2026';
 
   <h2>International data transfers</h2>
   <p>
-    Our infrastructure providers may process data in countries other than your own. Where this
+    Our infrastructure and payment providers may process data in countries other than your own. Where this
     happens, we rely on those providers' own safeguards for transferring data internationally in
     compliance with applicable law.
   </p>
