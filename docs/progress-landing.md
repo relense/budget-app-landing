@@ -5,6 +5,10 @@ Tracks the ~13-tool calculator brief (marketing SEO tools under `/ferramentas`).
 shared source of truth for what's done, in progress, and still needed, since this work spans
 multiple sessions/sittings.
 
+**All 13 tools from the original brief are done as of 2026-09-17.** 129 tests passing, clean
+build. Not yet pushed to `origin` / no PR opened — see "Deferred" below for what's left before
+that, and the framework/on-brand/traffic-only tables below for what shipped.
+
 Scope decision (2026-09-17): build all on-brand + traffic-only tools + IRS now. Deep-linking into
 `budget-app-web`, the "Guardar este resultado" email-capture backend, EN mirrors, and pushing/PR
 are explicitly for afterwards (see "Deferred" section).
@@ -51,12 +55,11 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 | 10 | Simulador de baixa médica | `simulador-baixa-medica` | **Done** | `src/lib/calculators/sickLeaveBenefit.ts`. 3-day waiting period, 55/60/70/75% bands by leave-day, RR=salary/30 approximation. Employees only (self-employed have a 10-day wait, not modeled). |
 | 11 | IMT e Imposto do Selo | `imt-imposto-selo` | **Done** | `src/lib/calculators/imtStampDuty.ts`. Mainland only (Açores/Madeira scope-cut, flagged). 2026 bracket tables + IMT Jovem thresholds sourced via WebSearch/WebFetch (APCMC practical tables, cross-checked). |
 | 12 | Calculadora de IVA | `calculadora-iva` | **Done** | `src/lib/calculators/vatCalculator.ts`. Trivial add/extract, all 3 regions' rates sourced via WebSearch (OCC table). |
-| 13 | Calculadora de inflação | `calculadora-inflacao` | Todo | CPI series multiplication. Source: INE annual CPI table. |
+| 13 | Calculadora de inflação | `calculadora-inflacao` | **Done** | `src/lib/calculators/inflationCalculator.ts`. Annual CPI series 2000-2025 sourced via WebFetch (union PDF citing INE directly, cross-checked against Pordata + direct INE news coverage). Caught a wrong secondary source (dadosmundiais.com) along the way — not used. |
 
 ## Build order (this round)
 
-Per the brief's stated priority + current scope decision: 7, 4, 6, 11, 5, 8, 9, 10, 12 all done.
-Remaining: **13** (Calculadora de inflação) — the last one.
+All 13 tools done: 7, 4, 6, 11, 5, 8, 9, 10, 12, 13.
 
 ## Deferred (explicitly not this round)
 
@@ -119,3 +122,11 @@ source (AT / Segurança Social / Banco de Portugal / Código do Trabalho), not a
 - 2026-09-17: Tool 12 (Calculadora de IVA) shipped. Simplest tool in the batch — trivial add/
   extract arithmetic, 3 regions' rate tables (Continente/Açores/Madeira) sourced via WebSearch. 5
   new tests, 118/118 total passing.
+- 2026-09-17: Tool 13 (Calculadora de Inflação) shipped — **all 13 tools from the brief are now
+  done**. Full 2000-2025 annual CPI series built from a union statistics PDF that cites INE
+  directly, cross-checked year-by-year against Pordata's own page and direct INE news coverage of
+  the 2024/2025 definitive figures. A secondary aggregator (dadosmundiais.com) was checked and
+  found to diverge for 2019-2025 (e.g. claims 9.8% for 2022 vs. the INE-confirmed 7.8%) — not used.
+  2026 itself isn't in the table since INE hasn't published a definitive figure yet. 5 new tests,
+  123/123 total passing. Branch still not pushed — next step is confirming with the user whether to
+  push and open a PR now.
