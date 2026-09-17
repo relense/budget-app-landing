@@ -17,7 +17,7 @@ export const ui = {
   en: {
     'meta.title': 'Otterbond: a shared budget and savings tracker',
     'meta.description':
-      'A shared budget for couples and people who live together. Plan the month together, log expenses as they happen, and split the work of categorizing. No ads, no data-selling.',
+      'A shared budget for couples and people who live together. Plan the month together, log expenses, and split the categorizing. No ads, no data-selling.',
 
     'nav.features': 'Features',
     'nav.howItWorks': 'How it works',
@@ -269,7 +269,7 @@ export const ui = {
   'pt-pt': {
     'meta.title': 'Otterbond: um orçamento e poupanças partilhados',
     'meta.description':
-      'Um orçamento partilhado para casais e pessoas que vivem juntas. Planeiem o mês em conjunto, registem despesas à medida que acontecem, e dividam o trabalho de categorizar. Sem anúncios, sem venda de dados.',
+      'Um orçamento partilhado para casais e pessoas que vivem juntas. Planeiem o mês, registem despesas, e dividam o trabalho. Sem anúncios, sem venda de dados.',
 
     'nav.features': 'Funcionalidades',
     'nav.howItWorks': 'Como funciona',
