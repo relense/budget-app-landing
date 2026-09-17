@@ -47,7 +47,7 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 |---|------|------|--------|-------|
 | 7 | Simulador de IRS | `simulador-irs` | **Done** | `src/lib/calculators/irsCalculator.ts`. Reuses `taxCalculator.ts`'s brackets/dependents credit (now exports `computeProgressiveIrs` too) + `salaryCalculator.ts`'s SS rate. Deduction caps + global-cap formula sourced 2026-09-17 (see file header for citations). |
 | 8 | Simulador de subsídio de desemprego | `simulador-subsidio-desemprego` | **Done** | `src/lib/calculators/unemploymentBenefit.ts`. Corrected the brief's own assumption: the "-10% after 180 days" rule was repealed in 2018 — flat 65% the whole duration. Full 2012+ duration table + IAS floors/ceiling sourced. |
-| 9 | Calculadora de horas extra e trabalho nocturno | `calculadora-horas-extra` | Todo | Hourly rate formula + legal overtime/night supplements. Source: Código do Trabalho. CCT caveat. |
+| 9 | Calculadora de horas extra e trabalho nocturno | `calculadora-horas-extra` | **Done** | `src/lib/calculators/overtimePay.ts`. Art. 268º/266º CT percentages (Lei 13/2023), two-tier 100h/year threshold. CCT caveat flagged in explainer. |
 | 10 | Simulador de baixa médica | `simulador-baixa-medica` | Todo | Waiting period + percentage-by-duration scale. Source: Segurança Social. |
 | 11 | IMT e Imposto do Selo | `imt-imposto-selo` | **Done** | `src/lib/calculators/imtStampDuty.ts`. Mainland only (Açores/Madeira scope-cut, flagged). 2026 bracket tables + IMT Jovem thresholds sourced via WebSearch/WebFetch (APCMC practical tables, cross-checked). |
 | 12 | Calculadora de IVA | `calculadora-iva` | Todo | Trivial add/extract VAT, regional rates (mainland/Açores/Madeira). Lowest effort. |
@@ -55,8 +55,8 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 
 ## Build order (this round)
 
-Per the brief's stated priority + current scope decision: 7, 4, 6, 11, 5, 8 all done. Remaining:
-**9, 10, 12, 13** (lower risk / smaller effort), in any order.
+Per the brief's stated priority + current scope decision: 7, 4, 6, 11, 5, 8, 9 all done. Remaining:
+**10, 12, 13** (lower risk / smaller effort), in any order.
 
 ## Deferred (explicitly not this round)
 
@@ -110,3 +110,6 @@ source (AT / Segurança Social / Banco de Portugal / Código do Trabalho), not a
   was repealed in 2018 (Lei n.º 114/2017) — many still-live blog pages quote it as current, but it
   isn't; not modeled. Full duration table (age x contribution-months, cross-checked against a
   second source) + 2026 IAS floors/ceiling sourced. 8 new tests, 98/98 total passing.
+- 2026-09-17: Tool 9 (Calculadora de Horas Extra e Trabalho Noturno) shipped. Art. 268º/266º CT
+  percentages (as amended by Lei 13/2023) sourced via WebSearch, two-tier 100-annual-hours
+  threshold modeled. 9 new tests, 107/107 total passing.
