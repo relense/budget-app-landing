@@ -1,0 +1,181 @@
+---
+// Hub page for all free calculator tools -- the "scales to twenty" page. As the /ferramentas/*
+// collection grows, new tools get added here and to the relevant group; the footer only keeps a
+// handful of the ones that matter most for search right now (see Footer.astro's own comment) plus
+// a link back to this hub. Standalone, Portuguese-only page (English counterpart: /tools), same
+// `lang`/`noAlternate` reasoning as every other page in this directory.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Ferramentas Financeiras Gratuitas: calculadoras e simuladores';
+const description =
+  'Calculadoras gratuitas e sem registo para Portugal: salário líquido, recibos verdes, reforma, juros compostos e independência financeira (FIRE).';
+
+const groups = [
+  {
+    heading: 'Orçamento e poupança',
+    tools: [
+      {
+        href: '/ferramentas/juros-compostos',
+        icon: 'piggy-bank' as const,
+        title: 'Calculadora de Juros Compostos',
+        body: 'Vê como um valor inicial e uma poupança mensal crescem ao longo do tempo.',
+      },
+      {
+        href: '/ferramentas/calculadora-fire',
+        icon: 'fire' as const,
+        title: 'Calculadora FIRE',
+        body: 'Quanto precisas investido para viveres dos rendimentos, e quando lá chegas ao teu ritmo atual.',
+      },
+      {
+        href: '/ferramentas/simulador-reforma',
+        icon: 'hourglass' as const,
+        title: 'Simulador de Reforma',
+        body: 'Estima a tua futura pensão pública e quanto precisas de poupar para fechar a diferença.',
+      },
+      {
+        href: '/ferramentas/fundo-de-emergencia',
+        icon: 'shield-check' as const,
+        title: 'Calculadora de Fundo de Emergência',
+        body: 'Quanto deves ter de lado, e em quantos meses lá chegas ao teu ritmo.',
+      },
+      {
+        href: '/ferramentas/regra-50-30-20',
+        icon: 'chart-pie' as const,
+        title: 'Calculadora da Regra 50/30/20',
+        body: 'Os três baldes do teu orçamento -- necessidades, desejos, poupança -- a partir do teu salário líquido.',
+      },
+      {
+        href: '/ferramentas/custo-real-carro',
+        icon: 'car-simple' as const,
+        title: 'Custo Real de um Carro por Mês',
+        body: 'Depreciação, seguro, combustível, IUC, manutenção e crédito, tudo num único número por mês.',
+      },
+      {
+        href: '/ferramentas/calculadora-inflacao',
+        icon: 'trend-up' as const,
+        title: 'Calculadora de Inflação',
+        body: 'Quanto valia (ou vai valer) um valor noutro ano, com a série do INE de 2000 a 2025.',
+      },
+    ],
+  },
+  {
+    heading: 'Casa e crédito',
+    tools: [
+      {
+        href: '/ferramentas/amortizacao-antecipada-credito-habitacao',
+        icon: 'house-line' as const,
+        title: 'Amortização Antecipada do Crédito Habitação',
+        body: 'Quanto poupas em juros, e quanto mais cedo acabas o crédito, ao amortizar antecipadamente.',
+      },
+      {
+        href: '/ferramentas/imt-imposto-selo',
+        icon: 'stamp' as const,
+        title: 'IMT e Imposto do Selo 2026',
+        body: 'Quanto vais pagar na escritura, com as tabelas de 2026 e a isenção IMT Jovem.',
+      },
+    ],
+  },
+  {
+    heading: 'Casal e orçamento partilhado',
+    tools: [
+      {
+        href: '/ferramentas/dividir-despesas-casal',
+        icon: 'heart' as const,
+        title: 'Como Dividir Despesas em Casal',
+        body: 'Compara três formas de dividir a renda e as contas: a meias, proporcional, ou com a mesma sobra para os dois.',
+      },
+    ],
+  },
+  {
+    heading: 'Salário e impostos',
+    tools: [
+      {
+        href: '/ferramentas/salario-liquido',
+        icon: 'check-circle' as const,
+        title: 'Calculadora de Salário Líquido',
+        body: 'Passa de bruto a líquido (ou ao contrário) com as tabelas oficiais de 2026.',
+      },
+      {
+        href: '/ferramentas/recibos-verdes',
+        icon: 'coins' as const,
+        title: 'Simulador de Recibos Verdes',
+        body: 'Estima o teu rendimento líquido como trabalhador independente, IRS e Segurança Social incluídos.',
+      },
+      {
+        href: '/ferramentas/simulador-irs',
+        icon: 'receipt' as const,
+        title: 'Simulador de IRS 2026',
+        body: 'Estima se vais receber ou pagar IRS, com os escalões, deduções e limites de 2026.',
+      },
+      {
+        href: '/ferramentas/subsidio-ferias-natal-duodecimos',
+        icon: 'calendar-blank' as const,
+        title: 'Subsídio de Férias e Natal',
+        body: 'Vê o teu calendário de pagamentos: pagamento único em junho e novembro, ou por duodécimos.',
+      },
+      {
+        href: '/ferramentas/simulador-subsidio-desemprego',
+        icon: 'umbrella' as const,
+        title: 'Simulador de Subsídio de Desemprego',
+        body: 'Estima o valor mensal e a duração do subsídio, com os limites e a tabela de 2026.',
+      },
+      {
+        href: '/ferramentas/calculadora-horas-extra',
+        icon: 'moon-stars' as const,
+        title: 'Calculadora de Horas Extra e Trabalho Noturno',
+        body: 'Quanto valem as tuas horas extra e noturnas, com os acréscimos do Código do Trabalho.',
+      },
+      {
+        href: '/ferramentas/simulador-baixa-medica',
+        icon: 'first-aid' as const,
+        title: 'Simulador de Baixa Médica',
+        body: 'Quanto recebes de subsídio de doença por dia e no total, com o período de espera de 2026.',
+      },
+      {
+        href: '/ferramentas/calculadora-iva',
+        icon: 'percent' as const,
+        title: 'Calculadora de IVA 2026',
+        body: 'Soma ou extrai o IVA de um valor, com as taxas do Continente, Açores e Madeira.',
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+  <NavBar lang="pt-pt" />
+
+  <main class="mx-auto max-w-5xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Ferramentas Financeiras Gratuitas
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Calculadoras e simuladores gratuitos, sem registo, para quem vive e trabalha em Portugal.
+      Os mesmos números que o Otterbond usa por dentro.
+    </p>
+
+    {
+      groups.map((group) => (
+        <section class="mt-12">
+          <h2 class="text-xl font-medium text-[var(--color-ink)]">{group.heading}</h2>
+          <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+            {group.tools.map((tool) => (
+              <a href={tool.href} class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6">
+                <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+                  <Icon name={tool.icon} class="h-5 w-5" />
+                </div>
+                <h3 class="mt-4 text-lg font-medium text-[var(--color-ink)]">{tool.title}</h3>
+                <p class="mt-2 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">{tool.body}</p>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </main>
+
+  <Footer lang="pt-pt" />
+</BaseLayout>

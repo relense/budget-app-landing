@@ -28,14 +28,6 @@ const year = new Date().getFullYear();
 
       <div class="flex gap-14">
         <div>
-          <h3 class="text-sm font-medium text-[var(--color-ink)]">{t('footer.legalHeading')}</h3>
-          <ul class="mt-3 space-y-2 text-sm text-[var(--color-ink-soft)]">
-            <li><a href={`${prefix}/privacy`} class="hover:text-[var(--color-ink)]">{t('footer.privacy')}</a></li>
-            <li><a href={`${prefix}/terms`} class="hover:text-[var(--color-ink)]">{t('footer.terms')}</a></li>
-          </ul>
-        </div>
-
-        <div>
           <h3 class="text-sm font-medium text-[var(--color-ink)]">{t('footer.toolsHeading')}</h3>
           <ul class="mt-3 space-y-2 text-sm text-[var(--color-ink-soft)]">
             <li>
@@ -56,12 +48,29 @@ const year = new Date().getFullYear();
             </li>
             <li>
               <a
-                href={lang === 'en' ? '/tools/compound-interest' : '/ferramentas/juros-compostos'}
+                href={lang === 'en' ? '/tools/portugal-state-pension-calculator' : '/ferramentas/simulador-reforma'}
                 class="hover:text-[var(--color-ink)]"
               >
-                {t('footer.toolsCompoundInterest')}
+                {t('footer.toolsReforma')}
               </a>
             </li>
+            <li>
+              <a
+                href={lang === 'en' ? '/tools' : '/ferramentas'}
+                class="inline-flex items-center gap-1 font-medium text-[var(--color-mint)] hover:underline"
+              >
+                {t('footer.toolsAll')}
+                <Icon name="arrow-right" class="h-3.5 w-3.5" />
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-[var(--color-ink)]">{t('footer.legalHeading')}</h3>
+          <ul class="mt-3 space-y-2 text-sm text-[var(--color-ink-soft)]">
+            <li><a href={`${prefix}/privacy`} class="hover:text-[var(--color-ink)]">{t('footer.privacy')}</a></li>
+            <li><a href={`${prefix}/terms`} class="hover:text-[var(--color-ink)]">{t('footer.terms')}</a></li>
           </ul>
         </div>
       </div>

@@ -21,6 +21,10 @@ export const WAITLIST_API_URL: string | null = import.meta.env.WAITLIST_API_URL 
 
 export const CREATOR_GITHUB_URL = 'https://github.com/relense';
 
+// See .env.example and src/env.d.ts for the full contract. null (unset) means
+// CookieConsent.astro renders nothing and no analytics script ever loads -- no placeholder ID.
+export const GA_MEASUREMENT_ID: string | null = import.meta.env.PUBLIC_GA_MEASUREMENT_ID ?? null;
+
 // Plus subscription checkout, hosted on the web app (not this static site) -- purchases happen
 // there, never in an app store, so both locales link to the same URL.
 export const PRICING_URL = 'https://app.otterbond.app/plans';

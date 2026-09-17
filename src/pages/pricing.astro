@@ -1,0 +1,35 @@
+---
+// Standalone SEO page for pricing -- separate from the homepage's own #pricing anchor (which the
+// nav's "Pricing" link still points at, unchanged). People searching "otterbond pricing" land
+// directly here instead of only ever finding it as a homepage section, following the same "own
+// front door" rationale as the /tools and /ferramentas calculator pages. Reuses the same
+// <Pricing /> and <Faq /> components as the homepage verbatim (same t() copy, same
+// PRICING_URL), so there's no separate copy to keep in sync.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NavBar from '../components/NavBar.astro';
+import Pricing from '../components/Pricing.astro';
+import Faq from '../components/Faq.astro';
+import Footer from '../components/Footer.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const title = 'Otterbond Pricing: Free vs Plus';
+const description =
+  "See what's free and what Plus unlocks in Otterbond: budgeting, bills and savings funds are always free, Plus adds the detail behind your Safe to Spend number for €2.99/month with a 15-day free trial.";
+---
+
+<BaseLayout title={title} description={description}>
+  <NavBar />
+  <main>
+    <div class="mx-auto max-w-3xl px-5 pt-12 sm:px-8 sm:pt-16">
+      <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+        {t('nav.pricing')}
+      </h1>
+    </div>
+    <Pricing />
+    <Faq />
+  </main>
+  <Footer />
+</BaseLayout>

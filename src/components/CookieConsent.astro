@@ -1,0 +1,102 @@
+---
+// GA4 is only ever loaded after explicit consent (or immediately on a return visit, if consent
+// was already given previously) -- "Reject" (or simply not deciding) means the gtag.js script
+// never loads at all, no exceptions. GA_MEASUREMENT_ID being unset means this component renders
+// nothing: there's no placeholder tracking ID that would silently send data nowhere real.
+import { GA_MEASUREMENT_ID } from '../lib/constants';
+import { getLangFromUrl, useTranslations, type Lang } from '../i18n/utils';
+
+// See NavBar.astro's own comment: same override, same reason (a `lang` prop lets BaseLayout pass
+// down its already-resolved language even on pages where the URL itself doesn't carry it, e.g.
+// the unprefixed `/ferramentas/*` calculator pages).
+const { lang: langProp } = Astro.props as { lang?: Lang };
+const lang = langProp ?? getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+{
+  GA_MEASUREMENT_ID && (
+    <div
+      id="cookie-consent"
+      hidden
+      class="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--color-line)] bg-[var(--color-bg-elevated)] px-5 py-4 sm:px-8"
+    >
+      <div class="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p class="max-w-[70ch] text-sm leading-relaxed text-[var(--color-ink-soft)]">{t('cookieConsent.text')}</p>
+        <div class="flex flex-shrink-0 gap-3">
+          <button
+            id="cookie-consent-reject"
+            type="button"
+            class="rounded-full border border-[var(--color-line)] px-5 py-2 text-sm font-medium text-[var(--color-ink-soft)] transition-colors hover:text-[var(--color-ink)]"
+          >
+            {t('cookieConsent.reject')}
+          </button>
+          <button
+            id="cookie-consent-accept"
+            type="button"
+            class="rounded-full bg-[var(--color-mint)] px-5 py-2 text-sm font-medium text-[var(--color-mint-deep)] transition-transform active:scale-[0.98]"
+          >
+            {t('cookieConsent.accept')}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+{
+  GA_MEASUREMENT_ID && (
+    <script is:inline define:vars={{ GA_MEASUREMENT_ID }}>
+      const CONSENT_KEY = 'otterbond-cookie-consent'; // 'accepted' | 'rejected'
+
+      function loadAnalytics(id) {
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
+        document.head.appendChild(script);
+
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function gtag() {
+          window.dataLayer.push(arguments);
+        };
+        window.gtag('js', new Date());
+        window.gtag('config', id);
+      }
+
+      const banner = document.getElementById('cookie-consent');
+      const acceptButton = document.getElementById('cookie-consent-accept');
+      const rejectButton = document.getElementById('cookie-consent-reject');
+
+      try {
+        const stored = localStorage.getItem(CONSENT_KEY);
+        if (stored === 'accepted') {
+          loadAnalytics(GA_MEASUREMENT_ID);
+        } else if (stored !== 'rejected') {
+          banner.hidden = false;
+        }
+      } catch {
+        // localStorage unavailable (private mode, disabled storage, etc.) -- skip analytics
+        // entirely rather than show a banner with no way to remember the choice.
+      }
+
+      acceptButton?.addEventListener('click', () => {
+        try {
+          localStorage.setItem(CONSENT_KEY, 'accepted');
+        } catch {
+          // Ignore -- worst case the banner reappears next visit.
+        }
+        loadAnalytics(GA_MEASUREMENT_ID);
+        banner.hidden = true;
+      });
+
+      rejectButton?.addEventListener('click', () => {
+        try {
+          localStorage.setItem(CONSENT_KEY, 'rejected');
+        } catch {
+          // Ignore -- worst case the banner reappears next visit.
+        }
+        banner.hidden = true;
+      });
+    </script>
+  )
+}

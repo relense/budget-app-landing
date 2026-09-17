@@ -1,0 +1,622 @@
+---
+// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
+// shared "front door, not a feature of the app" rationale. English version deliberately not built
+// yet (per the product brief: "pt-PT first; English optional later").
+//
+// Chart: two-series inline SVG line chart (no charting library), colors validated with the
+// dataviz skill's own six-checks validator against this site's dark surface (#1e1e1e) --
+// #3987e5 (primary/current-pace scenario) and #d95926 (lower-return scenario) both pass every
+// gate; this site's own pastel brand tokens (mint, cat-*) do not (too light/low-chroma for a mark
+// on a dark surface) so they were not force-fit here. FIRE-number reference line uses the
+// existing neutral --color-ink-faint token, not a categorical color (it's a reference, not a
+// series).
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Calculadora FIRE: quanto precisas para a independência financeira';
+const description =
+  'Calcula quanto precisas investido para viveres dos rendimentos, quando lá chegas ao teu ritmo atual, e o que muda se a rentabilidade for mais baixa. Sem registo.';
+
+const faqs = [
+  {
+    question: '4% é seguro em Portugal?',
+    answer:
+      'A regra dos 4% vem do Trinity Study (1998, EUA), com base apenas no histórico das bolsas norte-americanas. Investigação mais recente (nomeadamente de Wade Pfau, sobre 20 mercados desenvolvidos entre 1900 e 2010) mostra que fora dos EUA a taxa historicamente segura ronda antes os 2,8% a 3,5%, porque os mercados europeus tiveram retornos reais mais baixos ao longo do século XX (duas guerras mundiais, períodos de hiperinflação, bolsas encerradas ou destruídas). Por isso, muita gente na Europa usa 3% a 3,5% em vez de 4%, sobretudo com uma carteira globalmente diversificada (não só ações europeias).',
+  },
+  {
+    question: 'Conta com a pensão do Estado?',
+    answer:
+      'Não. Esta calculadora assume que precisas de gerar o teu rendimento desejado inteiramente a partir da tua carteira, sem contar com qualquer pensão pública futura. Se quiseres perceber quanto da tua reforma a pensão pública deverá cobrir, e ajustar as tuas contas de acordo, usa o nosso Simulador de Reforma.',
+    link: { label: 'Simulador de Reforma', hash: '/ferramentas/simulador-reforma' },
+  },
+  {
+    question: 'E os impostos sobre mais-valias?',
+    answer:
+      'Também não estão incluídos. Quando vendes participações com ganho, esse ganho está normalmente sujeito a tributação (em Portugal, mais-valias de ações/ETFs são tributadas à taxa liberatória de 28%, com regras específicas consoante o prazo de detenção e o tipo de produto). O número de FIRE aqui é bruto desse efeito, o valor líquido que realmente consegues levantar pode ser algo menor consoante a tua situação fiscal.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+---
+
+<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+  <NavBar lang="pt-pt" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Calculadora FIRE
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Quanto precisas investido para viveres dos rendimentos, quando lá chegas ao teu ritmo atual,
+      e o que muda se a rentabilidade for mais baixa.
+    </p>
+    <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+      Esta é uma projeção a partir de pressupostos que podes editar, não uma previsão pessoal nem
+      aconselhamento financeiro. Sem nomes de índices, corretoras ou produtos.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Rendimento mensal desejado na reforma (€)</span>
+        <input
+          type="number"
+          id="desiredMonthlyIncome"
+          value="1500"
+          min="0"
+          step="10"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Já investido (€)</span>
+        <input
+          type="number"
+          id="currentAmount"
+          value="20000"
+          min="0"
+          step="100"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Contribuição mensal (€)</span>
+        <input
+          type="number"
+          id="monthlyContribution"
+          value="500"
+          min="0"
+          step="10"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+        <div class="mt-3 flex items-center gap-3">
+          <span class="text-xs whitespace-nowrap text-[var(--color-ink-faint)]">E se poupasses...</span>
+          <input
+            type="range"
+            id="monthlyContributionSlider"
+            min="0"
+            max="3000"
+            step="10"
+            value="500"
+            class="w-full accent-[var(--color-mint-deep)]"
+          />
+        </div>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Idade atual (opcional)</span>
+        <input
+          type="number"
+          id="currentAge"
+          min="16"
+          max="90"
+          step="1"
+          placeholder="Para veres a idade na FIRE"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none placeholder:text-[var(--color-placeholder)] focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+        <p class="mt-1 text-xs text-[var(--color-ink-faint)]">Também torna o Coast FIRE mais preciso.</p>
+      </label>
+
+      <details class="sm:col-span-2">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
+          Pressupostos (rentabilidade, inflação, taxa de levantamento)
+        </summary>
+
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Rentabilidade nominal anual esperada (%)</span>
+            <input
+              type="number"
+              id="nominalReturnPercent"
+              value="7"
+              min="0"
+              step="0.1"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Inflação anual esperada (%)</span>
+            <input
+              type="number"
+              id="inflationPercent"
+              value="2"
+              min="0"
+              step="0.1"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+
+          <label class="block text-sm sm:col-span-2">
+            <span class="font-medium text-[var(--color-ink)]">Taxa de levantamento segura (%)</span>
+            <input
+              type="number"
+              id="withdrawalRatePercent"
+              value="4"
+              min="1"
+              step="0.1"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+            <p class="mt-1 text-xs text-[var(--color-ink-faint)]">
+              A "regra dos 4%" vem do Trinity Study (1998, EUA); fora dos EUA, muita gente usa 3%
+              a 3,5% por segurança (ver explicação abaixo).
+            </p>
+          </label>
+        </div>
+      </details>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+
+      <div class="mt-4 grid grid-cols-1 gap-3 text-[15px] text-[var(--color-mint-deep)] sm:grid-cols-2">
+        <p id="result-primary-pace"></p>
+        <p id="result-lower-pace"></p>
+      </div>
+
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-coast"></p>
+    </section>
+
+    <div class="mt-8 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:p-8">
+      <div class="flex flex-wrap items-center gap-5 text-sm text-[var(--color-ink-soft)]">
+        <span class="flex items-center gap-2">
+          <span class="h-2.5 w-2.5 rounded-full" style="background:#3987e5"></span>
+          Ao ritmo atual
+        </span>
+        <span class="flex items-center gap-2">
+          <span class="h-2.5 w-2.5 rounded-full" style="background:#d95926"></span>
+          <span id="legend-lower-return"></span>
+        </span>
+        <span class="flex items-center gap-2">
+          <span class="h-0.5 w-3.5" style="background:var(--color-ink-faint)"></span>
+          Objetivo FIRE
+        </span>
+      </div>
+      <svg id="fire-chart" viewBox="0 0 640 300" class="mt-4 w-full touch-none select-none" role="img" aria-label="Projeção da carteira ao longo do tempo">
+        <g id="chart-gridlines"></g>
+        <line id="chart-fire-line" x1="0" y1="0" x2="0" y2="0" stroke="var(--color-ink-faint)" stroke-width="1.5" stroke-dasharray="4 4" />
+        <polyline id="chart-line-primary" fill="none" stroke="#3987e5" stroke-width="2" />
+        <polyline id="chart-line-lower" fill="none" stroke="#d95926" stroke-width="2" />
+        <line id="chart-crosshair" x1="0" y1="0" x2="0" y2="0" stroke="var(--color-ink-faint)" stroke-width="1" opacity="0" />
+        <g id="chart-tooltip" opacity="0">
+          <rect width="150" height="58" rx="8" fill="var(--color-bg)" stroke="var(--color-line)" />
+          <text id="tooltip-year" x="10" y="20" font-size="11" fill="var(--color-ink)"></text>
+          <text id="tooltip-primary" x="10" y="36" font-size="11" fill="#3987e5"></text>
+          <text id="tooltip-lower" x="10" y="50" font-size="11" fill="#d95926"></text>
+        </g>
+        <rect id="chart-hover-area" x="0" y="0" width="640" height="260" fill="transparent" />
+      </svg>
+    </div>
+
+    <div class="legal-body mt-14">
+      <h2>O que é FIRE, e as suas variantes</h2>
+      <p>
+        FIRE significa "Financial Independence, Retire Early" (independência financeira, reforma
+        antecipada): acumular capital suficiente para que os rendimentos desse capital cubram as
+        tuas despesas, sem dependeres de um salário. Não é um único objetivo, existem variantes
+        conforme o estilo de vida e o caminho até lá:
+      </p>
+      <p>
+        <strong>Lean FIRE</strong>: viver com um orçamento reduzido e um número-alvo mais baixo,
+        muitas vezes com um estilo de vida minimalista ou mudando para um local com custo de vida
+        menor.
+      </p>
+      <p>
+        <strong>Coast FIRE</strong>: já tens investido o suficiente para que, só com o crescimento
+        composto (sem mais nenhuma contribuição), o teu capital chegue ao número de FIRE por volta
+        da idade normal de reforma. Continuas a trabalhar para pagar as despesas correntes, mas já
+        não precisas de poupar mais para o futuro.
+      </p>
+      <p>
+        <strong>Barista FIRE</strong>: um meio-termo, tens investido o suficiente para cobrir a
+        maior parte das despesas, mas continuas a trabalhar a tempo parcial para cobrir o resto (e,
+        nalguns países, para manter benefícios como seguro de saúde).
+      </p>
+
+      <h2>De onde vem a regra dos 4%, e porque muita gente usa 3,5%</h2>
+      <p>
+        A "regra dos 4%" tem origem no trabalho de William Bengen (1994) e ficou popular através do
+        Trinity Study (1998), um estudo académico que testou taxas de levantamento contra o
+        histórico do mercado norte-americano. A conclusão: levantar 4% do capital inicial por ano
+        (ajustado à inflação depois) sobrevive à esmagadora maioria dos períodos históricos de 30
+        anos nos EUA.
+      </p>
+      <p>
+        O problema é que esse estudo usa apenas dados dos EUA, que tiveram um dos melhores
+        históricos de mercado acionista do século XX. Investigação que olha para outros países
+        desenvolvidos (nomeadamente a de Wade Pfau, cobrindo 20 mercados entre 1900 e 2010) mostra
+        que, fora dos EUA, uma taxa historicamente segura ronda antes os 2,8% a 3,5%, porque os
+        mercados europeus sofreram mais com guerras, hiperinflação e encerramentos de bolsa ao
+        longo do século XX. É por isso que muita gente na Europa usa 3% a 3,5% como margem de
+        segurança em vez do clássico 4%, sobretudo se a carteira não for amplamente diversificada
+        a nível global.
+      </p>
+
+      <h2>Porque esta calculadora trabalha em termos reais</h2>
+      <p>
+        Todos os valores aqui — o rendimento desejado, o número de FIRE, o capital acumulado ao
+        longo do tempo — estão em euros de hoje, não em euros nominais do futuro. A rentabilidade
+        nominal que indicas é convertida internamente numa rentabilidade real (acima da inflação),
+        para que não tenhas de pensar separadamente no efeito da inflação em cada número.
+      </p>
+
+      <h2>O risco da sequência de retornos</h2>
+      <p>
+        A rentabilidade média ao longo de vários anos não conta toda a história: a ordem em que os
+        retornos acontecem importa, sobretudo nos primeiros anos depois de parares de trabalhar. Se
+        os mercados caírem logo no início da tua reforma antecipada e continuares a levantar o
+        mesmo valor, estás a vender mais unidades a preços mais baixos, o que pode esgotar o
+        capital muito mais depressa do que a média histórica sugere, mesmo que a rentabilidade
+        média ao longo de todo o período acabe por ser boa. É por isso que a taxa de levantamento
+        segura tende a ser mais conservadora do que uma simples média de retornos esperados.
+      </p>
+
+      <h2>O que esta calculadora ignora</h2>
+      <p>
+        Não modela impostos sobre mais-valias (que reduzem o valor líquido que realmente consegues
+        levantar), comissões de gestão ou de transação, nem a evolução real do teu salário ou das
+        tuas contribuições ao longo da carreira. Assume uma rentabilidade constante todos os anos,
+        o que os mercados reais nunca oferecem. É uma ferramenta para perceberes a ordem de
+        grandeza e o mecanismo, não uma previsão exata do teu percurso.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+              {'link' in faq && faq.link && (
+                <a
+                  href={faq.link.hash}
+                  class="mt-2 inline-flex items-center gap-1 text-[15px] font-medium text-[var(--color-mint)] hover:underline"
+                >
+                  {faq.link.label}
+                  <Icon name="arrow-right" class="h-3.5 w-3.5" />
+                </a>
+              )}
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-lg font-medium text-[var(--color-ink)]">Ferramentas relacionadas</h2>
+      <ul class="mt-3 space-y-2 text-[15px] text-[var(--color-mint)]">
+        <li>
+          <a href="/ferramentas/simulador-reforma" class="inline-flex items-center gap-1 hover:underline">
+            Simulador de Reforma <Icon name="arrow-right" class="h-3.5 w-3.5" />
+          </a>
+        </li>
+        <li>
+          <a href="/ferramentas/salario-liquido" class="inline-flex items-center gap-1 hover:underline">
+            Calculadora de Salário Líquido <Icon name="arrow-right" class="h-3.5 w-3.5" />
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="fire" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        Já sabes o número. Agora é acompanhar se estás no ritmo.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        O Otterbond ajuda-te a guardar esse valor todos os meses, e a ver se os depósitos reais
+        acompanham o plano.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/pt-pt/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Experimentar grátis
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+  </main>
+
+  <Footer lang="pt-pt" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateFire, projectPortfolioByYear } from '../../lib/calculators/fireCalculator';
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const contributionInput = document.getElementById('monthlyContribution') as HTMLInputElement;
+  const contributionSlider = document.getElementById('monthlyContributionSlider') as HTMLInputElement;
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function numOrNull(id: string): number | null {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return el.value === '' ? null : Number(el.value);
+  }
+
+  function formatYears(years: number | null): string {
+    if (years === null) return 'nunca, a este ritmo';
+    if (years <= 0) return 'já lá chegaste';
+    return `${years.toFixed(1)} anos`;
+  }
+
+  // gtag may not exist yet (cookie consent not accepted) -- guard every call.
+  function track(event: string) {
+    if (typeof (window as any).gtag === 'function') {
+      (window as any).gtag('event', event, { tool: 'calculadora-fire' });
+    }
+  }
+
+  let hasTrackedView = false;
+  let hasTrackedCompletion = false;
+
+  function recalc() {
+    contributionInput.value = contributionSlider.value;
+
+    const currentAge = numOrNull('currentAge');
+    const result = calculateFire({
+      desiredMonthlyIncome: num('desiredMonthlyIncome'),
+      currentAmount: num('currentAmount'),
+      monthlyContribution: num('monthlyContribution'),
+      nominalReturnPercent: num('nominalReturnPercent'),
+      inflationPercent: num('inflationPercent'),
+      withdrawalRatePercent: num('withdrawalRatePercent'),
+      currentAge,
+    });
+
+    document.getElementById('result-headline')!.textContent =
+      `Precisas de ${euro.format(result.fireNumber)} investidos para viver com ${euro.format(num('desiredMonthlyIncome'))} por mês.`;
+
+    const primaryAge = result.primary.ageAtFire !== null ? ` (${result.primary.ageAtFire.toFixed(1)} anos)` : '';
+    document.getElementById('result-primary-pace')!.textContent =
+      `Ao ritmo atual: ${formatYears(result.primary.yearsToFire)}${primaryAge}.`;
+
+    const lowerReturnLabel = `${result.lowerReturn.nominalReturnPercent.toFixed(1)}%`;
+    document.getElementById('legend-lower-return')!.textContent = `Com ${lowerReturnLabel} nominal`;
+    document.getElementById('result-lower-pace')!.textContent =
+      `Com ${lowerReturnLabel}: ${formatYears(result.lowerReturn.yearsToFire)}.`;
+
+    const coastEl = document.getElementById('result-coast')!;
+    if (result.primary.coastFireAchieved) {
+      coastEl.textContent = 'Já atingiste o Coast FIRE: mesmo sem investir mais nada, o crescimento sozinho deve chegar lá.';
+    } else if (result.primary.coastFireNumber !== null) {
+      coastEl.textContent = `Se parasses de investir hoje, precisarias de ${euro.format(result.primary.coastFireNumber)} para lá chegar sozinho.`;
+    } else {
+      coastEl.textContent = '';
+    }
+
+    // Chart: project both scenarios out to whichever horizon is longer (capped, since "never"
+    // scenarios have no natural endpoint), always at least a few years so the chart never
+    // collapses to a single point.
+    const primaryYears = result.primary.yearsToFire ?? 40;
+    const lowerYears = result.lowerReturn.yearsToFire ?? 40;
+    const horizonYears = Math.max(5, Math.min(60, Math.ceil(Math.max(primaryYears, lowerYears))));
+
+    const monthlyContribution = num('monthlyContribution');
+    const currentAmount = num('currentAmount');
+    const primaryMonthlyRate = result.primary.realReturnPercent / 100 / 12;
+    const lowerMonthlyRate = result.lowerReturn.realReturnPercent / 100 / 12;
+
+    const primarySeries = projectPortfolioByYear({
+      currentAmount,
+      monthlyContribution,
+      monthlyRate: primaryMonthlyRate,
+      years: horizonYears,
+    });
+    const lowerSeries = projectPortfolioByYear({
+      currentAmount,
+      monthlyContribution,
+      monthlyRate: lowerMonthlyRate,
+      years: horizonYears,
+    });
+
+    renderChart(primarySeries, lowerSeries, result.fireNumber, horizonYears);
+
+    if (!hasTrackedCompletion) {
+      hasTrackedCompletion = true;
+      track('tool_completed');
+    }
+  }
+
+  // --- Chart rendering ---
+  const PADDING_LEFT = 56;
+  const PADDING_RIGHT = 16;
+  const PADDING_TOP = 16;
+  const PADDING_BOTTOM = 28;
+  const CHART_WIDTH = 640;
+  const CHART_HEIGHT = 300;
+  const PLOT_WIDTH = CHART_WIDTH - PADDING_LEFT - PADDING_RIGHT;
+  const PLOT_HEIGHT = CHART_HEIGHT - PADDING_TOP - PADDING_BOTTOM;
+
+  let currentPrimarySeries: number[] = [];
+  let currentLowerSeries: number[] = [];
+  let currentMaxValue = 1;
+  let currentHorizonYears = 1;
+
+  function formatEuroShort(value: number): string {
+    if (value >= 1_000_000) return `€${(value / 1_000_000).toFixed(1)}M`;
+    if (value >= 1_000) return `€${Math.round(value / 1000)}k`;
+    return euro.format(value);
+  }
+
+  function xForYear(year: number): number {
+    return PADDING_LEFT + (year / currentHorizonYears) * PLOT_WIDTH;
+  }
+  function yForValue(value: number): number {
+    return PADDING_TOP + PLOT_HEIGHT - (value / currentMaxValue) * PLOT_HEIGHT;
+  }
+
+  function renderChart(primarySeries: number[], lowerSeries: number[], fireNumber: number, horizonYears: number) {
+    currentPrimarySeries = primarySeries;
+    currentLowerSeries = lowerSeries;
+    currentHorizonYears = horizonYears;
+    currentMaxValue = Math.max(fireNumber, ...primarySeries, ...lowerSeries) * 1.08;
+
+    const primaryPoints = primarySeries.map((value, year) => `${xForYear(year)},${yForValue(value)}`).join(' ');
+    const lowerPoints = lowerSeries.map((value, year) => `${xForYear(year)},${yForValue(value)}`).join(' ');
+
+    document.getElementById('chart-line-primary')!.setAttribute('points', primaryPoints);
+    document.getElementById('chart-line-lower')!.setAttribute('points', lowerPoints);
+
+    const fireLine = document.getElementById('chart-fire-line')!;
+    const fireY = yForValue(fireNumber);
+    fireLine.setAttribute('x1', String(PADDING_LEFT));
+    fireLine.setAttribute('x2', String(CHART_WIDTH - PADDING_RIGHT));
+    fireLine.setAttribute('y1', String(fireY));
+    fireLine.setAttribute('y2', String(fireY));
+
+    // Gridlines + y-axis labels at 4 evenly spaced values, muted per the dataviz skill's own
+    // "recessive grid/axes" rule.
+    const gridGroup = document.getElementById('chart-gridlines')!;
+    gridGroup.innerHTML = '';
+    const steps = 4;
+    for (let i = 0; i <= steps; i++) {
+      const value = (currentMaxValue / steps) * i;
+      const y = yForValue(value);
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', String(PADDING_LEFT));
+      line.setAttribute('x2', String(CHART_WIDTH - PADDING_RIGHT));
+      line.setAttribute('y1', String(y));
+      line.setAttribute('y2', String(y));
+      line.setAttribute('stroke', 'var(--color-line)');
+      line.setAttribute('stroke-width', '1');
+      gridGroup.appendChild(line);
+
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', String(PADDING_LEFT - 8));
+      label.setAttribute('y', String(y + 4));
+      label.setAttribute('text-anchor', 'end');
+      label.setAttribute('font-size', '10');
+      label.setAttribute('fill', 'var(--color-ink-faint)');
+      label.textContent = formatEuroShort(value);
+      gridGroup.appendChild(label);
+    }
+    // x-axis year labels (start, middle, end).
+    [0, Math.round(horizonYears / 2), horizonYears].forEach((year) => {
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', String(xForYear(year)));
+      label.setAttribute('y', String(CHART_HEIGHT - 8));
+      label.setAttribute('text-anchor', year === 0 ? 'start' : year === horizonYears ? 'end' : 'middle');
+      label.setAttribute('font-size', '10');
+      label.setAttribute('fill', 'var(--color-ink-faint)');
+      label.textContent = `${year}a`;
+      gridGroup.appendChild(label);
+    });
+  }
+
+  // --- Hover crosshair + tooltip ---
+  const hoverArea = document.getElementById('chart-hover-area') as unknown as SVGRectElement;
+  const chartSvg = document.getElementById('fire-chart') as unknown as SVGSVGElement;
+  const crosshair = document.getElementById('chart-crosshair')!;
+  const tooltip = document.getElementById('chart-tooltip')!;
+  const tooltipYear = document.getElementById('tooltip-year')!;
+  const tooltipPrimary = document.getElementById('tooltip-primary')!;
+  const tooltipLower = document.getElementById('tooltip-lower')!;
+
+  function pointerToChartX(clientX: number): number {
+    const rect = chartSvg.getBoundingClientRect();
+    const scaleX = CHART_WIDTH / rect.width;
+    return (clientX - rect.left) * scaleX;
+  }
+
+  hoverArea.addEventListener('mousemove', (event) => {
+    const x = pointerToChartX(event.clientX);
+    const year = Math.round(((x - PADDING_LEFT) / PLOT_WIDTH) * currentHorizonYears);
+    const clampedYear = Math.max(0, Math.min(currentHorizonYears, year));
+    if (!currentPrimarySeries[clampedYear] && clampedYear !== 0) return;
+
+    const lineX = xForYear(clampedYear);
+    crosshair.setAttribute('x1', String(lineX));
+    crosshair.setAttribute('x2', String(lineX));
+    crosshair.setAttribute('y1', String(PADDING_TOP));
+    crosshair.setAttribute('y2', String(PADDING_TOP + PLOT_HEIGHT));
+    crosshair.setAttribute('opacity', '1');
+
+    const tooltipX = Math.min(lineX + 10, CHART_WIDTH - 158);
+    tooltip.setAttribute('transform', `translate(${tooltipX}, ${PADDING_TOP + 4})`);
+    tooltip.setAttribute('opacity', '1');
+    tooltipYear.textContent = `Ano ${clampedYear}`;
+    tooltipPrimary.textContent = `Ritmo atual: ${formatEuroShort(currentPrimarySeries[clampedYear] ?? 0)}`;
+    tooltipLower.textContent = `Retorno menor: ${formatEuroShort(currentLowerSeries[clampedYear] ?? 0)}`;
+  });
+
+  hoverArea.addEventListener('mouseleave', () => {
+    crosshair.setAttribute('opacity', '0');
+    tooltip.setAttribute('opacity', '0');
+  });
+
+  form.addEventListener('input', (event) => {
+    if ((event.target as HTMLElement)?.id === 'monthlyContributionSlider') {
+      recalc();
+      return;
+    }
+    if ((event.target as HTMLElement)?.id === 'monthlyContribution') {
+      contributionSlider.value = contributionInput.value;
+    }
+    recalc();
+  });
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => track('tool_bridge_click'));
+
+  if (!hasTrackedView) {
+    hasTrackedView = true;
+    track('tool_view');
+  }
+  recalc();
+</script>

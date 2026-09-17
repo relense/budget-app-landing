@@ -1,0 +1,372 @@
+---
+// English counterpart of /ferramentas/simulador-reforma.astro -- see that file's own comment for
+// the shared rationale. Deliberately NOT at a /pt-pt/-mirrored path (its Portuguese equivalent
+// lives at the unrelated /ferramentas/simulador-reforma), so BaseLayout gets `noAlternate` too.
+// Targets English-speaking expats who've paid into Portuguese Social Security and want to know
+// their pension gap. Title/H1 deliberately YEAR-LESS, see the PT file's comment for why.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Portugal State Pension Calculator 2026: how much you’ll get';
+const description =
+  "Estimate how much of your salary Portugal's state pension could replace, and how much you'd need to save monthly to cover the gap. Based on the EU's 2024 Ageing Report. No sign-up.";
+
+const faqs = [
+  {
+    question: 'Will the retirement age keep rising?',
+    answer:
+      "Historically, yes: the formula in Decree-Law 187/2007 raises the statutory retirement age by two-thirds of the increase in life expectancy at 65, as measured by Statistics Portugal (INE), and it's updated every year by ministerial order. For 2026 it's set at 66 years and 9 months. On the current trajectory, it isn't expected to reach 67 until around 2056, but that depends on how life expectancy actually evolves, so it isn't guaranteed.",
+  },
+  {
+    question: 'What is the replacement rate?',
+    answer:
+      "It's the share of your last salary that the state pension is expected to replace in your first year of retirement. It's the core metric the European Commission uses to compare pension adequacy across countries, and it's the basis for this calculator's math.",
+  },
+  {
+    question: 'PPR or ETF?',
+    answer:
+      "There's no single right answer, it depends on what you're optimizing for. A PPR gives you an upfront tax break (an IRS deduction, within limits), but usually comes with higher fees, less liquidity, and your money is locked in until retirement age or a specific qualifying event. An ETF (or another investment outside the PPR wrapper) usually has lower fees and full freedom to withdraw whenever you want, but without the upfront tax break, and with different capital-gains tax treatment. Plenty of people use both. This isn't investment advice, just a comparison of how the two work.",
+  },
+  {
+    question: 'Are these numbers guaranteed?',
+    answer:
+      "No. They're an estimate based on public data (the European Commission's Ageing Report and the current statutory retirement age), not a personal forecast or a guarantee of what you'll receive. The rules can change, your real contribution record may differ from what this calculator assumes, and your actual pension is only calculated by Social Security when you actually retire.",
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+---
+
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Portugal State Pension Calculator
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Estimate how much of your current salary Portugal's state pension is likely to cover, and
+      how much you'd need to save monthly to close the gap, based on the European Union's own
+      official projections.
+    </p>
+    <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+      This is a projection from public data, not a personal forecast or financial advice.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Birth year</span>
+        <input
+          type="number"
+          id="birthYear"
+          value="1990"
+          min="1940"
+          max="2020"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Current net monthly salary (€)</span>
+        <input
+          type="number"
+          id="netMonthlySalary"
+          value="1500"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Intended retirement age</span>
+        <input
+          type="number"
+          id="retirementAge"
+          value="66.75"
+          min="50"
+          max="80"
+          step="0.01"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+        <p class="mt-1.5 text-sm text-[var(--color-ink-faint)]" id="retirementAge-caption"></p>
+        <p class="mt-1 text-xs text-[var(--color-ink-faint)]">
+          Current 2026 statutory age: 66 years and 9 months.
+        </p>
+      </label>
+
+      <details class="sm:col-span-2">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
+          Advanced options (already saved, expected return)
+        </summary>
+
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Already saved for retirement (€)</span>
+            <input
+              type="number"
+              id="alreadySaved"
+              value="0"
+              min="0"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Expected annual real return (%)</span>
+            <input
+              type="number"
+              id="realReturnPercent"
+              value="3"
+              min="0"
+              step="0.1"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+            <p class="mt-1 text-xs text-[var(--color-ink-faint)]">
+              An assumption: above inflation, not the nominal return advertised on a financial
+              product.
+            </p>
+          </label>
+
+          <label class="mt-1 flex items-center gap-2.5 text-sm sm:col-span-2">
+            <input type="checkbox" id="noGrowthInRetirement" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
+            <span class="text-[var(--color-ink)]">
+              Assume no investment growth during retirement (simpler, more conservative)
+            </span>
+          </label>
+
+          <p class="text-xs text-[var(--color-ink-faint)] sm:col-span-2">
+            Planning horizon: 20 years (a simplification).
+          </p>
+        </div>
+      </details>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-pension-gap"></p>
+      <p class="mt-1 text-[15px] text-[var(--color-mint-deep)]/80" id="result-capital-needed"></p>
+
+      <p class="mt-5 text-sm font-medium text-[var(--color-mint-deep)]/70">Starting today, that's:</p>
+      <p class="mt-1 text-4xl font-medium text-[var(--color-mint-deep)]" id="result-monthly-saving">€0/mo</p>
+
+      <div class="mt-6 flex items-end gap-8">
+        <div class="flex flex-col items-center gap-2">
+          <div class="flex h-32 w-12 items-end rounded-lg bg-[var(--color-mint-deep)]/10">
+            <div id="bar-today" class="w-full rounded-lg bg-[var(--color-mint-deep)]" style="height:0%"></div>
+          </div>
+          <p class="text-xs text-[var(--color-mint-deep)]/70">Today (2022 baseline)</p>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <div class="flex h-32 w-12 items-end rounded-lg bg-[var(--color-mint-deep)]/10">
+            <div id="bar-retirement" class="w-full rounded-lg bg-[var(--color-mint-deep)]" style="height:0%"></div>
+          </div>
+          <p class="text-xs text-[var(--color-mint-deep)]/70" id="bar-retirement-label"></p>
+        </div>
+      </div>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>What the replacement rate is, and why it's falling</h2>
+      <p>
+        The "replacement rate" is the share of your last salary that the state pension is expected
+        to replace once you retire. A replacement rate of 70%, for instance, means your first
+        pension is roughly 70% of what you earned while working. In Portugal, this rate has been
+        trending downward for decades, mainly for two structural reasons: an aging population,
+        which shrinks the number of active contributors per pensioner, and repeated reforms to the
+        Social Security formula, aimed at keeping the system solvent long-term. This isn't a
+        personal opinion or an alarmist forecast — it's what the European Union's own official
+        models project for Portugal over the coming decades.
+      </p>
+
+      <h2>The 2040-to-2050 drop: a statistical artifact, not a pension cut</h2>
+      <p>
+        If you look at the numbers decade by decade, something odd stands out: the projected
+        replacement rate rises through 2040, then drops sharply by 2050. That can look like a
+        benefit cut for anyone retiring in that window, but that's not what's happening. The
+        European Commission's own report explains that this drop mostly reflects the gradual
+        phase-out of the CGA, the pre-2006 pension scheme for Portuguese civil servants. The CGA's
+        last cohort of long-career, higher-earning retirees is expected to clear the system by
+        around 2048, and once they do, they stop pulling the national average up. It isn't a
+        projection that your own pension will be cut in half in that decade — it's a shift in the
+        statistical mix of who's retiring.
+      </p>
+
+      <h2>What the Ageing Report is, and which edition this uses</h2>
+      <p>
+        This calculator uses the figures published in the European Commission's "2024 Ageing
+        Report," specifically Portugal's own country fiche, produced with the Ageing Working
+        Group. It's the EU's official long-term reference document for pension, healthcare and
+        public finance projections in every member state, updated roughly every three years. The
+        replacement-rate figures used here come directly from Table 18 of that report, the "total
+        replacement rate (earnings-related benefits)" row.
+      </p>
+
+      <h2>PPR: what it is, IRS deduction limits, and withdrawal rules</h2>
+      <p>
+        A PPR (Plano Poupança Reforma, or "retirement savings plan") is a long-term Portuguese
+        savings product designed specifically to top up the state pension, with tax benefits
+        attached. Contributing to a PPR lets you deduct 20% of what you invest each year from your
+        IRS tax bill, up to a maximum deduction that depends on your age on January 1st of the
+        year you invest: €400 (on up to €2,000 invested) under 35, €350 (on up to €1,750) between
+        35 and 50, and €300 (on up to €1,500) over 50. These limits, set out in Article 21 of
+        Portugal's Tax Benefits Statute (Estatuto dos Benefícios Fiscais), apply per taxpayer, not
+        per household.
+      </p>
+      <p>
+        As for withdrawals, there are seven situations that let you take the money out
+        penalty-free: retiring at the statutory pension age, turning 60, paying down your own
+        home mortgage, long-term unemployment (over 12 months, registered with Portugal's
+        employment institute), permanent incapacity to work, serious illness, and the holder's
+        death. The first three only avoid the penalty five years after each contribution; the
+        rest have no minimum holding period. Outside those situations, withdrawing usually means
+        repaying the tax benefit you already claimed, plus a surcharge, on top of ordinary
+        capital-gains tax.
+      </p>
+
+      <h2>Why this calculator uses real (inflation-adjusted) values</h2>
+      <p>
+        Every figure in this calculator — your salary, your estimated pension, the capital you'd
+        need — is expressed in today's euros, not future nominal euros. That means we're already
+        assuming your salary and prices will rise with inflation, and we only work with real
+        purchasing power. That's why the "expected return" you can adjust here is a real return
+        (above inflation), not the nominal return you'd see advertised on a financial product.
+      </p>
+
+      <h2>What this calculator doesn't know</h2>
+      <p>
+        This calculator doesn't know your full contribution history, whether you'll have career
+        breaks (unemployment, extended sick leave, years working abroad), how your salary will
+        actually grow over your career, or whether Portugal will change its Social Security rules
+        again — something it has done several times over the past few decades. It's a projection
+        built from public data and a simplified formula, not a personal forecast, and it doesn't
+        replace a simulation run directly through Segurança Social Direta using your real
+        contribution record.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="hourglass" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        Now you know the number. Saving it every month is the hard part.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        Otterbond helps you set that amount aside automatically each month, without having to
+        think about it.
+      </p>
+      <a
+        href="/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Try it free
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculatePensionGap } from '../../lib/calculators/pensionCalculator';
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const pct = new Intl.NumberFormat('en-IE', { maximumFractionDigits: 1 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function checked(id: string): boolean {
+    return (document.getElementById(id) as HTMLInputElement).checked;
+  }
+
+  function ageCaption(age: number): string {
+    const years = Math.floor(age);
+    const months = Math.round((age - years) * 12);
+    if (months === 0) return `= ${years} years`;
+    return `= ${years} years and ${months} month${months === 1 ? '' : 's'}`;
+  }
+
+  function recalc() {
+    const retirementAge = num('retirementAge');
+    (document.getElementById('retirementAge-caption') as HTMLElement).textContent = ageCaption(retirementAge);
+
+    const result = calculatePensionGap({
+      birthYear: num('birthYear'),
+      currentYear: new Date().getFullYear(),
+      netMonthlySalary: num('netMonthlySalary'),
+      retirementAge,
+      alreadySaved: num('alreadySaved'),
+      realReturnPercent: num('realReturnPercent'),
+      noGrowthInRetirement: checked('noGrowthInRetirement'),
+    });
+
+    const rate = pct.format(result.replacementRatePercent);
+    document.getElementById('result-headline')!.textContent =
+      `By ${result.retirementYear}, Portugal's state pension is estimated to cover about ${rate}% of your salary.`;
+
+    document.getElementById('result-pension-gap')!.textContent =
+      `Estimated pension: ${euro.format(result.estimatedMonthlyPension)}/month · Gap vs. your current salary: ${euro.format(result.monthlyGap)}/month`;
+
+    document.getElementById('result-capital-needed')!.textContent =
+      `To maintain your lifestyle for 20 years, you'd need about ${euro.format(result.capitalNeededAtRetirement)} saved by ${result.retirementYear}.`;
+
+    document.getElementById('result-monthly-saving')!.textContent =
+      `${euro.format(result.monthlySavingNeeded)}/mo`;
+
+    const todayRate = 67.3; // 2022 baseline, the table's first published year
+    (document.getElementById('bar-today') as HTMLElement).style.height = `${todayRate}%`;
+    (document.getElementById('bar-retirement') as HTMLElement).style.height = `${result.replacementRatePercent}%`;
+    (document.getElementById('bar-retirement-label') as HTMLElement).textContent = `${result.retirementYear}`;
+  }
+
+  form.addEventListener('input', recalc);
+  recalc();
+</script>

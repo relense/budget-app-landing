@@ -17,13 +17,14 @@ export const ui = {
   en: {
     'meta.title': 'Otterbond: a shared budget and savings tracker',
     'meta.description':
-      'A shared budget for couples and people who live together. Plan the month together, log expenses as they happen, and split the work of categorizing. No ads, no data-selling.',
+      'A shared budget for couples and people who live together. Plan the month together, log expenses, and split the categorizing. No ads, no data-selling.',
 
     'nav.features': 'Features',
     'nav.howItWorks': 'How it works',
     'nav.screens': 'Screens',
     'nav.pricing': 'Pricing',
     'nav.faq': 'FAQ',
+    'nav.tools': 'Tools',
     'nav.getStarted': 'Get started',
     'nav.toggleMenu': 'Toggle menu',
 
@@ -115,6 +116,25 @@ export const ui = {
     ],
     'pricing.cta': 'Start free trial',
     'pricing.ctaNote': 'Purchases happen on the web. No app-store markup.',
+
+    'freeTools.heading': 'Free tools, no sign-up',
+    'freeTools.body':
+      'Four calculators built on the same numbers Otterbond uses internally, useful whether or not you ever install the app.',
+    'freeTools.items': [
+      {
+        title: 'Recibos verdes, without the guesswork',
+        body: 'Estimate your net income as a freelancer in Portugal, IRS, Social Security and expenses included, in seconds.',
+      },
+      {
+        title: 'Your real Portuguese net salary',
+        body: "Go from gross to net (or the other way around) with 2026's official IRS and Social Security tables, for Mainland, Azores and Madeira.",
+      },
+      {
+        title: 'What will your state pension actually cover?',
+        body: "Estimate your Portugal pension gap and how much you'd need to save monthly to close it, based on the EU's own projections.",
+      },
+    ],
+    'freeTools.seeAll': 'See all free tools',
 
     'screenshotGallery.heading': "See it, don't just take our word for it",
     'screenshotGallery.tabMobile': 'Mobile',
@@ -242,6 +262,11 @@ export const ui = {
     'waitlist.msg.tooMany': 'Too many attempts. Try again later.',
     'waitlist.msg.generic': 'Something went wrong. Try again in a moment.',
 
+    'cookieConsent.text':
+      'We use analytics to understand how visitors use this site. No personal data is sold or shared with advertisers.',
+    'cookieConsent.accept': 'Accept',
+    'cookieConsent.reject': 'Reject',
+
     'footer.tagline': 'A shared, multi-currency budget and savings tracker.',
     'footer.legalHeading': 'Legal',
     'footer.privacy': 'Privacy Policy',
@@ -249,7 +274,8 @@ export const ui = {
     'footer.toolsHeading': 'Free tools',
     'footer.toolsRecibosVerdes': 'Portugal freelancer tax calculator',
     'footer.toolsSalarioLiquido': 'Portugal net salary calculator',
-    'footer.toolsCompoundInterest': 'Compound interest calculator',
+    'footer.toolsReforma': 'Portugal state pension calculator',
+    'footer.toolsAll': 'All free tools',
     'footer.madeBy': 'Made by relense',
 
     'notFound.title': 'Page not found, Otterbond',
@@ -269,13 +295,14 @@ export const ui = {
   'pt-pt': {
     'meta.title': 'Otterbond: um orçamento e poupanças partilhados',
     'meta.description':
-      'Um orçamento partilhado para casais e pessoas que vivem juntas. Planeiem o mês em conjunto, registem despesas à medida que acontecem, e dividam o trabalho de categorizar. Sem anúncios, sem venda de dados.',
+      'Um orçamento partilhado para casais e pessoas que vivem juntas. Planeiem o mês, registem despesas, e dividam o trabalho. Sem anúncios, sem venda de dados.',
 
     'nav.features': 'Funcionalidades',
     'nav.howItWorks': 'Como funciona',
     'nav.screens': 'Ecrãs',
     'nav.pricing': 'Preços',
     'nav.faq': 'FAQ',
+    'nav.tools': 'Ferramentas',
     'nav.getStarted': 'Começar',
     'nav.toggleMenu': 'Alternar menu',
 
@@ -368,6 +395,25 @@ export const ui = {
     ],
     'pricing.cta': 'Começar avaliação grátis',
     'pricing.ctaNote': 'As compras acontecem na web. Sem sobretaxa de loja de aplicações.',
+
+    'freeTools.heading': 'Ferramentas gratuitas, sem registo',
+    'freeTools.body':
+      'Quatro calculadoras construídas com os mesmos números que o Otterbond usa por dentro, úteis mesmo que nunca chegues a instalar a app.',
+    'freeTools.items': [
+      {
+        title: 'Recibos verdes, sem adivinhar',
+        body: 'Estima o teu rendimento líquido como trabalhador independente em Portugal, IRS, Segurança Social e despesas incluídos, em segundos.',
+      },
+      {
+        title: 'O teu salário líquido, sem surpresas',
+        body: 'Passa de bruto a líquido (ou ao contrário) com as tabelas oficiais de IRS e Segurança Social de 2026, para Continente, Açores e Madeira.',
+      },
+      {
+        title: 'Quanto vai cobrir a tua pensão?',
+        body: 'Estima o teu défice de reforma em Portugal e quanto precisas de poupar por mês para o fechar, com base nas projeções oficiais da UE.',
+      },
+    ],
+    'freeTools.seeAll': 'Ver todas as ferramentas',
 
     'screenshotGallery.heading': 'Vê por ti mesmo, não fiques só pela nossa palavra',
     'screenshotGallery.tabMobile': 'Telemóvel',
@@ -495,6 +541,11 @@ export const ui = {
     'waitlist.msg.tooMany': 'Demasiadas tentativas. Tenta novamente mais tarde.',
     'waitlist.msg.generic': 'Algo correu mal. Tenta novamente dentro de momentos.',
 
+    'cookieConsent.text':
+      'Usamos análises para perceber como os visitantes usam este site. Não vendemos nem partilhamos dados pessoais com publicidade.',
+    'cookieConsent.accept': 'Aceitar',
+    'cookieConsent.reject': 'Rejeitar',
+
     'footer.tagline': 'Um controlo de orçamento e poupanças partilhado e multi-moeda.',
     'footer.legalHeading': 'Legal',
     'footer.privacy': 'Política de Privacidade',
@@ -502,7 +553,8 @@ export const ui = {
     'footer.toolsHeading': 'Ferramentas gratuitas',
     'footer.toolsRecibosVerdes': 'Simulador recibos verdes',
     'footer.toolsSalarioLiquido': 'Calculadora salário líquido',
-    'footer.toolsCompoundInterest': 'Calculadora de juros compostos',
+    'footer.toolsReforma': 'Simulador de reforma',
+    'footer.toolsAll': 'Todas as ferramentas',
     'footer.madeBy': 'Feito por relense',
 
     'notFound.title': 'Página não encontrada, Otterbond',

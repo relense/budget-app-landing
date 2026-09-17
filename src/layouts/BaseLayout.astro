@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import CookieConsent from '../components/CookieConsent.astro';
 import { getLangFromUrl, getAlternatePath, useTranslations, htmlLang, type Lang } from '../i18n/utils';
 
 interface Props {
@@ -75,6 +76,8 @@ const websiteJsonLd = {
   </head>
   <body>
     <slot />
+
+    <CookieConsent lang={lang} />
 
     <script>
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
