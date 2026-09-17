@@ -1,0 +1,32 @@
+---
+// Standalone SEO page for pricing -- see the English pricing.astro's own comment for the shared
+// rationale. Same <Pricing /> and <Faq /> components, same t() copy, no separate content to
+// keep in sync.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Pricing from '../../components/Pricing.astro';
+import Faq from '../../components/Faq.astro';
+import Footer from '../../components/Footer.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const title = 'Preços da Otterbond: Grátis vs Plus';
+const description =
+  'Vê o que é grátis e o que o Plus desbloqueia na Otterbond: orçamento, contas e fundos de poupança são sempre gratuitos, o Plus acrescenta o detalhe por trás do teu número Podes Gastar por €2.99/mês, com 15 dias grátis.';
+---
+
+<BaseLayout title={title} description={description}>
+  <NavBar />
+  <main>
+    <div class="mx-auto max-w-3xl px-5 pt-12 sm:px-8 sm:pt-16">
+      <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+        {t('nav.pricing')}
+      </h1>
+    </div>
+    <Pricing />
+    <Faq />
+  </main>
+  <Footer />
+</BaseLayout>

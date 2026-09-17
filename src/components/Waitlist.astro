@@ -128,6 +128,9 @@ const messages = {
         setButtonState('success');
         setMessage(messages.success, 'success');
         form.reset();
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', 'waitlist_signup');
+        }
       } else if (response.status === 409) {
         setButtonState('success');
         setMessage(messages.alreadyOnList, 'idle');
