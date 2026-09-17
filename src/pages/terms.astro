@@ -6,7 +6,7 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 const CONTACT_EMAIL = 'budgeterinfo@gmail.com';
-const LAST_UPDATED = 'September 1, 2026';
+const LAST_UPDATED = 'September 17, 2026';
 ---
 
 <LegalLayout
@@ -57,6 +57,14 @@ const LAST_UPDATED = 'September 1, 2026';
     read/write access to everything in that workspace, and a Viewer role gives read-only access.
     Think about who you share a workspace with accordingly.
   </p>
+  <p>
+    The Service also has a public Ideas Board where anyone signed in can post feedback and
+    comments, visible to every other signed-in user under your account — unlike your budgeting
+    data, this isn't private. We may moderate it and remove content that violates the Acceptable
+    use rules below. Deleting your account replaces your name on anything you've posted there with
+    a generic placeholder; the post or comment itself isn't automatically removed, since it's
+    public content, not personal data (see our <a href="/privacy">Privacy Policy</a>).
+  </p>
 
   <h2>Acceptable use</h2>
   <p>You agree not to:</p>
@@ -64,20 +72,35 @@ const LAST_UPDATED = 'September 1, 2026';
     use the Service for anything illegal; attempt to gain unauthorized access to any account,
     workspace, or part of the Service that isn't yours; interfere with, overload, or abuse the
     Service's infrastructure or API; reverse-engineer, scrape, or attempt to extract the Service's
-    source code beyond what's already public; or impersonate any person or entity.
+    source code beyond what's already public; post unlawful, abusive, harassing, or infringing
+    content anywhere in the Service, including the Ideas Board; or impersonate any person or
+    entity.
   </p>
 
   <h2>Fees</h2>
   <p>
-    The Service is currently free to use, with no paid tier. If that changes in the future, we'll
-    update these Terms first and give you a clear choice before anything you rely on becomes paid.
+    The Service has a free tier and a paid Plus tier (currently €2.99/month), billed through
+    Stripe — see the <a href="/#pricing">Pricing</a> section for what each includes. First-time
+    subscribers get a 15-day free trial: a card is required upfront, but you're not charged until
+    the trial ends, and cancelling before then means you're never charged.
+  </p>
+  <p>
+    You can cancel anytime, self-serve, through Stripe's billing portal from within the app.
+    Cancelling stops renewal at the end of your current billing period; you keep Plus access until
+    then. If a payment fails, your plan reverts to Free once Stripe reports the subscription
+    unpaid or cancelled.
+  </p>
+  <p>
+    If we change pricing or plans in the future, we'll update these Terms first and give you a
+    clear choice before anything you already rely on becomes paid.
   </p>
 
   <h2>Termination</h2>
   <p>
     You can delete your account at any time from Profile &rarr; Account &rarr; Delete my account.
-    This permanently and immediately erases your account and all associated data, and cannot be
-    undone.
+    This permanently and immediately erases your account and all associated data, and cancels any
+    active Plus subscription immediately (not just at the end of the billing period), as part of
+    the same action. It cannot be undone.
   </p>
   <p>
     We may suspend or terminate your access if you violate these Terms, including the
