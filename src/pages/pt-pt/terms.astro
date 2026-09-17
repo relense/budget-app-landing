@@ -10,7 +10,7 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 const CONTACT_EMAIL = 'budgeterinfo@gmail.com';
-const LAST_UPDATED = 'September 1, 2026';
+const LAST_UPDATED = 'September 17, 2026';
 ---
 
 <LegalLayout
@@ -64,6 +64,15 @@ const LAST_UPDATED = 'September 1, 2026';
     Visualizador dá acesso só de leitura. Pensa em quem partilhas um espaço de trabalho tendo isto
     em conta.
   </p>
+  <p>
+    O Serviço tem também um Ideas Board público, onde qualquer pessoa com sessão iniciada pode
+    publicar sugestões e comentários, visíveis a todos os outros utilizadores associados à tua
+    conta — ao contrário dos teus dados de orçamento, isto não é privado. Podemos moderar este
+    conteúdo e remover o que viole as regras de Utilização aceitável abaixo. Eliminar a tua conta
+    substitui o teu nome no que publicaste lá por um indicador genérico; a publicação ou comentário
+    em si não é removido automaticamente, por ser conteúdo público, não dados pessoais (consulta a
+    nossa <a href="/pt-pt/privacy">Política de Privacidade</a>).
+  </p>
 
   <h2>Utilização aceitável</h2>
   <p>Comprometes-te a não:</p>
@@ -72,21 +81,36 @@ const LAST_UPDATED = 'September 1, 2026';
     conta, espaço de trabalho, ou parte do Serviço que não te pertença; interferir com,
     sobrecarregar, ou abusar da infraestrutura ou API do Serviço; fazer engenharia inversa,
     extração automatizada de dados (scraping), ou tentar extrair o código-fonte do Serviço para
-    além do que já é público; ou fazer-te passar por qualquer pessoa ou entidade.
+    além do que já é público; publicar conteúdo ilegal, abusivo, difamatório, ou que viole direitos
+    de terceiros, em qualquer parte do Serviço, incluindo o Ideas Board; ou fazer-te passar por
+    qualquer pessoa ou entidade.
   </p>
 
   <h2>Preços</h2>
   <p>
-    O Serviço é, atualmente, gratuito, sem qualquer plano pago. Se isso mudar no futuro,
-    atualizaremos estes Termos primeiro e dar-te-emos uma escolha clara antes de algo que uses
-    passar a ser pago.
+    O Serviço tem um plano gratuito e um plano pago Plus (atualmente €2,99/mês), cobrado através da
+    Stripe — consulta a secção <a href="/pt-pt/#pricing">Preços</a> para veres o que cada plano
+    inclui. Quem subscreve pela primeira vez tem um período experimental gratuito de 15 dias: é
+    necessário um cartão desde o início, mas só és cobrado quando o período terminar, e se
+    cancelares antes disso nunca chegas a ser cobrado.
+  </p>
+  <p>
+    Podes cancelar a qualquer momento, de forma autónoma, através do portal de faturação da Stripe,
+    dentro da aplicação. Cancelar interrompe a renovação no final do teu período de faturação
+    atual; mantens o acesso Plus até lá. Se um pagamento falhar, o teu plano volta a Grátis assim
+    que a Stripe reportar a subscrição como não paga ou cancelada.
+  </p>
+  <p>
+    Se alterarmos preços ou planos no futuro, atualizaremos estes Termos primeiro e dar-te-emos uma
+    escolha clara antes de algo que já uses passar a ser pago.
   </p>
 
   <h2>Cessação</h2>
   <p>
     Podes eliminar a tua conta a qualquer momento em Perfil &rarr; Conta &rarr; Eliminar a minha
     conta. Esta ação apaga permanente e imediatamente a tua conta e todos os dados associados, e
-    não pode ser desfeita.
+    cancela de imediato qualquer subscrição Plus ativa (não apenas no final do período de
+    faturação), como parte da mesma ação. Não pode ser desfeita.
   </p>
   <p>
     Podemos suspender ou terminar o teu acesso caso violes estes Termos, incluindo as regras de

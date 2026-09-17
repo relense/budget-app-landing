@@ -10,7 +10,7 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 const CONTACT_EMAIL = 'budgeterinfo@gmail.com';
-const LAST_UPDATED = 'September 1, 2026';
+const LAST_UPDATED = 'September 17, 2026';
 ---
 
 <LegalLayout
@@ -30,7 +30,7 @@ const LAST_UPDATED = 'September 1, 2026';
   <h2>O que recolhemos</h2>
   <p>
     <strong>Dados da conta:</strong> o endereço de email com que inicias sessão, um nome de
-    apresentação opcional, e a tua moeda preferida.
+    apresentação opcional, a tua moeda preferida, e o teu plano de subscrição (Grátis ou Plus).
   </p>
   <p>
     <strong>Dados financeiros que introduzes:</strong> orçamentos, categorias, transações,
@@ -40,6 +40,26 @@ const LAST_UPDATED = 'September 1, 2026';
   <p>
     <strong>Dados de espaço de trabalho e sociais:</strong> associações e funções em espaços de
     trabalho, ligações de amizade, e convites/pedidos pendentes entre contas.
+  </p>
+  <p>
+    <strong>Conteúdo do Ideas Board:</strong> publicações, comentários e votos que submetes no
+    Ideas Board da aplicação, o nosso quadro de sugestões público. Publicações e comentários são
+    mostrados a outros utilizadores com sessão iniciada, associados à tua conta; os votos nunca são
+    mostrados a mais ninguém, apenas como uma contagem agregada.
+  </p>
+  <p>
+    <strong>Dados de pagamento, se subscreveres o Plus:</strong> a Stripe, o nosso processador de
+    pagamentos, recolhe e guarda os teus dados de pagamento diretamente — nunca vemos nem
+    armazenamos o número do teu cartão. Guardamos apenas que tens uma subscrição, qual o plano, e
+    uma referência de cliente Stripe, para a podermos gerir em teu nome.
+  </p>
+  <p>
+    <strong>Dados de utilização do produto:</strong> um conjunto selecionado de ações dentro da
+    aplicação (por exemplo, iniciar sessão, adicionar uma transação, ou criar um espaço de
+    trabalho) e que ecrãs da aplicação abres, para percebermos como o Serviço é utilizado e o
+    melhorarmos. Isto é exclusivamente nosso (first-party) — nunca partilhado com terceiros e nunca
+    utilizado para publicidade — e é eliminado automaticamente após 90 dias, ou imediatamente se
+    eliminares a tua conta.
   </p>
   <p>
     <strong>Dados de autenticação:</strong> códigos de início de sessão únicos (armazenados como
@@ -54,8 +74,9 @@ const LAST_UPDATED = 'September 1, 2026';
     transmitidos e não fazem parte de quaisquer dados de conta que detemos.
   </p>
   <p>
-    Não utilizamos análise de tráfego, publicidade, nem rastreio de terceiros de qualquer tipo, e
-    não utilizamos cookies além da única cookie de autenticação descrita acima.
+    Não utilizamos análise de tráfego, publicidade, nem rastreio de terceiros de qualquer tipo — a
+    única análise que fazemos são os dados de utilização do produto descritos acima, exclusivamente
+    nossos — e não utilizamos cookies além da única cookie de autenticação descrita abaixo.
   </p>
   <p>
     <strong>Email da lista de espera:</strong> se te inscreveres na lista de espera neste site,
@@ -78,26 +99,40 @@ const LAST_UPDATED = 'September 1, 2026';
 
   <h2>Com quem partilhamos os dados</h2>
   <p>
-    Utilizamos um pequeno número de fornecedores de infraestrutura para operar o Serviço, cada um
-    a atuar como subcontratante em nosso nome, sob os seus próprios compromissos de segurança e
-    privacidade:
+    Utilizamos um pequeno número de fornecedores de infraestrutura e de pagamentos para operar o
+    Serviço, cada um a atuar como subcontratante em nosso nome, sob os seus próprios compromissos
+    de segurança e privacidade:
   </p>
   <p>
     <strong>SendGrid</strong> - entrega os códigos de início de sessão únicos que te enviamos por email.<br />
-    <strong>Render</strong> - aloja os nossos servidores de aplicação e a base de dados.
+    <strong>Render</strong> - aloja os nossos servidores de aplicação e a base de dados.<br />
+    <strong>Stripe</strong> - processa pagamentos se subscreveres o Plus, e trata dos teus dados de
+    pagamento diretamente; nunca vemos o número do teu cartão.<br />
+    <strong>Sentry</strong> - recebe relatórios automáticos de erros inesperados no servidor, para
+    podermos encontrar e corrigir problemas. Falhas de rotina, como dados inválidos ou limites de
+    utilização (rate limiting), nunca são reportadas — apenas erros genuínos e inesperados.
   </p>
   <p>
-    Poderemos, no futuro, ativar ferramentas de deteção de erros (por exemplo, Sentry) para
-    corrigir problemas mais rapidamente; se e quando isso acontecer, esta política será atualizada
-    primeiro. Não partilhamos os teus dados com mais nenhum terceiro, e nunca os vendemos.
+    Não partilhamos os teus dados com mais nenhum terceiro, e nunca os vendemos.
   </p>
 
   <h2>Retenção de dados</h2>
   <p>
     Os dados da tua conta e tudo o que introduziste são mantidos enquanto a tua conta existir. Os
     códigos de início de sessão e os tokens de atualização expiram automaticamente e são
-    eliminados pouco depois de deixarem de ser válidos. Se eliminares a tua conta, todos os teus
-    dados são removidos permanentemente numa única operação. Consulta "Os teus direitos" abaixo.
+    eliminados pouco depois de deixarem de ser válidos. Os dados de utilização do produto (ver "O
+    que recolhemos" acima) são mantidos durante 90 dias, numa base contínua, e eliminados
+    automaticamente.
+  </p>
+  <p>
+    Se eliminares a tua conta, tudo o que é exclusivamente teu — a tua conta, os dados do teu
+    espaço de trabalho pessoal, e o teu histórico de utilização do produto — é removido
+    permanentemente de imediato, e qualquer subscrição Plus ativa é cancelada de imediato como
+    parte da mesma operação. Há duas exceções restritas e deliberadas: os dados que contribuíste
+    para um espaço de trabalho partilhado com outras pessoas permanecem nesse espaço de trabalho
+    para os restantes membros, com o teu nome removido; e o que publicaste no Ideas Board público
+    (uma publicação ou comentário) permanece visível, com o teu nome substituído. Consulta "Os teus
+    direitos" abaixo.
   </p>
 
   <h2>Os teus direitos</h2>
@@ -110,8 +145,10 @@ const LAST_UPDATED = 'September 1, 2026';
   <p>
     <strong>Exportar os meus dados</strong> - descarrega uma cópia completa da tua conta e de tudo
     o que guardaste connosco, num único ficheiro.<br />
-    <strong>Eliminar a minha conta</strong> - apaga permanente e imediatamente a tua conta e todos
-    os dados associados. Esta ação não pode ser desfeita.
+    <strong>Eliminar a minha conta</strong> - apaga permanente e imediatamente a tua conta e tudo o
+    que é exclusivamente teu. Esta ação não pode ser desfeita. Consulta "Retenção de dados" acima
+    para as duas exceções restritas relativas a conteúdo partilhado com outros ou publicado
+    publicamente.
   </p>
   <p>
     Para qualquer outro pedido (correção, oposição, ou uma questão sobre como os teus dados são
@@ -143,7 +180,7 @@ const LAST_UPDATED = 'September 1, 2026';
 
   <h2>Transferências internacionais de dados</h2>
   <p>
-    Os nossos fornecedores de infraestrutura poderão tratar dados em países diferentes do teu.
+    Os nossos fornecedores de infraestrutura e de pagamentos poderão tratar dados em países diferentes do teu.
     Nesses casos, confiamos nas salvaguardas próprias desses fornecedores para transferências
     internacionais de dados, em conformidade com a legislação aplicável.
   </p>
