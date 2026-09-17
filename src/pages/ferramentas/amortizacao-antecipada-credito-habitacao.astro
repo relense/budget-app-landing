@@ -1,0 +1,413 @@
+---
+// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
+// shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
+// No English counterpart yet.
+//
+// Deliberately stays a generic amortisation calculator, not advice on whether to amortise --
+// see src/lib/calculators/mortgagePrepayment.ts's own comment for the fee-cap sourcing (2026's
+// figures, after the variable-rate fee exemption expired 2025-12-31).
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Amortização Antecipada do Crédito Habitação';
+const description =
+  'Calcula quanto poupas em juros, e quanto mais cedo acabas o crédito, ao amortizar antecipadamente. Compara reduzir prazo ou reduzir prestação. Sem registo.';
+
+const faqs = [
+  {
+    question: 'Reduzir prazo ou reduzir prestação, qual poupa mais?',
+    answer:
+      'Reduzir o prazo poupa sempre mais juros no total, para o mesmo valor amortizado -- mantens a prestação igual, mas pagas o crédito mais depressa, logo há menos meses a acumular juros. Reduzir a prestação poupa menos juros no total, mas alivia o teu orçamento mensal desde já. A escolha depende do que precisas mais: menos anos de crédito, ou mais folga todos os meses.',
+  },
+  {
+    question: 'Vale sempre a pena amortizar antecipadamente?',
+    answer:
+      'Depende da comparação entre a taxa do teu crédito e o que esse dinheiro renderia noutro sítio, depois de descontar a comissão de amortização. Se não tens fundo de emergência constituído, normalmente compensa mais construir esse primeiro -- amortizar um crédito não te devolve o dinheiro se precisares dele de repente. Isto não é uma recomendação, é uma comparação de números.',
+  },
+  {
+    question: 'A comissão aplica-se sempre?',
+    answer:
+      'A comissão máxima legal é de 0,5% do capital amortizado em créditos a taxa variável e 2% em taxa fixa, mas é isso mesmo -- um máximo. O teu contrato pode ter uma comissão mais baixa ou isenção, por exemplo por seres cliente há muito tempo ou teres um produto específico do banco. Confirma sempre o valor exato junto do teu banco antes de decidir.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+  <NavBar lang="pt-pt" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Amortização Antecipada do Crédito Habitação
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Introduz o que falta pagar do teu crédito e quanto queres amortizar, e vê quanto poupas em
+      juros -- e em quantos meses acabas mais cedo, ou quanto desce a prestação.
+    </p>
+    <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+      Calculadora genérica de amortização, não é aconselhamento sobre se deves ou não amortizar.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Capital em dívida (€)</span>
+        <input
+          type="number"
+          id="outstandingBalance"
+          value="150000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Prazo restante (meses)</span>
+        <input
+          type="number"
+          id="remainingMonths"
+          value="300"
+          min="1"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Taxa anual (TAN) (%)</span>
+        <input
+          type="number"
+          id="annualRatePercent"
+          value="3.5"
+          min="0"
+          step="0.01"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Tipo de taxa</span>
+        <select
+          id="rateType"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="variable" selected>Variável (comissão máx. 0,5%)</option>
+          <option value="fixed">Fixa (comissão máx. 2%)</option>
+        </select>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Valor a amortizar (€)</span>
+        <input
+          type="number"
+          id="extraAmount"
+          value="10000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Frequência</span>
+        <select
+          id="mode"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="oneOff" selected>Pagamento único</option>
+          <option value="monthly">Todos os meses</option>
+        </select>
+      </label>
+
+      <label class="block text-sm sm:col-span-2" id="strategy-wrap">
+        <span class="font-medium text-[var(--color-ink)]">Objetivo</span>
+        <select
+          id="strategy"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="reduceTerm" selected>Reduzir o prazo (mesma prestação)</option>
+          <option value="reduceInstallment">Reduzir a prestação (mesmo prazo)</option>
+        </select>
+      </label>
+
+      <details class="sm:col-span-2">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
+          Comissão de amortização
+        </summary>
+        <label class="mt-4 block text-sm">
+          <span class="font-medium text-[var(--color-ink)]">Comissão (%)</span>
+          <input
+            type="number"
+            id="feeRatePercent"
+            value="0.5"
+            min="0"
+            step="0.01"
+            class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+          />
+          <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">
+            Preenchido automaticamente a partir do tipo de taxa (0,5% variável / 2% fixa) -- ajusta
+            se o teu contrato tiver um valor diferente ou isenção.
+          </p>
+        </label>
+      </details>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail-1"></p>
+      <p class="mt-1 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail-2"></p>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          Como calculámos
+        </summary>
+        <p class="mt-2 max-w-[58ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          Sistema de prestação constante (o método padrão em Portugal): a prestação mensal cobre
+          capital e juros para o prazo restante, à taxa mensal (TAN ÷ 12). Ao amortizar, reduzimos
+          o capital em dívida e recalculamos -- a reduzir o prazo, mantemos a prestação e
+          encurtamos os meses; a reduzir a prestação, mantemos o prazo e baixamos o valor mensal. A
+          comissão é a percentagem escolhida sobre o valor amortizado.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>Reduzir prazo ou reduzir prestação</h2>
+      <p>
+        Amortizar um valor ao capital em dívida dá-te sempre duas opções. Reduzir o prazo mantém
+        a prestação mensal exatamente igual, mas encurta o número de meses até o crédito acabar --
+        como pagas o mesmo valor por menos tempo, o total de juros pagos é sempre menor com esta
+        opção. Reduzir a prestação mantém o prazo original, mas baixa o valor que pagas todos os
+        meses a partir de agora -- poupas menos juros no total, mas o alívio no orçamento mensal
+        é imediato. Não há opção certa: depende se o que mais precisas é ter o crédito pago mais
+        cedo, ou ter mais folga no orçamento já no próximo mês.
+      </p>
+
+      <h2>A comissão de amortização</h2>
+      <p>
+        Desde 1 de janeiro de 2026, a isenção temporária da comissão para créditos a taxa
+        variável em habitação própria permanente (criada em 2022) deixou de vigorar, pelo que os
+        limites máximos legais voltaram a aplicar-se por defeito: 0,5% do capital amortizado em
+        créditos a taxa variável, 2% em taxa fixa. Estes são os máximos que o banco pode cobrar --
+        o teu contrato pode prever um valor mais baixo, ou mesmo isenção, por isso vale sempre a
+        pena confirmar o valor exato antes de decidires.
+      </p>
+
+      <h2>Quando é que amortizar compensa</h2>
+      <p>
+        Amortizar antecipadamente só compensa quando a taxa do teu crédito, líquida da comissão, é
+        maior do que o que esse mesmo dinheiro renderia se o deixasses investido ou numa poupança.
+        Com taxas de crédito habitação relativamente baixas, o cálculo nem sempre é óbvio -- por
+        isso esta calculadora mostra-te apenas os números da amortização em si, sem comparar com
+        nenhum produto de investimento específico. Vale também a pena ter sempre o fundo de
+        emergência já constituído antes de amortizar -- o dinheiro amortizado deixa de estar
+        disponível se precisares dele de repente.
+      </p>
+
+      <h2>O que esta calculadora não faz</h2>
+      <p>
+        Assume o sistema de prestação constante, o mais comum em Portugal, mas não modela taxas
+        mistas que mudam de regime a meio do prazo, nem seguros associados ao crédito. Não
+        substitui a simulação oficial do teu banco, que tem acesso ao plano de amortização real
+        do teu contrato.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Ferramentas relacionadas</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/ferramentas/fundo-de-emergencia"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Fundo de Emergência</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Confirma que já tens uma almofada antes de amortizar o crédito.
+          </p>
+        </a>
+        <a
+          href="/ferramentas/regra-50-30-20"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="chart-pie" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Regra 50/30/20</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Vê quanto do teu orçamento pode mesmo ir para amortizações extra.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="house-line" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        Já sabes quanto poupas. Agora falta juntar esse valor.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        O Otterbond ajuda-te a criar um fundo Amortização e a acompanhar o progresso até teres o
+        valor todo junto.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/pt-pt/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Experimentar grátis
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimativa a partir de regras públicas de 2026, não é aconselhamento fiscal, legal ou
+      financeiro.
+    </p>
+  </main>
+
+  <Footer lang="pt-pt" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import {
+    calculateMortgagePrepayment,
+    type PrepaymentMode,
+    type PrepaymentStrategy,
+  } from '../../lib/calculators/mortgagePrepayment';
+
+  const TOOL_SLUG = 'amortizacao-antecipada-credito-habitacao';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function val(id: string): string {
+    return (document.getElementById(id) as HTMLSelectElement).value;
+  }
+
+  const rateTypeSelect = document.getElementById('rateType') as HTMLSelectElement;
+  const feeInput = document.getElementById('feeRatePercent') as HTMLInputElement;
+  const modeSelect = document.getElementById('mode') as HTMLSelectElement;
+  const strategyWrap = document.getElementById('strategy-wrap') as HTMLElement;
+  let feeManuallyEdited = false;
+  feeInput.addEventListener('input', () => {
+    feeManuallyEdited = true;
+  });
+
+  function syncVisibility() {
+    if (!feeManuallyEdited) {
+      feeInput.value = rateTypeSelect.value === 'fixed' ? '2' : '0.5';
+    }
+    strategyWrap.hidden = modeSelect.value === 'monthly';
+  }
+
+  function recalc() {
+    syncVisibility();
+
+    const mode = val('mode') as PrepaymentMode;
+    const strategy = val('strategy') as PrepaymentStrategy;
+
+    const result = calculateMortgagePrepayment({
+      outstandingBalance: num('outstandingBalance'),
+      remainingMonths: num('remainingMonths'),
+      annualRatePercent: num('annualRatePercent'),
+      extraAmount: num('extraAmount'),
+      mode,
+      strategy,
+      feeRatePercent: num('feeRatePercent'),
+    });
+
+    const headline = document.getElementById('result-headline')!;
+    if (mode === 'monthly' || strategy === 'reduceTerm') {
+      const months = Math.round(result.monthsSaved);
+      headline.textContent = `Poupas ${euro.format(result.interestSaved)} em juros e acabas ${months} ${months === 1 ? 'mês' : 'meses'} mais cedo.`;
+    } else {
+      headline.textContent = `A prestação desce para ${euro.format(result.newMonthlyPayment)}, uma poupança de ${euro.format(result.interestSaved)} em juros.`;
+    }
+
+    document.getElementById('result-detail-1')!.textContent =
+      `Prestação atual: ${euro.format(result.baselineMonthlyPayment)} · Prestação nova: ${euro.format(result.newMonthlyPayment)}`;
+    document.getElementById('result-detail-2')!.textContent =
+      `Comissão de amortização: ${euro.format(result.fee)} · Juros totais: ${euro.format(result.baselineTotalInterest)} → ${euro.format(result.newTotalInterest)}`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>

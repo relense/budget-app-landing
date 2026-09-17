@@ -39,7 +39,7 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 | 3 | Regra 50/30/20 | `regra-50-30-20` | **Done** | `src/lib/calculators/rule502030.ts` |
 | 4 | Subsídio de férias e Natal / duodécimos | `subsidio-ferias-natal-duodecimos` | **Done** | `src/lib/calculators/paySchedule.ts` — thin 12-month calendar wrapper over `salaryCalculator.ts`'s existing `calculateSalary` (no new tax logic needed, it already modeled subsidy withholding + duodécimos). |
 | 5 | Custo real de um carro | `custo-real-carro` | Todo | Depreciation + fuel + loan amortisation. No official tax data, mostly arithmetic — low sourcing risk. |
-| 6 | Amortização antecipada do crédito habitação | `amortizacao-antecipada-credito-habitacao` | Todo | French-system amortisation + early-repayment fee. Source: Banco de Portugal (fee %). |
+| 6 | Amortização antecipada do crédito habitação | `amortizacao-antecipada-credito-habitacao` | **Done** | `src/lib/calculators/mortgagePrepayment.ts`. French-system amortisation, reduceTerm/reduceInstallment/monthly modes. 2026 fee caps (0.5%/2%) sourced via WebSearch against Banco de Portugal's own page — confirmed the temporary variable-rate exemption expired 2025-12-31. |
 
 ## Traffic-only tools (rank well, weaker bridge)
 
@@ -55,9 +55,9 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 
 ## Build order (this round)
 
-Per the brief's stated priority + current scope decision: 7 (IRS), then 4 (subsídios), done. Next:
-**6, 11** (the ones needing real sourcing but smaller), then **5, 8, 9, 10, 12, 13** (lower risk /
-smaller effort) in any order.
+Per the brief's stated priority + current scope decision: 7 (IRS), 4 (subsídios), 6 (amortização),
+done. Next: **11** (IMT/Selo — will join the new "Casa e crédito" hub group), then **5, 8, 9, 10,
+12, 13** (lower risk / smaller effort) in any order.
 
 ## Deferred (explicitly not this round)
 
@@ -93,3 +93,8 @@ source (AT / Segurança Social / Banco de Portugal / Código do Trabalho), not a
   `salaryCalculator.ts`'s `calculateSalary` already modeled subsidy withholding and duodécimos
   correctly; this tool is just `paySchedule.ts` turning that into a 12-month calendar. 5 new tests,
   67/67 total passing.
+- 2026-09-17: Tool 6 (Amortização Antecipada) shipped. French-system amortisation from scratch
+  (`mortgagePrepayment.ts`), worked example independently cross-checked via a standalone Node
+  computation of the same formulas before being hardcoded into the test file. New "Casa e crédito"
+  hub group created (IMT/Selo will join it later). Fee caps sourced via WebSearch against Banco de
+  Portugal directly. 8 new tests, 75/75 total passing.
