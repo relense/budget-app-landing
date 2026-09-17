@@ -1,0 +1,352 @@
+---
+// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
+// shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
+// No English counterpart yet (EN mirrors for the 3 new on-brand tools are a follow-up).
+//
+// Year-less title/H1: a fixed-percentage budgeting rule isn't annually-versioned data.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Calculadora da Regra 50/30/20';
+const description =
+  'Calcula os três baldes do teu orçamento com a regra 50/30/20: necessidades, desejos, e poupança, a partir do teu salário líquido. Resultado imediato, sem registo.';
+
+const faqs = [
+  {
+    question: 'O que entra em cada balde?',
+    answer:
+      'Necessidades (50%): renda ou crédito habitação, contas, alimentação, transporte, seguros -- o que tens de pagar mesmo sem escolha. Desejos (30%): restaurantes, subscrições, lazer, roupa que não é essencial -- o que escolhes gastar, não o que és obrigado a pagar. Poupança (20%): fundo de emergência, reforma, objetivos, e qualquer dívida acima do pagamento mínimo.',
+  },
+  {
+    question: 'E se a renda sozinha já passa dos 50%?',
+    answer:
+      'É uma situação comum em Lisboa e no Porto, e não significa que estejas a fazer algo errado. Ajusta as percentagens à tua realidade -- por exemplo 60/20/20 ou 65/15/20 -- em vez de forçares 50% numa cidade onde isso raramente é possível. O importante é manter a poupança como uma fatia deliberada, mesmo que pequena, não zero.',
+  },
+  {
+    question: 'A regra 50/30/20 aplica-se ao rendimento bruto ou líquido?',
+    answer:
+      'Ao líquido -- o que efetivamente recebes depois de impostos e Segurança Social, e que podes gastar ou poupar. É esse o número a usar nesta calculadora.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+  <NavBar lang="pt-pt" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Calculadora da Regra 50/30/20
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Introduz o teu salário líquido e vê quanto deveria ir para necessidades, desejos e
+      poupança -- com as percentagens que quiseres, não só as clássicas.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Salário líquido mensal (€)</span>
+        <input
+          type="number"
+          id="netMonthlyIncome"
+          value="1500"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <details class="sm:col-span-2">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
+          Ajustar as percentagens
+        </summary>
+
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Necessidades (%)</span>
+            <input
+              type="number"
+              id="needsPercent"
+              value="50"
+              min="0"
+              max="100"
+              step="1"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Desejos (%)</span>
+            <input
+              type="number"
+              id="wantsPercent"
+              value="30"
+              min="0"
+              max="100"
+              step="1"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Poupança (%)</span>
+            <input
+              type="number"
+              id="savingsPercent"
+              value="20"
+              min="0"
+              max="100"
+              step="1"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+        </div>
+        <p class="mt-2 text-xs text-[var(--color-ink-faint)]" id="percent-total-caption"></p>
+      </details>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div class="rounded-xl bg-[var(--color-mint-deep)]/10 p-4">
+          <p class="text-sm font-medium text-[var(--color-mint-deep)]/70" id="result-needs-label"></p>
+          <p class="mt-2 text-2xl font-medium text-[var(--color-mint-deep)]" id="result-needs"></p>
+        </div>
+        <div class="rounded-xl bg-[var(--color-mint-deep)]/10 p-4">
+          <p class="text-sm font-medium text-[var(--color-mint-deep)]/70" id="result-wants-label"></p>
+          <p class="mt-2 text-2xl font-medium text-[var(--color-mint-deep)]" id="result-wants"></p>
+        </div>
+        <div class="rounded-xl bg-[var(--color-mint-deep)]/10 p-4">
+          <p class="text-sm font-medium text-[var(--color-mint-deep)]/70" id="result-savings-label"></p>
+          <p class="mt-2 text-2xl font-medium text-[var(--color-mint-deep)]" id="result-savings"></p>
+        </div>
+      </div>
+
+      <p class="mt-5 text-[15px] text-[var(--color-mint-deep)]/80" id="result-annual"></p>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          Como calculámos
+        </summary>
+        <p class="mt-2 max-w-[55ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          Cada balde = salário líquido × a sua percentagem. Por definição, 50% + 30% + 20% = todo
+          o salário -- se ajustares as percentagens, o mesmo princípio aplica-se à nova divisão.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>O que entra em cada balde</h2>
+      <p>
+        Necessidades são o que tens de pagar independentemente de quereres ou não: renda ou
+        crédito habitação, contas de água, luz e internet, alimentação básica, transporte para o
+        trabalho, seguros obrigatórios. Se deixasses de pagar, terias um problema real, não só um
+        incómodo. Desejos são tudo o que escolhes gastar por opção, não por obrigação:
+        restaurantes, subscrições de streaming, roupa além do essencial, saídas, hobbies. A
+        distinção entre necessidade e desejo é pessoal até certo ponto -- um carro pode ser
+        necessidade para quem vive longe do trabalho e desejo para quem tem transporte público à
+        porta. Poupança inclui o fundo de emergência, contribuições para a reforma, objetivos
+        específicos, e qualquer valor pago em dívidas acima do mínimo exigido.
+      </p>
+
+      <h2>Porque a regra falha em Lisboa e no Porto</h2>
+      <p>
+        A regra 50/30/20 nasceu nos Estados Unidos, num contexto onde a renda média representa
+        uma fatia bem menor do rendimento do que em muitas zonas de Lisboa ou do Porto hoje. Se a
+        tua renda sozinha já consome 45% ou 50% do teu salário líquido, sobra pouco ou nada para
+        o resto das necessidades, e a regra clássica deixa de ser realista. Isso não significa
+        que estejas a gerir mal o dinheiro -- significa que o ponto de partida da regra não
+        corresponde à tua realidade de mercado. Nesses casos, faz mais sentido usar uma divisão
+        como 60/20/20 ou 65/15/20, mantendo sempre uma fatia deliberada para poupança, mesmo que
+        pequena.
+      </p>
+
+      <h2>Como adaptar as percentagens à tua vida</h2>
+      <p>
+        Não há problema nenhum em ajustar os três números, desde que continuem a somar 100% do
+        teu rendimento. O que importa manter é a disciplina de teres uma fatia definida para
+        poupança -- mesmo que seja 10% em vez de 20% nalgumas fases da vida -- em vez de a
+        poupança ser "o que sobra por acaso" no fim do mês, que tende a ser zero.
+      </p>
+
+      <h2>O que esta calculadora não faz</h2>
+      <p>
+        Não categoriza as tuas despesas reais por ti, nem sabe se estás a gastar mais em desejos
+        do que achas. É um ponto de partida para dividires o teu rendimento em três fatias -- o
+        trabalho de veres onde o teu dinheiro está a ir realmente continua a ser teu.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Ferramentas relacionadas</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/ferramentas/salario-liquido"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="check-circle" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Salário Líquido</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Não sabes o teu líquido de cor? Calcula-o primeiro a partir do bruto.
+          </p>
+        </a>
+        <a
+          href="/ferramentas/fundo-de-emergencia"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Fundo de Emergência</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Usa a fatia de poupança para definires quanto precisas de ter de lado.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="chart-pie" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        Já sabes os três valores. Agora falta segui-los todos os meses.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        O Otterbond transforma estes três baldes num orçamento real, que acompanha o que gastas
+        automaticamente.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/pt-pt/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Experimentar grátis
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimativas a partir de regras gerais de finanças pessoais, não são aconselhamento fiscal,
+      legal ou financeiro.
+    </p>
+  </main>
+
+  <Footer lang="pt-pt" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateRule502030 } from '../../lib/calculators/rule502030';
+
+  const TOOL_SLUG = 'regra-50-30-20';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+
+  function recalc() {
+    const needsPercent = num('needsPercent');
+    const wantsPercent = num('wantsPercent');
+    const savingsPercent = num('savingsPercent');
+
+    const result = calculateRule502030({
+      netMonthlyIncome: num('netMonthlyIncome'),
+      needsPercent,
+      wantsPercent,
+      savingsPercent,
+    });
+
+    document.getElementById('result-needs-label')!.textContent = `Necessidades (${needsPercent}%)`;
+    document.getElementById('result-wants-label')!.textContent = `Desejos (${wantsPercent}%)`;
+    document.getElementById('result-savings-label')!.textContent = `Poupança (${savingsPercent}%)`;
+
+    document.getElementById('result-needs')!.textContent = euro.format(result.needs);
+    document.getElementById('result-wants')!.textContent = euro.format(result.wants);
+    document.getElementById('result-savings')!.textContent = euro.format(result.savings);
+
+    document.getElementById('result-annual')!.textContent =
+      `${euro.format(result.savings)}/mês de poupança são ${euro.format(result.annualSavings)} por ano.`;
+
+    const totalPercent = needsPercent + wantsPercent + savingsPercent;
+    const caption = document.getElementById('percent-total-caption')!;
+    caption.textContent =
+      totalPercent === 100
+        ? 'As percentagens somam 100%.'
+        : `Atenção: as percentagens somam ${totalPercent}%, não 100%.`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>

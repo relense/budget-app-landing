@@ -12,7 +12,7 @@ import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
 import Icon from '../../components/Icon.astro';
 
-const title = 'Simulador de Reforma: taxa de substituição e poupança necessária';
+const title = 'Simulador de Reforma 2026: quanto vais receber de pensão';
 const description =
   'Simula a tua futura pensão de reforma em Portugal: taxa de substituição estimada, o défice mensal e quanto precisas de poupar por mês. Com base no Ageing Report 2024 da UE. Sem registo.';
 
@@ -293,6 +293,22 @@ const faqJsonLd = {
           ))
         }
       </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-lg font-medium text-[var(--color-ink)]">Ferramentas relacionadas</h2>
+      <ul class="mt-3 space-y-2 text-[15px] text-[var(--color-mint)]">
+        <li>
+          <a href="/ferramentas/calculadora-fire" class="inline-flex items-center gap-1 hover:underline">
+            Calculadora FIRE <Icon name="arrow-right" class="h-3.5 w-3.5" />
+          </a>
+        </li>
+        <li>
+          <a href="/ferramentas/salario-liquido" class="inline-flex items-center gap-1 hover:underline">
+            Calculadora de Salário Líquido <Icon name="arrow-right" class="h-3.5 w-3.5" />
+          </a>
+        </li>
+      </ul>
     </div>
 
     <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">

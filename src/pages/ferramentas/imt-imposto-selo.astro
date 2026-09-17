@@ -1,0 +1,318 @@
+---
+// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
+// shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
+// No English counterpart yet.
+//
+// Mainland Portugal only -- see src/lib/calculators/imtStampDuty.ts's own file comment for why
+// Açores/Madeira aren't modeled, and for the full sourcing on the bracket tables and IMT Jovem.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'IMT e Imposto do Selo na Compra de Casa 2026';
+const description =
+  'Calcula o IMT e o Imposto do Selo a pagar na escritura, com as tabelas de 2026 e a isenção IMT Jovem. Continente. Resultado imediato, sem registo.';
+
+const faqs = [
+  {
+    question: 'O IMT é o único imposto a pagar na escritura?',
+    answer:
+      'Não -- além do IMT, pagas sempre Imposto do Selo (0,8% do valor), mesmo quando o IMT é zero. A estes juntam-se custos que não são impostos: escritura ou documento particular autenticado, registo predial, e eventual comissão bancária se houver crédito habitação associado.',
+  },
+  {
+    question: 'Como funciona a isenção IMT Jovem?',
+    answer:
+      'Se tens 35 anos ou menos, compras a tua primeira habitação própria e permanente, não és dependente para efeitos de IRS, e não foste proprietário de casa nos últimos 3 anos, tens isenção total de IMT e Imposto do Selo até 330.539€, e isenção parcial (só pagas sobre a diferença acima desse valor) até 660.982€. Acima disso, não há benefício.',
+  },
+  {
+    question: 'O valor a considerar é o da escritura ou o valor patrimonial?',
+    answer:
+      'É sempre o maior dos dois -- o preço declarado na escritura ou o Valor Patrimonial Tributário (VPT) do imóvel, o que for mais alto. Esta calculadora assume que introduzes já esse valor de referência.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+  <NavBar lang="pt-pt" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      IMT e Imposto do Selo na Compra de Casa
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Introduz o valor do imóvel e vê quanto vais pagar de IMT e Imposto do Selo na escritura --
+      com as tabelas de 2026 (Continente) e a isenção IMT Jovem.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Valor do imóvel (€)</span>
+        <input
+          type="number"
+          id="price"
+          value="250000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+        <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">
+          O maior entre o preço da escritura e o Valor Patrimonial Tributário (VPT).
+        </p>
+      </label>
+
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Tipo de aquisição</span>
+        <select
+          id="propertyType"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="permanentHome" selected>Habitação própria e permanente</option>
+          <option value="secondaryOrOther">Habitação secundária ou outra</option>
+        </select>
+      </label>
+
+      <label class="mt-1 flex items-center gap-2.5 text-sm sm:col-span-2" id="youth-wrap">
+        <input type="checkbox" id="youthExemptionEligible" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
+        <span class="text-[var(--color-ink)]">
+          Tenho 35 anos ou menos e é a minha primeira habitação própria e permanente (IMT Jovem)
+        </span>
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail"></p>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          Como calculámos
+        </summary>
+        <p class="mt-2 max-w-[58ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          O IMT usa uma tabela de escalões: encontra-se o escalão do valor do imóvel, multiplica-se
+          o valor pela taxa desse escalão, e subtrai-se a parcela a abater (nos dois escalões mais
+          altos, a taxa aplica-se ao valor total, sem parcela a abater). O Imposto do Selo é sempre
+          0,8% do mesmo valor. A isenção IMT Jovem, quando aplicável, zera os dois até 330.539€, ou
+          aplica-os só à diferença acima desse valor até 660.982€.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>Como funcionam os escalões do IMT</h2>
+      <p>
+        O IMT não é uma taxa fixa sobre o valor total do imóvel -- é uma tabela de escalões, mais
+        alta para habitação própria e permanente do que para uma segunda casa ou outra aquisição
+        (que já paga desde o primeiro euro, sem escalão isento). Cada escalão tem uma taxa
+        marginal e uma "parcela a abater" que corrige o efeito de aplicar essa taxa apenas à fatia
+        do valor dentro desse escalão, não ao valor todo. Nos dois escalões mais altos (acima de
+        cerca de 660 mil euros para habitação própria), deixa de haver parcela a abater e a taxa
+        aplica-se ao valor total -- uma regra deliberada para imóveis de valor muito elevado.
+      </p>
+
+      <h2>A isenção IMT Jovem</h2>
+      <p>
+        Quem tem até 35 anos e compra a primeira habitação própria e permanente tem isenção total
+        de IMT e Imposto do Selo até 330.539€ (valor de 2026), e isenção parcial -- só se paga
+        sobre a diferença acima desse valor -- até 660.982€. Acima disso, não há benefício e
+        aplica-se a tabela normal. Para teres direito, não podes ter sido proprietário de qualquer
+        habitação nos últimos 3 anos, nem ser dependente para efeitos de IRS no ano da compra.
+      </p>
+
+      <h2>Outros custos da escritura</h2>
+      <p>
+        Além do IMT e do Imposto do Selo, há custos que não são impostos mas que também entram na
+        conta: a escritura ou o documento particular autenticado, o registo predial (registo da
+        aquisição e, se houver crédito, da hipoteca), e eventuais comissões do banco associadas ao
+        crédito habitação. Vale a pena orçamentar estes custos à parte, já que variam consoante o
+        cartório ou solicitador escolhido.
+      </p>
+
+      <h2>O que esta calculadora não faz</h2>
+      <p>
+        Cobre apenas o Continente -- Açores e Madeira têm tabelas de IMT próprias, com valores
+        diferentes. Não modela outras isenções específicas (por exemplo, revenda no âmbito de
+        atividade imobiliária, ou reabilitação urbana), nem os custos de escritura e registo, que
+        variam por caso.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Ferramentas relacionadas</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/ferramentas/amortizacao-antecipada-credito-habitacao"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="house-line" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Amortização Antecipada</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Depois da escritura, vê como poupar em juros ao longo do crédito.
+          </p>
+        </a>
+        <a
+          href="/ferramentas/fundo-de-emergencia"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Fundo de Emergência</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Confirma que estes custos de escritura não esvaziam a tua almofada.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="house-line" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        Já sabes o custo da escritura. Falta juntar o dinheiro para lá chegar.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        O Otterbond ajuda-te a criar um fundo Casa com este total como meta, e um prazo à tua
+        escolha.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/pt-pt/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Experimentar grátis
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimativa a partir das tabelas de IMT e Imposto do Selo de 2026 para o Continente, não é
+      aconselhamento fiscal, legal ou financeiro.
+    </p>
+  </main>
+
+  <Footer lang="pt-pt" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateImtStampDuty, type PropertyType } from '../../lib/calculators/imtStampDuty';
+
+  const TOOL_SLUG = 'imt-imposto-selo';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function checked(id: string): boolean {
+    return (document.getElementById(id) as HTMLInputElement).checked;
+  }
+  function val(id: string): string {
+    return (document.getElementById(id) as HTMLSelectElement).value;
+  }
+
+  const propertyTypeSelect = document.getElementById('propertyType') as HTMLSelectElement;
+  const youthWrap = document.getElementById('youth-wrap') as HTMLElement;
+
+  function syncVisibility() {
+    youthWrap.hidden = propertyTypeSelect.value !== 'permanentHome';
+  }
+
+  function recalc() {
+    syncVisibility();
+
+    const result = calculateImtStampDuty({
+      price: num('price'),
+      propertyType: val('propertyType') as PropertyType,
+      youthExemptionEligible: checked('youthExemptionEligible'),
+    });
+
+    document.getElementById('result-headline')!.textContent =
+      `IMT ${euro.format(result.imt)} + Imposto do Selo ${euro.format(result.stampDuty)} = ${euro.format(result.total)} a pagar na escritura.`;
+
+    const detail = document.getElementById('result-detail')!;
+    if (result.youthExemptionApplied === 'full') {
+      detail.textContent = 'Isenção total ao abrigo do IMT Jovem.';
+    } else if (result.youthExemptionApplied === 'partial') {
+      detail.textContent = 'Isenção parcial ao abrigo do IMT Jovem: só pagas sobre a diferença acima de 330.539€.';
+    } else {
+      detail.textContent = '';
+    }
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>

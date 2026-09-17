@@ -5,20 +5,23 @@ import { getLangFromUrl, useTranslations } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-// Order mirrors Footer.astro's own tools list (recibos verdes, salário líquido, juros
-// compostos, then the pension calculator), so the two never drift apart.
+// Deliberately capped at the same 3 highest-value-for-search tools as Footer.astro's own list,
+// plus a link to the /ferramentas (/tools) hub -- as the tool count grows (4 today, more on the
+// way), this section stops scaling as a card-per-tool grid the same way the footer would have.
+// New tools get added to the hub, not here; a tool only earns a homepage card by bumping one of
+// these three once it's ranking better for search.
 const hrefs = [
   lang === 'en' ? '/tools/portugal-freelancer-tax-calculator' : '/ferramentas/recibos-verdes',
   lang === 'en' ? '/tools/portugal-net-salary-calculator' : '/ferramentas/salario-liquido',
-  lang === 'en' ? '/tools/compound-interest' : '/ferramentas/juros-compostos',
   lang === 'en' ? '/tools/portugal-state-pension-calculator' : '/ferramentas/simulador-reforma',
 ] as const;
 
 // Reuses each tool's own already-established icon from its own bridge-to-app CTA card, for
 // visual continuity from this homepage card to the tool page itself.
-const icons = ['coins', 'check-circle', 'piggy-bank', 'hourglass'] as const;
+const icons = ['coins', 'check-circle', 'hourglass'] as const;
 
 const tools = t('freeTools.items').map((item, i) => ({ ...item, href: hrefs[i], icon: icons[i] }));
+const hubHref = lang === 'en' ? '/tools' : '/ferramentas';
 ---
 
 <section id="free-tools" class="bg-[var(--color-bg)] py-20 sm:py-28">
@@ -49,6 +52,17 @@ const tools = t('freeTools.items').map((item, i) => ({ ...item, href: hrefs[i], 
           </a>
         ))
       }
+      <a
+        href={hubHref}
+        class="flex flex-col justify-center rounded-[var(--radius-card)] border border-dashed border-[var(--color-line)] p-7"
+        data-reveal
+        style={`transition-delay:${tools.length * 60}ms`}
+      >
+        <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-bg-elevated)] text-[var(--color-mint)]">
+          <Icon name="arrow-right" class="h-5 w-5" />
+        </div>
+        <h3 class="mt-5 text-lg font-medium text-[var(--color-mint)]">{t('freeTools.seeAll')}</h3>
+      </a>
     </div>
   </div>
 </section>

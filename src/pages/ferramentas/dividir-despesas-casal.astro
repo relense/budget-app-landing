@@ -1,0 +1,367 @@
+---
+// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
+// shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
+// No English counterpart yet (EN mirrors for the 3 new on-brand tools are a follow-up).
+//
+// Year-less title/H1: the three split methods aren't annually-versioned data.
+//
+// Expense rows are 4 fixed labelled fields (renda, contas, compras, outras), not a dynamic
+// add/remove-row list -- every existing calculator page in this repo uses fixed fields, and
+// introducing a new dynamic-row UI pattern for just this one page isn't worth the added
+// complexity. "Outras despesas" covers anything that doesn't fit the first three.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Como Dividir Despesas em Casal';
+const description =
+  'Compara três formas de dividir as despesas em casal: 50/50, proporcional ao rendimento, e com o mesmo valor a sobrar para cada um. Resultado imediato, sem registo.';
+
+const faqs = [
+  {
+    question: 'Qual é o método mais justo?',
+    answer:
+      'Não há um método objetivamente "mais justo" -- depende do que o casal valoriza. O 50/50 trata os dois como iguais independentemente do que ganham. O proporcional ao rendimento faz com que quem ganha mais pague mais, em percentagem igual do que ganha. O de sobra igual garante que os dois ficam com o mesmo dinheiro livre no fim do mês. Os três são "corretos" em contextos diferentes.',
+  },
+  {
+    question: 'E se um de nós não tem rendimento fixo?',
+    answer:
+      'Usa uma média dos últimos meses (ou uma estimativa conservadora) como rendimento nesse campo. Se o rendimento variar muito de mês para mês, vale a pena revisitar a divisão regularmente, em vez de a fixares uma vez e esqueceres.',
+  },
+  {
+    question: 'Devemos ter conta conjunta?',
+    answer:
+      'Não é obrigatório para nenhum dos três métodos. Muitos casais preferem manter contas pessoais e transferir a parte de cada um para uma conta ou espaço partilhado só para as despesas comuns -- assim cada um mantém visibilidade sobre o resto do seu próprio dinheiro.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+  <NavBar lang="pt-pt" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Como Dividir Despesas em Casal
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Compara três formas de dividir a renda, as contas e as compras: a meias, proporcional ao
+      que cada um ganha, ou com o mesmo valor a sobrar para os dois no fim do mês.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Rendimento líquido, pessoa A (€)</span>
+        <input
+          type="number"
+          id="incomeA"
+          value="1800"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Rendimento líquido, pessoa B (€)</span>
+        <input
+          type="number"
+          id="incomeB"
+          value="1200"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Renda ou crédito habitação (€)</span>
+        <input
+          type="number"
+          id="expenseRent"
+          value="900"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Contas (água, luz, gás, internet) (€)</span>
+        <input
+          type="number"
+          id="expenseBills"
+          value="150"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Compras / mercearia (€)</span>
+        <input
+          type="number"
+          id="expenseGroceries"
+          value="300"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Outras despesas partilhadas (€)</span>
+        <input
+          type="number"
+          id="expenseOther"
+          value="0"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+
+      <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div class="rounded-xl bg-[var(--color-mint-deep)]/10 p-4">
+          <p class="text-sm font-medium text-[var(--color-mint-deep)]/70">A meias (50/50)</p>
+          <p class="mt-2 text-[15px] text-[var(--color-mint-deep)]" id="result-5050"></p>
+        </div>
+        <div class="rounded-xl bg-[var(--color-mint-deep)]/15 p-4 ring-1 ring-[var(--color-mint-deep)]/20">
+          <p class="text-sm font-medium text-[var(--color-mint-deep)]/70">Proporcional ao rendimento</p>
+          <p class="mt-2 text-[15px] text-[var(--color-mint-deep)]" id="result-proportional"></p>
+          <p class="mt-1 text-xs text-[var(--color-mint-deep)]/60">O método mais usado</p>
+        </div>
+        <div class="rounded-xl bg-[var(--color-mint-deep)]/10 p-4">
+          <p class="text-sm font-medium text-[var(--color-mint-deep)]/70">Sobra igual para os dois</p>
+          <p class="mt-2 text-[15px] text-[var(--color-mint-deep)]" id="result-leftover"></p>
+        </div>
+      </div>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          Como calculámos
+        </summary>
+        <p class="mt-2 max-w-[55ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          A meias: cada um paga metade do total. Proporcional: cada um paga a percentagem do
+          total igual à percentagem que o seu rendimento representa no rendimento combinado.
+          Sobra igual: calcula-se quanto cada um pode contribuir para que, depois de pagar a sua
+          parte, os dois fiquem com o mesmo valor livre.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>Os três métodos, e quando cada um faz sentido</h2>
+      <p>
+        O 50/50 é o mais simples: cada um paga metade de tudo, independentemente do que ganha.
+        Funciona bem quando os rendimentos são parecidos, ou quando o casal prefere manter as
+        contas completamente separadas e simples de calcular. O problema aparece quando há uma
+        diferença grande de rendimento: metade das despesas pode ser uma fatia muito maior do
+        orçamento de quem ganha menos do que de quem ganha mais.
+      </p>
+      <p>
+        O método proporcional ao rendimento resolve isso: cada um contribui com a mesma
+        percentagem do que ganha, não o mesmo valor. Se A ganha o dobro de B, A paga o dobro das
+        despesas -- mas em proporção, os dois estão a "sentir" o mesmo esforço. É o método mais
+        usado por casais com rendimentos bastante diferentes, precisamente por isso.
+      </p>
+      <p>
+        O método de sobra igual vai um passo mais além: não olha só para a proporção do
+        rendimento, mas para o valor absoluto que sobra a cada um depois de pagar a sua parte.
+        Garante que, no fim do mês, os dois têm exatamente o mesmo dinheiro livre para gastar como
+        quiserem -- mesmo que isso signifique que quem ganha mais paga uma fatia ainda maior das
+        despesas do que a proporção pura sugeriria.
+      </p>
+
+      <h2>Rendimentos muito desiguais</h2>
+      <p>
+        Quando a diferença de rendimento é grande, vale a pena falar abertamente sobre qual dos
+        três métodos parece mais equilibrado para os dois, em vez de assumir que um deles é "o
+        correto". Não há problema em revisitar a divisão sempre que a situação financeira de
+        um dos dois mudar -- uma promoção, uma mudança de emprego, ou um período sem rendimento não
+        devem ser motivo de desconforto para reabrir a conversa.
+      </p>
+
+      <h2>Despesas partilhadas vs. pessoais</h2>
+      <p>
+        Esta calculadora trata apenas das despesas partilhadas -- as que existem porque vivem
+        juntos (renda, contas, compras de casa). Despesas pessoais (roupa, saídas individuais,
+        subscrições próprias) costumam ficar fora desta divisão, pagas do que sobra a cada um
+        depois da sua parte das despesas comuns.
+      </p>
+
+      <h2>Conta conjunta ou não</h2>
+      <p>
+        Nenhum dos três métodos exige uma conta conjunta. Muitos casais preferem manter as contas
+        pessoais separadas e transferir a parte de cada um para uma conta ou espaço só para as
+        despesas comuns todos os meses -- assim cada um mantém visibilidade total sobre o resto do
+        seu próprio dinheiro, sem misturar tudo.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Ferramentas relacionadas</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/ferramentas/fundo-de-emergencia"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Fundo de Emergência</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Depois de dividirem as despesas, descubram juntos quanto precisam de lado para
+            imprevistos.
+          </p>
+        </a>
+        <a
+          href="/ferramentas/regra-50-30-20"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="chart-pie" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Regra 50/30/20</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Usa o que sobra depois da tua parte das despesas para veres o teu próprio orçamento
+            pessoal.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="heart" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        Já sabem quanto cada um paga. Falta ter isso visível todos os meses.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        O Otterbond permite partilhar um espaço com o teu par para acompanharem as despesas
+        comuns juntos, sem folhas de cálculo.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/pt-pt/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Experimentar grátis
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimativas a partir de regras gerais de finanças pessoais, não são aconselhamento fiscal,
+      legal ou financeiro.
+    </p>
+  </main>
+
+  <Footer lang="pt-pt" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateSplitExpenses } from '../../lib/calculators/splitExpensesCouple';
+
+  const TOOL_SLUG = 'dividir-despesas-casal';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+
+  function recalc() {
+    const totalExpenses = num('expenseRent') + num('expenseBills') + num('expenseGroceries') + num('expenseOther');
+    const result = calculateSplitExpenses({ incomeA: num('incomeA'), incomeB: num('incomeB'), totalExpenses });
+
+    document.getElementById('result-headline')!.textContent =
+      `Despesas partilhadas: ${euro.format(totalExpenses)}/mês.`;
+
+    document.getElementById('result-5050')!.textContent =
+      `A: ${euro.format(result.fiftyFifty.a)} · B: ${euro.format(result.fiftyFifty.b)}`;
+    document.getElementById('result-proportional')!.textContent =
+      `A: ${euro.format(result.proportional.a)} · B: ${euro.format(result.proportional.b)}`;
+    document.getElementById('result-leftover')!.textContent =
+      `A: ${euro.format(result.equalLeftover.a)} · B: ${euro.format(result.equalLeftover.b)}`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>

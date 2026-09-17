@@ -1,0 +1,337 @@
+---
+// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
+// shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
+// No English counterpart yet.
+//
+// See src/lib/calculators/overtimePay.ts's own comment for the full Código do Trabalho sourcing.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Calculadora de Horas Extra e Trabalho Noturno';
+const description =
+  'Calcula quanto valem as tuas horas extra e horas noturnas, com os acréscimos legais do Código do Trabalho. Resultado imediato, sem registo.';
+
+const faqs = [
+  {
+    question: 'O meu acordo coletivo pode ter valores diferentes?',
+    answer:
+      'Sim -- os acréscimos aqui são os do Código do Trabalho, que se aplicam na ausência de instrumento de regulamentação coletiva (CCT) que preveja outra coisa. Muitos setores têm acordos próprios, por vezes mais favoráveis. Confirma sempre o teu CCT antes de assumir estes valores como definitivos.',
+  },
+  {
+    question: 'O que conta para o limite de 100 horas anuais?',
+    answer:
+      'É o total de horas de trabalho suplementar prestadas ao longo do ano civil, que acumula progressivamente. Depois de ultrapassado, os acréscimos sobem para os valores mais altos (50%/75% em dia útil, 100% em dia de descanso ou feriado).',
+  },
+  {
+    question: 'Horas extra têm um tratamento fiscal diferente em IRS?',
+    answer:
+      'Sim, o trabalho suplementar tem retenção na fonte autónoma e uma taxa reduzida em relação ao rendimento normal, dentro de certos limites -- mas essa é uma questão de retenção de IRS, não do valor bruto calculado aqui, que é apenas o valor a receber antes de impostos.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+  <NavBar lang="pt-pt" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Calculadora de Horas Extra e Trabalho Noturno
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Introduz o teu salário base e as horas que trabalhaste a mais, e vê quanto valem -- com os
+      acréscimos legais para dia útil, dia de descanso ou feriado, e trabalho noturno.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Salário base mensal bruto (€)</span>
+        <input
+          type="number"
+          id="grossMonthlySalary"
+          value="1500"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Horas semanais normais</span>
+        <input
+          type="number"
+          id="weeklyHours"
+          value="40"
+          min="1"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Horas extra em dia útil</span>
+        <input
+          type="number"
+          id="weekdayOvertimeHours"
+          value="0"
+          min="0"
+          step="0.5"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Horas em dia de descanso ou feriado</span>
+        <input
+          type="number"
+          id="restDayOrHolidayHours"
+          value="0"
+          min="0"
+          step="0.5"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Horas noturnas</span>
+        <input
+          type="number"
+          id="nightHours"
+          value="0"
+          min="0"
+          step="0.5"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="mt-1 flex items-center gap-2.5 text-sm">
+        <input type="checkbox" id="aboveAnnualLimit" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
+        <span class="text-[var(--color-ink)]">Já ultrapassei 100 horas extra este ano</span>
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail"></p>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          Como calculámos
+        </summary>
+        <p class="mt-2 max-w-[58ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          Valor da hora = (salário mensal × 12) ÷ (52 × horas semanais). Até às 100 horas extra
+          anuais: +25% na primeira hora em dia útil, +37,5% nas seguintes, +50% em dia de descanso
+          ou feriado. Acima das 100 horas: +50%, +75% e +100%, respetivamente. O trabalho noturno
+          soma sempre +25%, independentemente do limite anual.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>Como se calcula o valor da hora</h2>
+      <p>
+        O Código do Trabalho define uma fórmula própria para o valor da hora normal, usada como
+        base para todos os acréscimos: o salário mensal multiplicado por 12 (para anualizar) e
+        dividido por 52 semanas vezes o número de horas semanais normais. Não é simplesmente o
+        salário a dividir pelas horas do mês -- esta fórmula usa o ano completo como referência.
+      </p>
+
+      <h2>Os dois patamares do trabalho suplementar</h2>
+      <p>
+        Nas primeiras 100 horas extra do ano civil, a primeira hora (ou fração) trabalhada a mais
+        num dia útil tem um acréscimo de 25%, e cada hora seguinte nesse mesmo dia tem 37,5%. Em
+        dia de descanso obrigatório ou feriado, o acréscimo é sempre 50% por hora, sem distinção
+        entre primeira e seguintes. Depois de ultrapassadas as 100 horas anuais, estes valores
+        sobem para 50%, 75% e 100% respetivamente -- um incentivo legal para não normalizar
+        demasiado trabalho suplementar ao longo do ano.
+      </p>
+
+      <h2>O suplemento de trabalho noturno</h2>
+      <p>
+        Trabalhar entre a noite e a manhã (o período exato é definido por lei ou por CCT, tipicamente
+        entre as 22h e as 7h) dá direito a um acréscimo fixo de 25% sobre o valor equivalente de
+        dia -- independente de seres ou não trabalhador por turnos, e independente de essas horas
+        serem também horas extra ou parte do teu horário normal. Este suplemento não se aplica a
+        atividades cuja natureza é já inerentemente noturna, como bares ou discotecas.
+      </p>
+
+      <h2>Quando um acordo coletivo muda tudo isto</h2>
+      <p>
+        Estes valores são os que a lei define por defeito, na ausência de instrumento de
+        regulamentação coletiva (CCT) próprio. Muitos setores negoceiam condições diferentes --
+        por vezes mais favoráveis, por vezes com mecanismos alternativos como banco de horas ou
+        folga compensatória em vez de pagamento. Confirma sempre o teu CCT antes de assumires
+        estes valores como definitivos para a tua situação.
+      </p>
+
+      <h2>O que esta calculadora não faz</h2>
+      <p>
+        Não modela acordos coletivos específicos, banco de horas, nem a retenção de IRS aplicável
+        ao trabalho suplementar (que tem regras próprias, diferentes do salário normal). O
+        resultado é sempre o valor bruto a receber, antes de impostos e Segurança Social.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Ferramentas relacionadas</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/ferramentas/salario-liquido"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="check-circle" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Salário Líquido</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Vê como este valor extra se traduz no teu líquido do mês.
+          </p>
+        </a>
+        <a
+          href="/ferramentas/fundo-de-emergencia"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Fundo de Emergência</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Um bom destino para um rendimento extra e pontual como este.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="moon-stars" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        Já sabes o valor. Agora falta não o perder de vista.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        O Otterbond ajuda-te a adicionar este valor como rendimento extra, sem se misturar com o
+        teu salário normal.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/pt-pt/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Experimentar grátis
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimativa a partir do regime geral do Código do Trabalho, não é aconselhamento legal e não
+      substitui o teu acordo coletivo, se tiveres um.
+    </p>
+  </main>
+
+  <Footer lang="pt-pt" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateOvertimePay } from '../../lib/calculators/overtimePay';
+
+  const TOOL_SLUG = 'calculadora-horas-extra';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function checked(id: string): boolean {
+    return (document.getElementById(id) as HTMLInputElement).checked;
+  }
+
+  function recalc() {
+    const result = calculateOvertimePay({
+      grossMonthlySalary: num('grossMonthlySalary'),
+      weeklyHours: num('weeklyHours'),
+      weekdayOvertimeHours: num('weekdayOvertimeHours'),
+      restDayOrHolidayHours: num('restDayOrHolidayHours'),
+      nightHours: num('nightHours'),
+      aboveAnnualLimit: checked('aboveAnnualLimit'),
+    });
+
+    document.getElementById('result-headline')!.textContent = `Valor total: ${euro.format(result.total)}.`;
+    document.getElementById('result-detail')!.textContent =
+      `Valor da hora normal: ${euro.format(result.hourlyRate)} · Dia útil: ${euro.format(result.weekdayOvertimePay)} · Descanso/feriado: ${euro.format(result.restDayOrHolidayPay)} · Noturno: ${euro.format(result.nightPay)}`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>
