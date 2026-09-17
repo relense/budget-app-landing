@@ -38,7 +38,7 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 | 2 | Dividir despesas em casal | `dividir-despesas-casal` | **Done** | `src/lib/calculators/splitExpensesCouple.ts` |
 | 3 | Regra 50/30/20 | `regra-50-30-20` | **Done** | `src/lib/calculators/rule502030.ts` |
 | 4 | Subsídio de férias e Natal / duodécimos | `subsidio-ferias-natal-duodecimos` | **Done** | `src/lib/calculators/paySchedule.ts` — thin 12-month calendar wrapper over `salaryCalculator.ts`'s existing `calculateSalary` (no new tax logic needed, it already modeled subsidy withholding + duodécimos). |
-| 5 | Custo real de um carro | `custo-real-carro` | Todo | Depreciation + fuel + loan amortisation. No official tax data, mostly arithmetic — low sourcing risk. |
+| 5 | Custo real de um carro | `custo-real-carro` | **Done** | `src/lib/calculators/trueCarCost.ts`. IUC taken as a direct input rather than derived from its own bracket tables (scope cut, flagged in the module). |
 | 6 | Amortização antecipada do crédito habitação | `amortizacao-antecipada-credito-habitacao` | **Done** | `src/lib/calculators/mortgagePrepayment.ts`. French-system amortisation, reduceTerm/reduceInstallment/monthly modes. 2026 fee caps (0.5%/2%) sourced via WebSearch against Banco de Portugal's own page — confirmed the temporary variable-rate exemption expired 2025-12-31. |
 
 ## Traffic-only tools (rank well, weaker bridge)
@@ -55,7 +55,7 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 
 ## Build order (this round)
 
-Per the brief's stated priority + current scope decision: 7, 4, 6, 11 all done. Remaining: **5, 8,
+Per the brief's stated priority + current scope decision: 7, 4, 6, 11, 5 all done. Remaining: **8,
 9, 10, 12, 13** (lower risk / smaller effort), in any order.
 
 ## Deferred (explicitly not this round)
@@ -102,3 +102,6 @@ source (AT / Segurança Social / Banco de Portugal / Código do Trabalho), not a
   cross-checked the two highest-bracket thresholds against a second source since they weren't on
   the first page's visible text). Joined the "Casa e crédito" hub group. 9 new tests, 84/84 total
   passing.
+- 2026-09-17: Tool 5 (Custo Real de um Carro) shipped. Mostly arithmetic (depreciation, fuel,
+  optional loan interest); IUC modeled as a direct input rather than its own bracket tables, per
+  the module's own scope-cut comment. 6 new tests, 90/90 total passing.
