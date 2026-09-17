@@ -357,8 +357,9 @@ function findBracket(brackets: TaxBracket[], taxableIncome: number): TaxBracket 
 // (cumulative) rate applies up to that bracket's own ceiling, and only the excess above it is
 // taxed at the current bracket's marginal rate. Extracted so `calculateFreelancerTaxes` can apply
 // it twice under quociente conjugal (once to the halved income, doubling the result) without
-// duplicating the bracket-lookup logic.
-function computeProgressiveIrs(taxableIncome: number, brackets: TaxBracket[]): number {
+// duplicating the bracket-lookup logic. Exported so irsCalculator.ts (the annual IRS simulator)
+// reuses the exact same bracket-application method rather than a second, possibly-diverging one.
+export function computeProgressiveIrs(taxableIncome: number, brackets: TaxBracket[]): number {
   const bracket = findBracket(brackets, taxableIncome);
   if (bracket.id <= 1) return taxableIncome * bracket.normalRate;
   const bracketAvg = brackets.find((b) => b.id === bracket.id - 1)!;

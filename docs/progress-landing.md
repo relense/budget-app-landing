@@ -45,7 +45,7 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 
 | # | Tool | Slug | Status | Notes |
 |---|------|------|--------|-------|
-| 7 | Simulador de IRS | `simulador-irs` | Todo | **Highest priority** — seasonal (Apr–Jun), most regulated. Brackets, specific deduction, family quotient, deduction caps. Source: AT / Portal das Finanças, 2026 figures. |
+| 7 | Simulador de IRS | `simulador-irs` | **Done** | `src/lib/calculators/irsCalculator.ts`. Reuses `taxCalculator.ts`'s brackets/dependents credit (now exports `computeProgressiveIrs` too) + `salaryCalculator.ts`'s SS rate. Deduction caps + global-cap formula sourced 2026-09-17 (see file header for citations). |
 | 8 | Simulador de subsídio de desemprego | `simulador-subsidio-desemprego` | Todo | 65%/55% of reference remuneration, IAS-bounded, duration table by age/contributions. Source: Segurança Social. |
 | 9 | Calculadora de horas extra e trabalho nocturno | `calculadora-horas-extra` | Todo | Hourly rate formula + legal overtime/night supplements. Source: Código do Trabalho. CCT caveat. |
 | 10 | Simulador de baixa médica | `simulador-baixa-medica` | Todo | Waiting period + percentage-by-duration scale. Source: Segurança Social. |
@@ -55,9 +55,9 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 
 ## Build order (this round)
 
-Per the brief's stated priority + current scope decision: **7 (IRS) next** — urgent and highest
-sourcing risk, do it first while there's room to get it right — then **4, 6, 11** (the ones needing
-real sourcing but smaller), then **5, 8, 9, 10, 12, 13** (lower risk / smaller effort) in any order.
+Per the brief's stated priority + current scope decision: 7 (IRS) done first (urgent, highest
+sourcing risk). Next: **4, 6, 11** (the ones needing real sourcing but smaller), then **5, 8, 9,
+10, 12, 13** (lower risk / smaller effort) in any order.
 
 ## Deferred (explicitly not this round)
 
@@ -84,3 +84,8 @@ source (AT / Segurança Social / Banco de Portugal / Código do Trabalho), not a
 - 2026-09-17: Tools 1–3 shipped, rebased cleanly onto peer session's framework + hub wiring. Scope
   extended to all remaining on-brand + traffic-only tools + IRS this round; rest (EN mirrors, deep
   links, save-result backend) confirmed deferred. This file created.
+- 2026-09-17: Tool 7 (Simulador de IRS) shipped. Researched 2026 deduction caps + global-cap
+  formula via WebSearch/WebFetch (AT's own Art. 78º page + cross-checked tax-advisory summaries,
+  since the official formula is published as an image, not text). Exported `computeProgressiveIrs`
+  from `taxCalculator.ts` (previously private) so this tool reuses the exact same bracket-
+  application method instead of a second implementation. 15 new tests, 62/62 total passing.
