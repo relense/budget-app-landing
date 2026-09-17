@@ -49,15 +49,14 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 | 8 | Simulador de subsídio de desemprego | `simulador-subsidio-desemprego` | Todo | 65%/55% of reference remuneration, IAS-bounded, duration table by age/contributions. Source: Segurança Social. |
 | 9 | Calculadora de horas extra e trabalho nocturno | `calculadora-horas-extra` | Todo | Hourly rate formula + legal overtime/night supplements. Source: Código do Trabalho. CCT caveat. |
 | 10 | Simulador de baixa médica | `simulador-baixa-medica` | Todo | Waiting period + percentage-by-duration scale. Source: Segurança Social. |
-| 11 | IMT e Imposto do Selo | `imt-imposto-selo` | Todo | IMT bracket table (by type/region) + 0.8% Selo. Source: AT, per-year tables. |
+| 11 | IMT e Imposto do Selo | `imt-imposto-selo` | **Done** | `src/lib/calculators/imtStampDuty.ts`. Mainland only (Açores/Madeira scope-cut, flagged). 2026 bracket tables + IMT Jovem thresholds sourced via WebSearch/WebFetch (APCMC practical tables, cross-checked). |
 | 12 | Calculadora de IVA | `calculadora-iva` | Todo | Trivial add/extract VAT, regional rates (mainland/Açores/Madeira). Lowest effort. |
 | 13 | Calculadora de inflação | `calculadora-inflacao` | Todo | CPI series multiplication. Source: INE annual CPI table. |
 
 ## Build order (this round)
 
-Per the brief's stated priority + current scope decision: 7 (IRS), 4 (subsídios), 6 (amortização),
-done. Next: **11** (IMT/Selo — will join the new "Casa e crédito" hub group), then **5, 8, 9, 10,
-12, 13** (lower risk / smaller effort) in any order.
+Per the brief's stated priority + current scope decision: 7, 4, 6, 11 all done. Remaining: **5, 8,
+9, 10, 12, 13** (lower risk / smaller effort), in any order.
 
 ## Deferred (explicitly not this round)
 
@@ -98,3 +97,8 @@ source (AT / Segurança Social / Banco de Portugal / Código do Trabalho), not a
   computation of the same formulas before being hardcoded into the test file. New "Casa e crédito"
   hub group created (IMT/Selo will join it later). Fee caps sourced via WebSearch against Banco de
   Portugal directly. 8 new tests, 75/75 total passing.
+- 2026-09-17: Tool 11 (IMT e Imposto do Selo) shipped. Mainland-only 2026 bracket tables +
+  IMT Jovem exemption thresholds sourced via WebSearch/WebFetch (APCMC's practical tables page,
+  cross-checked the two highest-bracket thresholds against a second source since they weren't on
+  the first page's visible text). Joined the "Casa e crédito" hub group. 9 new tests, 84/84 total
+  passing.
