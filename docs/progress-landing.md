@@ -48,15 +48,15 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 | 7 | Simulador de IRS | `simulador-irs` | **Done** | `src/lib/calculators/irsCalculator.ts`. Reuses `taxCalculator.ts`'s brackets/dependents credit (now exports `computeProgressiveIrs` too) + `salaryCalculator.ts`'s SS rate. Deduction caps + global-cap formula sourced 2026-09-17 (see file header for citations). |
 | 8 | Simulador de subsídio de desemprego | `simulador-subsidio-desemprego` | **Done** | `src/lib/calculators/unemploymentBenefit.ts`. Corrected the brief's own assumption: the "-10% after 180 days" rule was repealed in 2018 — flat 65% the whole duration. Full 2012+ duration table + IAS floors/ceiling sourced. |
 | 9 | Calculadora de horas extra e trabalho nocturno | `calculadora-horas-extra` | **Done** | `src/lib/calculators/overtimePay.ts`. Art. 268º/266º CT percentages (Lei 13/2023), two-tier 100h/year threshold. CCT caveat flagged in explainer. |
-| 10 | Simulador de baixa médica | `simulador-baixa-medica` | Todo | Waiting period + percentage-by-duration scale. Source: Segurança Social. |
+| 10 | Simulador de baixa médica | `simulador-baixa-medica` | **Done** | `src/lib/calculators/sickLeaveBenefit.ts`. 3-day waiting period, 55/60/70/75% bands by leave-day, RR=salary/30 approximation. Employees only (self-employed have a 10-day wait, not modeled). |
 | 11 | IMT e Imposto do Selo | `imt-imposto-selo` | **Done** | `src/lib/calculators/imtStampDuty.ts`. Mainland only (Açores/Madeira scope-cut, flagged). 2026 bracket tables + IMT Jovem thresholds sourced via WebSearch/WebFetch (APCMC practical tables, cross-checked). |
 | 12 | Calculadora de IVA | `calculadora-iva` | Todo | Trivial add/extract VAT, regional rates (mainland/Açores/Madeira). Lowest effort. |
 | 13 | Calculadora de inflação | `calculadora-inflacao` | Todo | CPI series multiplication. Source: INE annual CPI table. |
 
 ## Build order (this round)
 
-Per the brief's stated priority + current scope decision: 7, 4, 6, 11, 5, 8, 9 all done. Remaining:
-**10, 12, 13** (lower risk / smaller effort), in any order.
+Per the brief's stated priority + current scope decision: 7, 4, 6, 11, 5, 8, 9, 10 all done.
+Remaining: **12, 13**.
 
 ## Deferred (explicitly not this round)
 
@@ -113,3 +113,6 @@ source (AT / Segurança Social / Banco de Portugal / Código do Trabalho), not a
 - 2026-09-17: Tool 9 (Calculadora de Horas Extra e Trabalho Noturno) shipped. Art. 268º/266º CT
   percentages (as amended by Lei 13/2023) sourced via WebSearch, two-tier 100-annual-hours
   threshold modeled. 9 new tests, 107/107 total passing.
+- 2026-09-17: Tool 10 (Simulador de Baixa Médica) shipped. 3-day waiting period (0 for
+  hospitalisation) + 55/60/70/75% bands by calendar day of leave, sourced via WebSearch against
+  Segurança Social's own published rules. 6 new tests, 113/113 total passing.
