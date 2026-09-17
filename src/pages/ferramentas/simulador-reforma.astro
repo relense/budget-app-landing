@@ -1,0 +1,382 @@
+---
+// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
+// shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
+// English counterpart: /tools/portugal-state-pension-calculator.
+//
+// Unlike the other 3 calculators, the title/H1 here is deliberately YEAR-LESS: the underlying
+// data (EU Ageing Report editions, the retirement-age formula) isn't annually re-versioned the
+// same way official tax tables are, so a "2026" in the title would misleadingly imply a freshness
+// this data doesn't have. See src/lib/calculators/pensionCalculator.ts for the data sources.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Simulador de Reforma: taxa de substituição e poupança necessária';
+const description =
+  'Simula a tua futura pensão de reforma em Portugal: taxa de substituição estimada, o défice mensal e quanto precisas de poupar por mês. Com base no Ageing Report 2024 da UE. Sem registo.';
+
+const faqs = [
+  {
+    question: 'A idade da reforma vai subir?',
+    answer:
+      'Historicamente sim: a fórmula do Decreto-Lei n.º 187/2007 aumenta a idade legal de reforma em dois terços do aumento da esperança média de vida aos 65 anos, medida pelo INE, e é atualizada todos os anos por portaria. Em 2026 está fixada em 66 anos e 9 meses. Segundo a trajetória atual, não deverá chegar aos 67 anos antes de cerca de 2056, mas isto depende de como a esperança de vida evoluir nos próximos anos, por isso não é uma certeza.',
+  },
+  {
+    question: 'O que é a taxa de substituição?',
+    answer:
+      'É a percentagem do teu último salário que a pensão pública consegue repor no primeiro ano de reforma. É a métrica central usada pela Comissão Europeia para comparar a adequação dos sistemas de pensões entre países, e é a base do cálculo deste simulador.',
+  },
+  {
+    question: 'PPR ou ETF?',
+    answer:
+      'Não há uma resposta certa, depende do que procuras. Um PPR tem benefício fiscal à entrada (dedução em IRS, dentro dos limites), mas normalmente tem comissões mais altas, menos liquidez, e o dinheiro fica preso até à idade da reforma ou a situações específicas. Um ETF (ou outro produto fora do regime PPR) costuma ter comissões mais baixas e liberdade total para resgatar quando quiseres, mas sem o benefício fiscal à entrada, e com tributação diferente sobre as mais-valias. Muita gente usa os dois em simultâneo. Isto não é uma recomendação de investimento, apenas uma comparação de características.',
+  },
+  {
+    question: 'Estes valores são garantidos?',
+    answer:
+      'Não. São uma estimativa baseada em dados públicos (o Ageing Report da Comissão Europeia e as regras atuais da idade de reforma), não uma previsão pessoal nem uma garantia de quanto vais receber. As regras podem mudar, a tua carreira contributiva real pode ser diferente do que este simulador assume, e a tua pensão real só é calculada pela Segurança Social no momento em que te reformares.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+---
+
+<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+  <NavBar lang="pt-pt" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Simulador de Reforma
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Estima quanto da tua pensão pública vai cobrir o teu salário atual, e quanto precisas de
+      poupar por mês para fechar essa diferença, com base nas projeções oficiais da União
+      Europeia.
+    </p>
+    <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+      Esta é uma projeção a partir de dados públicos, não uma previsão pessoal nem aconselhamento
+      financeiro.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Ano de nascimento</span>
+        <input
+          type="number"
+          id="birthYear"
+          value="1990"
+          min="1940"
+          max="2020"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Salário líquido mensal atual (€)</span>
+        <input
+          type="number"
+          id="netMonthlySalary"
+          value="1500"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Idade de reforma pretendida</span>
+        <input
+          type="number"
+          id="retirementAge"
+          value="66.75"
+          min="50"
+          max="80"
+          step="0.01"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+        <p class="mt-1.5 text-sm text-[var(--color-ink-faint)]" id="retirementAge-caption"></p>
+        <p class="mt-1 text-xs text-[var(--color-ink-faint)]">
+          Idade legal atual (2026): 66 anos e 9 meses.
+        </p>
+      </label>
+
+      <details class="sm:col-span-2">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
+          Opções avançadas (já poupado, retorno esperado)
+        </summary>
+
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Já poupado para a reforma (€)</span>
+            <input
+              type="number"
+              id="alreadySaved"
+              value="0"
+              min="0"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Retorno real anual esperado (%)</span>
+            <input
+              type="number"
+              id="realReturnPercent"
+              value="3"
+              min="0"
+              step="0.1"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+            <p class="mt-1 text-xs text-[var(--color-ink-faint)]">
+              É uma suposição: acima da inflação, não a rentabilidade nominal anunciada num
+              produto financeiro.
+            </p>
+          </label>
+
+          <label class="mt-1 flex items-center gap-2.5 text-sm sm:col-span-2">
+            <input type="checkbox" id="noGrowthInRetirement" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
+            <span class="text-[var(--color-ink)]">
+              Sem crescimento do investimento durante a reforma (mais simples, mais conservador)
+            </span>
+          </label>
+
+          <p class="text-xs text-[var(--color-ink-faint)] sm:col-span-2">
+            Horizonte de planeamento: 20 anos (simplificação).
+          </p>
+        </div>
+      </details>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-pension-gap"></p>
+      <p class="mt-1 text-[15px] text-[var(--color-mint-deep)]/80" id="result-capital-needed"></p>
+
+      <p class="mt-5 text-sm font-medium text-[var(--color-mint-deep)]/70">
+        Isso são, a partir de hoje:
+      </p>
+      <p class="mt-1 text-4xl font-medium text-[var(--color-mint-deep)]" id="result-monthly-saving">€0/mês</p>
+
+      <div class="mt-6 flex items-end gap-8">
+        <div class="flex flex-col items-center gap-2">
+          <div class="flex h-32 w-12 items-end rounded-lg bg-[var(--color-mint-deep)]/10">
+            <div id="bar-today" class="w-full rounded-lg bg-[var(--color-mint-deep)]" style="height:0%"></div>
+          </div>
+          <p class="text-xs text-[var(--color-mint-deep)]/70">Hoje (base 2022)</p>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <div class="flex h-32 w-12 items-end rounded-lg bg-[var(--color-mint-deep)]/10">
+            <div id="bar-retirement" class="w-full rounded-lg bg-[var(--color-mint-deep)]" style="height:0%"></div>
+          </div>
+          <p class="text-xs text-[var(--color-mint-deep)]/70" id="bar-retirement-label"></p>
+        </div>
+      </div>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>O que é a taxa de substituição, e porque está a cair</h2>
+      <p>
+        A "taxa de substituição" é a percentagem do teu último salário que a pensão pública
+        consegue repor quando te reformas. Uma taxa de 70%, por exemplo, significa que a tua
+        primeira pensão ronda 70% do que ganhavas em atividade. Em Portugal, esta taxa tem vindo
+        a descer ao longo das últimas décadas, sobretudo por dois motivos estruturais: o
+        envelhecimento demográfico, que reduz o número de contribuintes ativos por cada
+        pensionista, e sucessivas alterações às fórmulas de cálculo da Segurança Social, pensadas
+        para tornar o sistema sustentável a longo prazo. Isto não é uma opinião nem uma previsão
+        alarmista, é o que os próprios modelos oficiais da União Europeia projetam para Portugal
+        nas próximas décadas.
+      </p>
+
+      <h2>A quebra entre 2040 e 2050: um efeito estatístico, não um corte real</h2>
+      <p>
+        Se olhares para os números período a período, vais notar algo estranho: a taxa de
+        substituição projetada sobe até 2040 e depois cai a pique até 2050. Isto pode parecer um
+        "corte" nas pensões para quem se reforma nessa década, mas não é isso que está a
+        acontecer. O relatório da Comissão Europeia explica que esta quebra reflete sobretudo o
+        desaparecimento gradual da Caixa Geral de Aposentações (CGA), o regime de pensões dos
+        funcionários públicos anteriores a 2006. Os últimos beneficiários da CGA com carreiras
+        longas e salários elevados estão a chegar à reforma por volta de 2048, e a partir daí
+        deixam de "puxar" a média para cima. Não é uma projeção de que a tua pensão pessoal vai
+        cair para metade nessa década, é uma mudança na composição estatística de quem se está a
+        reformar.
+      </p>
+
+      <h2>O que é o Ageing Report, e que edição usa este simulador</h2>
+      <p>
+        Este simulador usa os números publicados no "2024 Ageing Report" (relatório de
+        envelhecimento de 2024) da Comissão Europeia, na ficha-país específica de Portugal,
+        elaborada em conjunto com o Ageing Working Group. É o documento oficial de referência da
+        UE para projeções de longo prazo sobre pensões, saúde e finanças públicas em cada
+        Estado-membro, atualizado a cada três anos. Os valores de taxa de substituição usados
+        aqui vêm diretamente da Tabela 18 desse relatório, linha "taxa de substituição total
+        (benefícios relacionados com contribuições)".
+      </p>
+
+      <h2>PPR: o que é, limites de dedução em IRS, e regras de resgate</h2>
+      <p>
+        Um PPR (Plano Poupança Reforma) é um produto de poupança de longo prazo, pensado
+        especificamente para complementar a pensão pública, com benefícios fiscais associados. Ao
+        investir num PPR, podes deduzir à coleta de IRS 20% do valor aplicado durante o ano, até
+        uma dedução máxima que depende da tua idade a 1 de janeiro do ano da aplicação: 400€
+        (sobre um investimento até 2.000€) até aos 35 anos, 350€ (sobre até 1.750€) entre os 35 e
+        os 50 anos, e 300€ (sobre até 1.500€) acima dos 50 anos. Estes limites, definidos no
+        artigo 21.º do Estatuto dos Benefícios Fiscais, aplicam-se por contribuinte, não por
+        agregado familiar.
+      </p>
+      <p>
+        Quanto ao resgate, há sete situações que permitem levantar o dinheiro sem penalização:
+        reforma por velhice, atingir os 60 anos, pagamento de prestações do crédito à habitação
+        própria, desemprego de longa duração (mais de 12 meses, inscrito no IEFP), incapacidade
+        permanente para o trabalho, doença grave, e morte do titular. As três primeiras só
+        dispensam penalização cinco anos depois da entrega respetiva; as restantes não têm prazo
+        mínimo. Fora destas situações, o resgate costuma implicar a devolução dos benefícios
+        fiscais já obtidos, com um agravamento, além da tributação normal das mais-valias.
+      </p>
+
+      <h2>Porque usamos valores reais (ajustados à inflação)</h2>
+      <p>
+        Todos os valores neste simulador — o teu salário, a pensão estimada, o capital necessário
+        — estão expressos em euros de hoje, não em euros nominais do futuro. Isto significa que já
+        assumimos que o teu salário e os preços vão subir ao ritmo da inflação, e trabalhamos
+        apenas com o poder de compra real. É por isso que a "taxa de retorno esperada" que podes
+        ajustar aqui é uma taxa de retorno real (acima da inflação), não a rentabilidade nominal
+        que vês anunciada num produto financeiro.
+      </p>
+
+      <h2>O que este simulador não sabe</h2>
+      <p>
+        Este simulador não conhece a tua carreira contributiva completa, não sabe se vais ter
+        interrupções (desemprego, baixa médica prolongada, anos no estrangeiro), não modela a
+        evolução real do teu salário ao longo da carreira, e não pode prever alterações futuras às
+        regras da Segurança Social, algo que Portugal já fez várias vezes nas últimas décadas. É
+        uma projeção construída a partir de dados públicos e de uma fórmula simplificada, não uma
+        previsão pessoal, e não substitui uma simulação feita diretamente na Segurança Social
+        Direta com a tua carreira contributiva real.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="hourglass" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        Já sabes o número. Agora falta guardá-lo todos os meses.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        O Otterbond ajuda-te a separar esse valor automaticamente todos os meses, sem teres de
+        pensar nisso.
+      </p>
+      <a
+        href="/pt-pt/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Experimentar grátis
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+  </main>
+
+  <Footer lang="pt-pt" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculatePensionGap } from '../../lib/calculators/pensionCalculator';
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const pct = new Intl.NumberFormat('pt-PT', { maximumFractionDigits: 1 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function checked(id: string): boolean {
+    return (document.getElementById(id) as HTMLInputElement).checked;
+  }
+
+  function ageCaption(age: number): string {
+    const years = Math.floor(age);
+    const months = Math.round((age - years) * 12);
+    if (months === 0) return `${years} anos`;
+    return `${years} anos e ${months} ${months === 1 ? 'mês' : 'meses'}`;
+  }
+
+  function recalc() {
+    const retirementAge = num('retirementAge');
+    (document.getElementById('retirementAge-caption') as HTMLElement).textContent =
+      `= ${ageCaption(retirementAge)}`;
+
+    const result = calculatePensionGap({
+      birthYear: num('birthYear'),
+      currentYear: new Date().getFullYear(),
+      netMonthlySalary: num('netMonthlySalary'),
+      retirementAge,
+      alreadySaved: num('alreadySaved'),
+      realReturnPercent: num('realReturnPercent'),
+      noGrowthInRetirement: checked('noGrowthInRetirement'),
+    });
+
+    const rate = pct.format(result.replacementRatePercent);
+    document.getElementById('result-headline')!.textContent =
+      `Em ${result.retirementYear} a pensão pública deverá cobrir cerca de ${rate}% do teu salário.`;
+
+    document.getElementById('result-pension-gap')!.textContent =
+      `Pensão estimada: ${euro.format(result.estimatedMonthlyPension)}/mês · Diferença para o teu salário atual: ${euro.format(result.monthlyGap)}/mês`;
+
+    document.getElementById('result-capital-needed')!.textContent =
+      `Para manter o teu nível de vida durante 20 anos, precisas de cerca de ${euro.format(result.capitalNeededAtRetirement)} guardados em ${result.retirementYear}.`;
+
+    document.getElementById('result-monthly-saving')!.textContent =
+      `${euro.format(result.monthlySavingNeeded)}/mês`;
+
+    const todayRate = 67.3; // 2022 baseline, the table's first published year
+    (document.getElementById('bar-today') as HTMLElement).style.height = `${todayRate}%`;
+    (document.getElementById('bar-retirement') as HTMLElement).style.height = `${result.replacementRatePercent}%`;
+    (document.getElementById('bar-retirement-label') as HTMLElement).textContent = `${result.retirementYear}`;
+  }
+
+  form.addEventListener('input', recalc);
+  recalc();
+</script>

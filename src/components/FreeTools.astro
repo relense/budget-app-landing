@@ -1,0 +1,54 @@
+---
+import Icon from './Icon.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+// Order mirrors Footer.astro's own tools list (recibos verdes, salário líquido, juros
+// compostos, then the pension calculator), so the two never drift apart.
+const hrefs = [
+  lang === 'en' ? '/tools/portugal-freelancer-tax-calculator' : '/ferramentas/recibos-verdes',
+  lang === 'en' ? '/tools/portugal-net-salary-calculator' : '/ferramentas/salario-liquido',
+  lang === 'en' ? '/tools/compound-interest' : '/ferramentas/juros-compostos',
+  lang === 'en' ? '/tools/portugal-state-pension-calculator' : '/ferramentas/simulador-reforma',
+] as const;
+
+// Reuses each tool's own already-established icon from its own bridge-to-app CTA card, for
+// visual continuity from this homepage card to the tool page itself.
+const icons = ['coins', 'check-circle', 'piggy-bank', 'hourglass'] as const;
+
+const tools = t('freeTools.items').map((item, i) => ({ ...item, href: hrefs[i], icon: icons[i] }));
+---
+
+<section id="free-tools" class="bg-[var(--color-bg)] py-20 sm:py-28">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="max-w-2xl" data-reveal>
+      <h2 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+        {t('freeTools.heading')}
+      </h2>
+      <p class="mt-4 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        {t('freeTools.body')}
+      </p>
+    </div>
+
+    <div class="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        tools.map((tool, i) => (
+          <a
+            href={tool.href}
+            class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7"
+            data-reveal
+            style={`transition-delay:${i * 60}ms`}
+          >
+            <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+              <Icon name={tool.icon} class="h-5 w-5" />
+            </div>
+            <h3 class="mt-5 text-lg font-medium text-[var(--color-ink)]">{tool.title}</h3>
+            <p class="mt-2 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">{tool.body}</p>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>

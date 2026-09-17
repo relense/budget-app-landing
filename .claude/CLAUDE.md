@@ -133,13 +133,14 @@ the single source of tokens; don't reintroduce a `tailwind.config.js`.
 
 - Waitlist end-to-end verified working (2026-09-03) against a local `budget-app-api` dev server
   on port 4400: real 201 on signup, real 409 on a repeat submission, correct message for each.
-  Production URL (`https://budget-app-api-6hrz.onrender.com/waitlist`) is set in `.env.example`
-  as the documented value but 404s as of this date — the route landed on `budget-app-api`'s
-  `develop` branch (PR #117) but hasn't been promoted to `main`/redeployed yet. No frontend work
-  left here; this is purely "wait for that deploy," then set `WAITLIST_API_URL` to that URL in
-  whatever's providing env vars for the actual production build (Cloudflare Pages' dashboard, not
-  a committed file). CORS on their end is a placeholder any-origin until this site has a real
-  domain, at which point tell that session the domain so they can lock it down.
+  As of 2026-09-17, production is confirmed live and working too, but at a different URL than
+  `.env.example` still documents: `https://staging.api.otterbond.app/waitlist` (not
+  `https://budget-app-api-6hrz.onrender.com/waitlist`, which `.env.example`'s comment references
+  as the target — that Render URL was the original plan before `budget-app-api` moved to a custom
+  domain). Confirmed via a direct `curl -X POST` (201) and by checking what Cloudflare Pages'
+  production build actually serves (`WAITLIST_API_URL` is already correctly set there to the
+  `staging.api.otterbond.app` URL). No frontend work left here. `.env.example`'s comment is stale
+  and should be updated to the real URL next time that file is touched.
 - `astro.config.mjs`'s `site` and `public/robots.txt`'s sitemap line are set to the real domain
   (`https://otterbond.app`) as of 2026-09-17. `@astrojs/sitemap` generates `sitemap-index.xml`
   from that `site` value, no further sitemap work needed. `budget-app-api`'s CORS still needs

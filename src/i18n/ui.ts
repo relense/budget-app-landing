@@ -116,6 +116,28 @@ export const ui = {
     'pricing.cta': 'Start free trial',
     'pricing.ctaNote': 'Purchases happen on the web. No app-store markup.',
 
+    'freeTools.heading': 'Free tools, no sign-up',
+    'freeTools.body':
+      'Four calculators built on the same numbers Otterbond uses internally, useful whether or not you ever install the app.',
+    'freeTools.items': [
+      {
+        title: 'Recibos verdes, without the guesswork',
+        body: 'Estimate your net income as a freelancer in Portugal, IRS, Social Security and expenses included, in seconds.',
+      },
+      {
+        title: 'Your real Portuguese net salary',
+        body: "Go from gross to net (or the other way around) with 2026's official IRS and Social Security tables, for Mainland, Azores and Madeira.",
+      },
+      {
+        title: 'Compound interest, made visible',
+        body: 'See exactly how a starting balance and a monthly amount grow over time, at any interest rate you choose.',
+      },
+      {
+        title: 'What will your state pension actually cover?',
+        body: "Estimate your Portugal pension gap and how much you'd need to save monthly to close it, based on the EU's own projections.",
+      },
+    ],
+
     'screenshotGallery.heading': "See it, don't just take our word for it",
     'screenshotGallery.tabMobile': 'Mobile',
     'screenshotGallery.tabWeb': 'Web',
@@ -242,6 +264,11 @@ export const ui = {
     'waitlist.msg.tooMany': 'Too many attempts. Try again later.',
     'waitlist.msg.generic': 'Something went wrong. Try again in a moment.',
 
+    'cookieConsent.text':
+      'We use analytics to understand how visitors use this site. No personal data is sold or shared with advertisers.',
+    'cookieConsent.accept': 'Accept',
+    'cookieConsent.reject': 'Reject',
+
     'footer.tagline': 'A shared, multi-currency budget and savings tracker.',
     'footer.legalHeading': 'Legal',
     'footer.privacy': 'Privacy Policy',
@@ -250,6 +277,7 @@ export const ui = {
     'footer.toolsRecibosVerdes': 'Portugal freelancer tax calculator',
     'footer.toolsSalarioLiquido': 'Portugal net salary calculator',
     'footer.toolsCompoundInterest': 'Compound interest calculator',
+    'footer.toolsReforma': 'Portugal state pension calculator',
     'footer.madeBy': 'Made by relense',
 
     'notFound.title': 'Page not found, Otterbond',
@@ -368,6 +396,28 @@ export const ui = {
     ],
     'pricing.cta': 'Começar avaliação grátis',
     'pricing.ctaNote': 'As compras acontecem na web. Sem sobretaxa de loja de aplicações.',
+
+    'freeTools.heading': 'Ferramentas gratuitas, sem registo',
+    'freeTools.body':
+      'Quatro calculadoras construídas com os mesmos números que o Otterbond usa por dentro, úteis mesmo que nunca chegues a instalar a app.',
+    'freeTools.items': [
+      {
+        title: 'Recibos verdes, sem adivinhar',
+        body: 'Estima o teu rendimento líquido como trabalhador independente em Portugal, IRS, Segurança Social e despesas incluídos, em segundos.',
+      },
+      {
+        title: 'O teu salário líquido, sem surpresas',
+        body: 'Passa de bruto a líquido (ou ao contrário) com as tabelas oficiais de IRS e Segurança Social de 2026, para Continente, Açores e Madeira.',
+      },
+      {
+        title: 'Juros compostos, à vista',
+        body: 'Vê exatamente como um valor inicial e uma poupança mensal crescem ao longo do tempo, à taxa que quiseres testar.',
+      },
+      {
+        title: 'Quanto vai cobrir a tua pensão?',
+        body: 'Estima o teu défice de reforma em Portugal e quanto precisas de poupar por mês para o fechar, com base nas projeções oficiais da UE.',
+      },
+    ],
 
     'screenshotGallery.heading': 'Vê por ti mesmo, não fiques só pela nossa palavra',
     'screenshotGallery.tabMobile': 'Telemóvel',
@@ -495,6 +545,11 @@ export const ui = {
     'waitlist.msg.tooMany': 'Demasiadas tentativas. Tenta novamente mais tarde.',
     'waitlist.msg.generic': 'Algo correu mal. Tenta novamente dentro de momentos.',
 
+    'cookieConsent.text':
+      'Usamos análises para perceber como os visitantes usam este site. Não vendemos nem partilhamos dados pessoais com publicidade.',
+    'cookieConsent.accept': 'Aceitar',
+    'cookieConsent.reject': 'Rejeitar',
+
     'footer.tagline': 'Um controlo de orçamento e poupanças partilhado e multi-moeda.',
     'footer.legalHeading': 'Legal',
     'footer.privacy': 'Política de Privacidade',
@@ -503,6 +558,7 @@ export const ui = {
     'footer.toolsRecibosVerdes': 'Simulador recibos verdes',
     'footer.toolsSalarioLiquido': 'Calculadora salário líquido',
     'footer.toolsCompoundInterest': 'Calculadora de juros compostos',
+    'footer.toolsReforma': 'Simulador de reforma',
     'footer.madeBy': 'Feito por relense',
 
     'notFound.title': 'Página não encontrada, Otterbond',
