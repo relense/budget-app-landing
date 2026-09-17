@@ -1,0 +1,291 @@
+---
+// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
+// shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
+// No English counterpart yet.
+//
+// See src/lib/calculators/sickLeaveBenefit.ts's own comment for the full sourcing. Employees
+// (TCO) only -- self-employed workers have a different 10-day waiting period, not modeled.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Simulador de Baixa Médica 2026';
+const description =
+  'Estima quanto recebes de subsídio de doença por dia e no total, com o período de espera e as percentagens de 2026. Resultado imediato, sem registo.';
+
+const faqs = [
+  {
+    question: 'Os primeiros dias de baixa não são mesmo pagos?',
+    answer:
+      'Por norma, não -- os primeiros 3 dias são um "período de espera" em que a Segurança Social não paga, e a entidade patronal também não é obrigada a pagar (salvo se o contrato ou CCT disser o contrário). A exceção é o internamento hospitalar ou cirurgia em ambulatório, em que o pagamento começa logo no primeiro dia.',
+  },
+  {
+    question: 'Porque é que a percentagem sobe com o tempo?',
+    answer:
+      'É uma forma de o sistema dar mais proteção a baixas mais longas, que tendem a corresponder a situações mais graves. Começa em 55% (dias 1 a 30), sobe para 60% (31 a 90), depois 70% (91 a 365), e chega a 75% para baixas com mais de um ano.',
+  },
+  {
+    question: 'Isto aplica-se a trabalhadores independentes?',
+    answer:
+      'Não exatamente -- este simulador cobre trabalhadores por conta de outrem. Quem trabalha a recibos verdes tem um período de espera diferente (10 dias, em vez de 3), entre outras diferenças nas regras.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+  <NavBar lang="pt-pt" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Simulador de Baixa Médica
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Introduz o teu salário médio e os dias de baixa, e vê quanto recebes no total e por dia,
+      depois do período de espera.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Salário bruto médio mensal (€)</span>
+        <input
+          type="number"
+          id="averageMonthlySalary"
+          value="1500"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Dias de baixa</span>
+        <input
+          type="number"
+          id="totalLeaveDays"
+          value="15"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="mt-1 flex items-center gap-2.5 text-sm sm:col-span-2">
+        <input type="checkbox" id="isHospitalization" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
+        <span class="text-[var(--color-ink)]">Internamento hospitalar ou cirurgia em ambulatório (sem período de espera)</span>
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail"></p>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          Como calculámos
+        </summary>
+        <p class="mt-2 max-w-[58ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          Remuneração de referência diária = salário médio mensal ÷ 30. Os primeiros 3 dias de
+          baixa não são pagos (0 dias se houver internamento). A cada dia pago aplica-se a
+          percentagem do respetivo período: 55% (dias 1-30), 60% (31-90), 70% (91-365), 75% (mais
+          de 365 dias).
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>O período de espera</h2>
+      <p>
+        Os primeiros 3 dias de qualquer baixa médica são um "período de espera" -- a Segurança
+        Social não paga por eles, e a entidade patronal, por norma, também não é obrigada a fazê-lo
+        (a não ser que o teu contrato ou acordo coletivo preveja o contrário). A única exceção é
+        internamento hospitalar ou cirurgia em ambulatório, casos em que o pagamento começa logo no
+        primeiro dia, sem período de espera.
+      </p>
+
+      <h2>Porque a percentagem sobe com a duração</h2>
+      <p>
+        O subsídio de doença não paga sempre a mesma percentagem -- começa em 55% da remuneração de
+        referência para os primeiros 30 dias, sobe para 60% entre os dias 31 e 90, para 70% entre
+        os dias 91 e 365, e atinge 75% para baixas que ultrapassem um ano. A lógica é dar mais
+        proteção a situações mais prolongadas, que tendem a ser também mais graves.
+      </p>
+
+      <h2>Como se calcula a remuneração de referência</h2>
+      <p>
+        A remuneração de referência diária resulta de dividir por 180 o total de remunerações
+        brutas registadas nos 6 meses civis anteriores ao início da baixa (sem contar subsídios de
+        férias ou Natal). Este simulador simplifica isso a partir de um único valor de salário
+        médio mensal -- se o teu rendimento variou muito nesse período, o resultado real pode
+        diferir.
+      </p>
+
+      <h2>O que este simulador não faz</h2>
+      <p>
+        Cobre apenas trabalhadores por conta de outrem -- trabalhadores independentes (recibos
+        verdes) têm um período de espera diferente (10 dias). Não modela baixas por doença
+        profissional ou acidente de trabalho, que seguem regras próprias, nem situações de
+        gravidez de risco.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Ferramentas relacionadas</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/ferramentas/fundo-de-emergencia"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Fundo de Emergência</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Cobre os dias do período de espera e a diferença de rendimento.
+          </p>
+        </a>
+        <a
+          href="/ferramentas/simulador-subsidio-desemprego"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="umbrella" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Subsídio de Desemprego</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Outra prestação da Segurança Social com uma lógica de cálculo parecida.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="first-aid" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        Já sabes o número. Agora vê como fica o teu mês.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        O Otterbond mostra-te quanto podes gastar por dia com um rendimento temporariamente mais
+        baixo, sem surpresas.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/pt-pt/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Experimentar grátis
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimativa a partir de regras públicas de 2026, não é aconselhamento fiscal, legal ou
+      financeiro, nem substitui o cálculo oficial da Segurança Social.
+    </p>
+  </main>
+
+  <Footer lang="pt-pt" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateSickLeaveBenefit } from '../../lib/calculators/sickLeaveBenefit';
+
+  const TOOL_SLUG = 'simulador-baixa-medica';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function checked(id: string): boolean {
+    return (document.getElementById(id) as HTMLInputElement).checked;
+  }
+
+  function recalc() {
+    const result = calculateSickLeaveBenefit({
+      averageMonthlySalary: num('averageMonthlySalary'),
+      totalLeaveDays: num('totalLeaveDays'),
+      isHospitalization: checked('isHospitalization'),
+    });
+
+    document.getElementById('result-headline')!.textContent =
+      `Recebes cerca de ${euro.format(result.totalBenefit)} no total, ${euro.format(result.averageDailyBenefit)} por dia após o período de espera.`;
+    document.getElementById('result-detail')!.textContent =
+      `Dias de espera não pagos: ${result.waitingDays} · Dias pagos: ${result.payableDays}`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>

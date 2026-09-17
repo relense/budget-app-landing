@@ -11,3 +11,10 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+interface Window {
+  /** Set by CookieConsent.astro's inline script, only after consent -- always optional and always
+   * guarded with `typeof window.gtag === 'function'` before use, since it may never load (consent
+   * rejected) or not have loaded yet. */
+  gtag?: (...args: unknown[]) => void;
+}

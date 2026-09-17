@@ -1,0 +1,337 @@
+---
+// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
+// shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
+// No English counterpart yet (EN mirrors for the 3 new on-brand tools are a follow-up).
+//
+// Year-less title/H1, like simulador-reforma.astro: a fund target from your own costs isn't
+// annually-versioned data, so a "2026" here would be meaningless.
+//
+// This is the most direct bridge of the 3 new tools: the output maps one-to-one onto the app's
+// own Emergency Fund goal type (target amount, monthly target, target date).
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Calculadora de Fundo de Emergência';
+const description =
+  'Calcula quanto precisas de poupar para o teu fundo de emergência: o valor alvo, quanto já tens, e em quantos meses o atinges ao teu ritmo. Resultado imediato, sem registo.';
+
+const faqs = [
+  {
+    question: 'Quantos meses de fundo de emergência preciso?',
+    answer:
+      '6 meses de despesas fixas é o ponto de partida mais comum. Vale a pena ficar mais perto de 3 meses se tens um emprego estável, sem dependentes, e um segundo rendimento em casa. Vale a pena ficar mais perto de 9 ou 12 meses se és freelancer ou tens rendimento irregular, se és o único rendimento do agregado, ou se tens dependentes a cargo.',
+  },
+  {
+    question: 'Onde devo guardar o fundo de emergência?',
+    answer:
+      'Em algo líquido, ou seja, que consigas levantar em poucos dias sem penalização nem risco de perder valor: uma conta poupança simples ou um depósito a prazo de curto prazo. Não é dinheiro para investir em ações, ETFs ou fundos, mesmo que a rentabilidade pareça melhor -- o objetivo deste fundo é estar lá quando precisares dele, não crescer.',
+  },
+  {
+    question: 'O que conta como emergência?',
+    answer:
+      'Uma despesa inesperada e necessária: perda de emprego, uma reparação urgente (carro, casa), uma despesa de saúde não coberta. Não conta uma promoção, um saldo, ou umas férias que decidiste ter de repente -- isso é orçamento normal, não emergência.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+  <NavBar lang="pt-pt" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Calculadora de Fundo de Emergência
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Quanto deves ter de lado antes de mais nada. Introduz as tuas despesas fixas e o que já
+      tens guardado, e sabe o valor alvo, quanto falta, e em quantos meses lá chegas ao teu
+      ritmo.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Despesas fixas mensais (€)</span>
+        <input
+          type="number"
+          id="monthlyEssentials"
+          value="1000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+        <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">
+          Renda ou crédito habitação, contas, alimentação, transporte, seguros -- o que precisas
+          de pagar todos os meses mesmo sem rendimento.
+        </p>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Meses de almofada</span>
+        <select
+          id="cushionMonths"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="3">3 meses</option>
+          <option value="6" selected>6 meses</option>
+          <option value="9">9 meses</option>
+          <option value="12">12 meses</option>
+        </select>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Já tens guardado (€)</span>
+        <input
+          type="number"
+          id="alreadySaved"
+          value="0"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Quanto consegues poupar por mês (€)</span>
+        <input
+          type="number"
+          id="monthlyContribution"
+          value="200"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail"></p>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          Como calculámos
+        </summary>
+        <p class="mt-2 max-w-[55ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          Valor alvo = despesas fixas mensais × meses de almofada. Falta = valor alvo menos o que
+          já tens guardado (nunca menos de zero). Meses até lá = falta ÷ quanto poupas por mês,
+          arredondado sempre para cima, para nunca ficares aquém do objetivo.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>Porque 6 meses, e quando ajustar</h2>
+      <p>
+        6 meses de despesas fixas é o número mais citado, e é um bom ponto de partida para a
+        maioria das situações: cobre o tempo típico entre perder um rendimento e conseguir outro,
+        sem teres de recorrer a crédito ou vender algo a más condições. Mas não é um número fixo
+        para toda a gente. Se tens um emprego estável num setor com pouca rotatividade, sem
+        dependentes, e há outro rendimento em casa que continua a entrar mesmo que o teu pare, 3
+        meses pode ser suficiente -- o risco real de precisares do fundo todo de uma vez é menor.
+        Se, pelo contrário, trabalhas a recibos verdes ou tens rendimento variável, és o único
+        rendimento do agregado, ou tens filhos ou outros dependentes a cargo, faz mais sentido
+        aproximares-te de 9 ou mesmo 12 meses. Não há uma resposta universal certa, o que importa
+        é seres honesto sobre o quão previsível é o teu rendimento e quantas pessoas dependem dele.
+      </p>
+
+      <h2>Onde guardar o fundo de emergência</h2>
+      <p>
+        A regra é simples: tem de estar líquido. Isto é, tens de conseguir aceder ao dinheiro em
+        poucos dias, sem penalizações e sem risco de valer menos do que puseste lá. Uma conta
+        poupança simples ou um depósito a prazo de curto prazo cumprem isso. Não é sítio para
+        ações, ETFs, criptomoedas ou qualquer produto cujo valor possa cair precisamente na altura
+        em que mais precisas dele -- o objetivo deste dinheiro não é render o máximo possível, é
+        estar lá quando o resto do teu orçamento não chega.
+      </p>
+
+      <h2>O que conta como emergência (e o que não conta)</h2>
+      <p>
+        Emergência é uma despesa inesperada e necessária: perder o emprego, uma avaria urgente no
+        carro que precisas para trabalhar, uma infiltração em casa, uma despesa de saúde não
+        coberta pelo SNS ou pelo seguro. Não é emergência uma promoção que "não podes perder", um
+        saldo que apareceu, ou umas férias decididas de repente -- isso entra no orçamento normal,
+        não no fundo de emergência. Manter esta distinção clara é o que evita esvaziares o fundo
+        por motivos que, no fundo, eram só falta de planeamento no orçamento do mês.
+      </p>
+
+      <h2>O que esta calculadora não faz</h2>
+      <p>
+        Não sabe se tens outras dívidas que talvez valha a pena priorizar antes de encher o fundo
+        por completo, não conhece a tua situação de saúde ou familiar específica, e não substitui
+        pensar com calma no que realmente precisas. É um ponto de partida a partir de um número --
+        as tuas despesas fixas -- não um plano financeiro completo.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Ferramentas relacionadas</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/ferramentas/regra-50-30-20"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="chart-pie" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Regra 50/30/20</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Descobre quanto do teu salário deve ir para poupança antes de decidir quanto poupar
+            para a emergência.
+          </p>
+        </a>
+        <a
+          href="/ferramentas/dividir-despesas-casal"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="heart" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Dividir despesas em casal</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Se vivem juntos, um fundo de emergência costuma ser mais fácil de manter com as
+            despesas partilhadas bem divididas primeiro.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="shield-check" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        Já sabes o número. Agora falta guardá-lo, mês a mês.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        O Otterbond ajuda-te a criar este fundo como objetivo e a acompanhar o progresso todos os
+        meses, sem folhas de cálculo.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/pt-pt/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Experimentar grátis
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimativas a partir de regras gerais de finanças pessoais, não são aconselhamento fiscal,
+      legal ou financeiro.
+    </p>
+  </main>
+
+  <Footer lang="pt-pt" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateEmergencyFund } from '../../lib/calculators/emergencyFund';
+
+  const TOOL_SLUG = 'fundo-de-emergencia';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const monthYear = new Intl.DateTimeFormat('pt-PT', { month: 'long', year: 'numeric' });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+
+  function recalc() {
+    const alreadySaved = num('alreadySaved');
+    const result = calculateEmergencyFund({
+      monthlyEssentials: num('monthlyEssentials'),
+      cushionMonths: num('cushionMonths'),
+      alreadySaved,
+      monthlyContribution: num('monthlyContribution'),
+    });
+
+    document.getElementById('result-headline')!.textContent =
+      `Precisas de ${euro.format(result.target)}. Já tens ${euro.format(Math.max(0, alreadySaved))}.`;
+
+    const detail = document.getElementById('result-detail')!;
+    if (result.remaining === 0) {
+      detail.textContent = 'O teu fundo de emergência já está completo.';
+    } else if (result.monthsToReach === null || result.targetDate === null) {
+      detail.textContent =
+        `Faltam ${euro.format(result.remaining)}. Define quanto consegues poupar por mês para veres uma data.`;
+    } else {
+      detail.textContent =
+        `Faltam ${euro.format(result.remaining)}, ou seja ${result.monthsToReach} ${result.monthsToReach === 1 ? 'mês' : 'meses'} a ${euro.format(num('monthlyContribution'))}/mês, até ${monthYear.format(result.targetDate)}.`;
+    }
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>

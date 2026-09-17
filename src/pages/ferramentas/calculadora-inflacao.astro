@@ -1,0 +1,288 @@
+---
+// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
+// shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
+// No English counterpart yet.
+//
+// The last of the 13-tool brief. See src/lib/calculators/inflationCalculator.ts's own comment for
+// the full CPI series sourcing, including a caught-wrong secondary source (dadosmundiais.com).
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+import { EARLIEST_YEAR, LATEST_YEAR } from '../../lib/calculators/inflationCalculator';
+
+const title = 'Calculadora de Inflação: quanto valiam os teus euros';
+const description =
+  'Vê quanto valia (ou vai valer) um valor em euros noutro ano, com a série de inflação do INE de 2000 a 2025. Resultado imediato, sem registo.';
+
+const faqs = [
+  {
+    question: 'O que mede exatamente o IPC?',
+    answer:
+      'O Índice de Preços no Consumidor mede a evolução média dos preços de um cabaz representativo de bens e serviços consumidos pelas famílias portuguesas -- alimentação, habitação, transportes, saúde, lazer, entre outros. É o indicador oficial de inflação em Portugal, calculado mensalmente pelo INE.',
+  },
+  {
+    question: 'Porque é que 2026 não está incluído?',
+    answer:
+      'Porque o ano ainda não terminou -- o INE só publica a taxa de inflação média anual definitiva depois de fechado o ano civil. Esta calculadora usa 2025 como o ano mais recente disponível, e será atualizada quando o valor definitivo de 2026 for publicado.',
+  },
+  {
+    question: 'Inflação subjacente é diferente da inflação total?',
+    answer:
+      'Sim -- a inflação subjacente exclui energia e alimentos não transformados, categorias mais voláteis, para mostrar uma tendência de fundo mais estável. Esta calculadora usa sempre o índice geral (total), que é o mais citado e o que mede o custo de vida completo.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+  <NavBar lang="pt-pt" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Calculadora de Inflação
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Introduz um valor e dois anos, e vê o que valia (ou vai valer) hoje -- com a série oficial
+      do IPC do INE, de {EARLIEST_YEAR} a {LATEST_YEAR}.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Valor (€)</span>
+        <input
+          type="number"
+          id="amount"
+          value="1000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Ano de partida</span>
+        <input
+          type="number"
+          id="startYear"
+          value={EARLIEST_YEAR}
+          min={EARLIEST_YEAR}
+          max={LATEST_YEAR}
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Ano de chegada</span>
+        <input
+          type="number"
+          id="endYear"
+          value={LATEST_YEAR}
+          min={EARLIEST_YEAR}
+          max={LATEST_YEAR}
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail"></p>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>O que mede o IPC</h2>
+      <p>
+        O Índice de Preços no Consumidor acompanha a evolução do custo de um cabaz representativo
+        de bens e serviços -- alimentação, habitação, transportes, saúde, lazer, entre outros --
+        que reflete os hábitos de consumo médios das famílias portuguesas. É o indicador oficial de
+        inflação em Portugal, calculado e publicado mensalmente pelo INE (Instituto Nacional de
+        Estatística).
+      </p>
+
+      <h2>Porque a tua poupança precisa de crescer, não só de existir</h2>
+      <p>
+        Se guardares 1.000€ debaixo do colchão durante 25 anos, continuas a ter 1.000€ -- mas com
+        muito menos poder de compra do que tinhas quando os guardaste, porque os preços do que
+        podes comprar com esse dinheiro subiram entretanto. É por isso que qualquer objetivo de
+        poupança de longo prazo compensa considerar um crescimento que pelo menos acompanhe a
+        inflação, não apenas manter o valor nominal parado.
+      </p>
+
+      <h2>Inflação total vs. inflação subjacente</h2>
+      <p>
+        A inflação total (a usada nesta calculadora) inclui todas as categorias do cabaz, incluindo
+        as mais voláteis, como energia e alimentos frescos. A inflação subjacente exclui
+        precisamente essas categorias, para mostrar uma tendência de fundo mais estável e menos
+        sujeita a choques pontuais (uma seca que sobe o preço dos vegetais, uma crise energética).
+        Os dois números contam histórias diferentes -- a subjacente é mais útil para perceber a
+        tendência, a total é mais fiel ao que realmente sentes no supermercado.
+      </p>
+
+      <h2>Sobre a série usada aqui</h2>
+      <p>
+        Os valores anuais usados nesta calculadora vêm da série oficial do INE, de {EARLIEST_YEAR} a{' '}
+        {LATEST_YEAR} -- o último ano com valor definitivo publicado. O ano corrente nunca aparece
+        na lista até estar fechado e o INE publicar a taxa média anual definitiva, normalmente em
+        janeiro do ano seguinte.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Ferramentas relacionadas</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/ferramentas/fundo-de-emergencia"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Fundo de Emergência</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            O teu fundo de emergência está a perder valor? Define um valor mensal que acompanhe.
+          </p>
+        </a>
+        <a
+          href="/ferramentas/juros-compostos"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="piggy-bank" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Juros Compostos</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Vê como uma poupança que rende pode superar a inflação ao longo do tempo.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="trend-up" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        Já sabes o que a inflação faz ao teu dinheiro parado.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        O Otterbond ajuda-te a definir objetivos de poupança com um valor mensal, para o teu
+        dinheiro não ficar só parado.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/pt-pt/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Experimentar grátis
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimativa a partir da série de IPC do INE, não é aconselhamento financeiro.
+    </p>
+  </main>
+
+  <Footer lang="pt-pt" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateInflation } from '../../lib/calculators/inflationCalculator';
+
+  const TOOL_SLUG = 'calculadora-inflacao';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const pct = new Intl.NumberFormat('pt-PT', { maximumFractionDigits: 1 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+
+  function recalc() {
+    const amount = num('amount');
+    const startYear = num('startYear');
+    const endYear = num('endYear');
+
+    const result = calculateInflation({ amount, startYear, endYear });
+
+    document.getElementById('result-headline')!.textContent =
+      `${euro.format(amount)} em ${startYear} valem cerca de ${euro.format(result.adjustedAmount)} em ${endYear}.`;
+    document.getElementById('result-detail')!.textContent =
+      `Variação acumulada: ${pct.format(result.cumulativePercent)}% · Média anual: ${pct.format(result.averageAnnualPercent)}%`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>
