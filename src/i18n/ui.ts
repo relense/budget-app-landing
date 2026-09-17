@@ -24,6 +24,7 @@ export const ui = {
     'nav.screens': 'Screens',
     'nav.pricing': 'Pricing',
     'nav.faq': 'FAQ',
+    'nav.tools': 'Tools',
     'nav.getStarted': 'Get started',
     'nav.toggleMenu': 'Toggle menu',
 
@@ -129,14 +130,11 @@ export const ui = {
         body: "Go from gross to net (or the other way around) with 2026's official IRS and Social Security tables, for Mainland, Azores and Madeira.",
       },
       {
-        title: 'Compound interest, made visible',
-        body: 'See exactly how a starting balance and a monthly amount grow over time, at any interest rate you choose.',
-      },
-      {
         title: 'What will your state pension actually cover?',
         body: "Estimate your Portugal pension gap and how much you'd need to save monthly to close it, based on the EU's own projections.",
       },
     ],
+    'freeTools.seeAll': 'See all free tools',
 
     'screenshotGallery.heading': "See it, don't just take our word for it",
     'screenshotGallery.tabMobile': 'Mobile',
@@ -276,8 +274,8 @@ export const ui = {
     'footer.toolsHeading': 'Free tools',
     'footer.toolsRecibosVerdes': 'Portugal freelancer tax calculator',
     'footer.toolsSalarioLiquido': 'Portugal net salary calculator',
-    'footer.toolsCompoundInterest': 'Compound interest calculator',
     'footer.toolsReforma': 'Portugal state pension calculator',
+    'footer.toolsAll': 'All free tools',
     'footer.madeBy': 'Made by relense',
 
     'notFound.title': 'Page not found, Otterbond',
@@ -304,6 +302,7 @@ export const ui = {
     'nav.screens': 'Ecrãs',
     'nav.pricing': 'Preços',
     'nav.faq': 'FAQ',
+    'nav.tools': 'Ferramentas',
     'nav.getStarted': 'Começar',
     'nav.toggleMenu': 'Alternar menu',
 
@@ -410,14 +409,11 @@ export const ui = {
         body: 'Passa de bruto a líquido (ou ao contrário) com as tabelas oficiais de IRS e Segurança Social de 2026, para Continente, Açores e Madeira.',
       },
       {
-        title: 'Juros compostos, à vista',
-        body: 'Vê exatamente como um valor inicial e uma poupança mensal crescem ao longo do tempo, à taxa que quiseres testar.',
-      },
-      {
         title: 'Quanto vai cobrir a tua pensão?',
         body: 'Estima o teu défice de reforma em Portugal e quanto precisas de poupar por mês para o fechar, com base nas projeções oficiais da UE.',
       },
     ],
+    'freeTools.seeAll': 'Ver todas as ferramentas',
 
     'screenshotGallery.heading': 'Vê por ti mesmo, não fiques só pela nossa palavra',
     'screenshotGallery.tabMobile': 'Telemóvel',
@@ -557,8 +553,8 @@ export const ui = {
     'footer.toolsHeading': 'Ferramentas gratuitas',
     'footer.toolsRecibosVerdes': 'Simulador recibos verdes',
     'footer.toolsSalarioLiquido': 'Calculadora salário líquido',
-    'footer.toolsCompoundInterest': 'Calculadora de juros compostos',
     'footer.toolsReforma': 'Simulador de reforma',
+    'footer.toolsAll': 'Todas as ferramentas',
     'footer.madeBy': 'Feito por relense',
 
     'notFound.title': 'Página não encontrada, Otterbond',
