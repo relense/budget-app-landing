@@ -1,17 +1,19 @@
 # Calculator tools — progress tracker
 
-Tracks the ~13-tool calculator brief (marketing SEO tools under `/ferramentas`). Branch:
-`feature/onbrand-calculator-tools`, off `develop`. Update this file as each tool lands — it's the
-shared source of truth for what's done, in progress, and still needed, since this work spans
-multiple sessions/sittings.
+Tracks the ~13-tool calculator brief (marketing SEO tools under `/ferramentas`) and its English
+mirrors under `/tools`. Update this file as each tool lands — it's the shared source of truth for
+what's done, in progress, and still needed, since this work spans multiple sessions/sittings.
 
-**All 13 tools from the original brief are done as of 2026-09-17.** 129 tests passing, clean
-build. Not yet pushed to `origin` / no PR opened — see "Deferred" below for what's left before
-that, and the framework/on-brand/traffic-only tables below for what shipped.
+**All 13 PT tools from the original brief shipped 2026-09-17** (branch
+`feature/onbrand-calculator-tools`, merged via PR #24 into `develop`, then `develop`→`staging`→
+`main`). See "PT tools" tables below for what shipped and their sourcing.
 
-Scope decision (2026-09-17): build all on-brand + traffic-only tools + IRS now. Deep-linking into
-`budget-app-web`, the "Guardar este resultado" email-capture backend, EN mirrors, and pushing/PR
-are explicitly for afterwards (see "Deferred" section).
+**Now in progress (2026-09-17, branch `feature/en-calculator-mirrors` off `develop`): English
+mirrors under `/tools` for all 14 tools that don't have one yet** (the 13 PT tools above + the
+peer session's FIRE calculator, which also launched PT-only). See "EN mirrors" section below.
+
+Still deferred either way: deep-linking into `budget-app-web`, the "Guardar este resultado"
+email-capture backend (contract already specced, no backend built).
 
 ## Framework (done)
 
@@ -57,9 +59,43 @@ Built by a peer session (`free-tools-homepage-pension-calc`), merged via `develo
 | 12 | Calculadora de IVA | `calculadora-iva` | **Done** | `src/lib/calculators/vatCalculator.ts`. Trivial add/extract, all 3 regions' rates sourced via WebSearch (OCC table). |
 | 13 | Calculadora de inflação | `calculadora-inflacao` | **Done** | `src/lib/calculators/inflationCalculator.ts`. Annual CPI series 2000-2025 sourced via WebFetch (union PDF citing INE directly, cross-checked against Pordata + direct INE news coverage). Caught a wrong secondary source (dadosmundiais.com) along the way — not used. |
 
-## Build order (this round)
+## EN mirrors (in progress, `/tools`)
 
-All 13 tools done: 7, 4, 6, 11, 5, 8, 9, 10, 12, 13.
+No new calculator logic needed anywhere here — every module is language-agnostic, this is purely a
+new page per tool with English copy, following the exact convention the 4 original EN pages (and
+`/tools/index.astro`'s own comment) already established: standalone page, `lang="en" noAlternate`,
+no hreflang pair with the PT page (they're framed as "Portugal X Calculator" for English-speaking
+expats/foreigners searching in English, not a literal translation of the PT page for a
+Portuguese-speaking audience — same rationale `salario-liquido.astro`'s own EN counterpart used).
+
+| PT tool | EN slug | EN title | Status |
+|---|---|---|---|
+| Fundo de emergência | `emergency-fund-calculator` | Emergency Fund Calculator | Todo |
+| Dividir despesas em casal | `split-expenses-couple-calculator` | Split Expenses Calculator for Couples | Todo |
+| Regra 50/30/20 | `50-30-20-rule-calculator` | 50/30/20 Budget Rule Calculator | Todo |
+| Subsídio de férias e Natal / duodécimos | `portugal-holiday-christmas-subsidy-calculator` | Portugal Holiday & Christmas Subsidy Calculator | Todo |
+| Custo real de um carro | `true-cost-of-a-car-calculator` | True Cost of a Car Calculator | Todo |
+| Amortização antecipada do crédito habitação | `portugal-mortgage-prepayment-calculator` | Portugal Mortgage Prepayment Calculator | Todo |
+| Simulador de IRS | `portugal-income-tax-calculator` | Portugal Income Tax Calculator (IRS) | Todo |
+| Simulador de subsídio de desemprego | `portugal-unemployment-benefit-calculator` | Portugal Unemployment Benefit Calculator | Todo |
+| Calculadora de horas extra | `portugal-overtime-pay-calculator` | Portugal Overtime & Night Work Pay Calculator | Todo |
+| Simulador de baixa médica | `portugal-sick-leave-pay-calculator` | Portugal Sick Leave Pay Calculator | Todo |
+| IMT e Imposto do Selo | `portugal-property-transfer-tax-calculator` | Portugal Property Transfer Tax Calculator (IMT & Stamp Duty) | Todo |
+| Calculadora de IVA | `portugal-vat-calculator` | Portugal VAT Calculator (IVA) | Todo |
+| Calculadora de inflação | `portugal-inflation-calculator` | Portugal Inflation Calculator | Todo |
+| Calculadora FIRE (peer session's tool) | `fire-calculator` | FIRE Calculator | Todo |
+
+Each landing also needs: `/tools/index.astro` updated to point at the new page instead of the PT
+fallback (remove the "(PT)" suffix / fallback comment for FIRE once its EN page exists), and a
+"related tools" cross-link update on the other EN pages that reference it.
+
+## Build order
+
+PT tools (done): 7, 4, 6, 11, 5, 8, 9, 10, 12, 13.
+
+EN mirrors (this round, no priority order specified — going top-to-bottom through the table above):
+emergency fund, split expenses, 50/30/20, custo-real-carro, amortização, then the 7 traffic-only
+tools, then FIRE last (not part of the original 13, lowest priority).
 
 ## Deferred (explicitly not this round)
 
