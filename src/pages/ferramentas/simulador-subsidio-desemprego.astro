@@ -1,0 +1,350 @@
+---
+// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
+// shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
+// No English counterpart yet.
+//
+// See src/lib/calculators/unemploymentBenefit.ts's own comment for the full sourcing, and
+// specifically for the "-10% after 180 days" correction -- that rule was repealed in 2018 and
+// isn't modeled, even though the original brief this tool was built from assumed it still applied.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Simulador de Subsídio de Desemprego 2026';
+const description =
+  'Estima o valor mensal e a duração do subsídio de desemprego, com os limites e a tabela de duração de 2026. Resultado imediato, sem registo.';
+
+const faqs = [
+  {
+    question: 'Quem tem direito ao subsídio de desemprego?',
+    answer:
+      'Quem ficou desempregado involuntariamente (despedimento, fim de contrato a termo não renovado, entre outras situações) e tem pelo menos 360 dias com registo de remunerações nos 24 meses anteriores -- o chamado prazo de garantia. Quem se demite voluntariamente, em regra, não tem direito, salvo exceções específicas.',
+  },
+  {
+    question: 'O valor desce depois de alguns meses?',
+    answer:
+      'Não desde 2018 -- a antiga regra que reduzia o valor em 10% ao fim de 180 dias foi revogada pela Lei n.º 114/2017 (Orçamento do Estado para 2018). O valor mantém-se constante durante todo o período de concessão, só mudando se o IAS for atualizado. Ainda há muita informação desatualizada online a referir essa redução -- não se aplica.',
+  },
+  {
+    question: 'Como peço o subsídio de desemprego?',
+    answer:
+      'O pedido é feito na Segurança Social Direta, idealmente até 90 dias após o desemprego (o atraso pode reduzir a duração do subsídio). É preciso estar inscrito como desempregado no IEFP e apresentar a documentação pedida, incluindo o motivo da cessação do contrato.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+  <NavBar lang="pt-pt" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Simulador de Subsídio de Desemprego
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Introduz o teu salário médio, idade e tempo de descontos, e vê uma estimativa de quanto
+      podes receber por mês, e durante quantos dias.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Salário bruto médio dos últimos 12 meses (€)</span>
+        <input
+          type="number"
+          id="averageMonthlySalary"
+          value="1500"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Faixa etária</span>
+        <select
+          id="ageBand"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="under30">Menos de 30 anos</option>
+          <option value="30to39" selected>30 a 39 anos</option>
+          <option value="40to49">40 a 49 anos</option>
+          <option value="50plus">50 ou mais anos</option>
+        </select>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Meses de descontos desde o último desemprego</span>
+        <input
+          type="number"
+          id="contributionMonths"
+          value="30"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Faixa de meses de descontos</span>
+        <select
+          id="contributionBand"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="under15">Menos de 15 meses</option>
+          <option value="15to24">15 a 24 meses</option>
+          <option value="atLeast24" selected>24 meses ou mais</option>
+        </select>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Anos com descontos nos últimos 20 anos</span>
+        <input
+          type="number"
+          id="yearsRegisteredLast20"
+          value="0"
+          min="0"
+          max="20"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+        <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">Cada 5 anos aqui acrescenta dias ao período de subsídio.</p>
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail"></p>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          Como calculámos
+        </summary>
+        <p class="mt-2 max-w-[58ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          Valor mensal = 65% do salário médio de referência, com um mínimo de 1 IAS (ou 1,15 IAS se
+          o teu salário for igual ou superior ao salário mínimo) e um máximo de 2,5 IAS, valores de
+          2026. A duração vem da tabela oficial por idade e meses de descontos, com dias extra por
+          cada 5 anos completos com descontos registados nos últimos 20 anos.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>Como se calcula o valor</h2>
+      <p>
+        O subsídio corresponde a 65% da tua remuneração de referência -- a média dos salários
+        registados na Segurança Social nos primeiros 12 dos últimos 14 meses antes do desemprego,
+        incluindo subsídios de férias e Natal. Esse valor está sempre sujeito a um mínimo e a um
+        máximo, indexados ao IAS (Indexante dos Apoios Sociais): em 2026, o mínimo é 1 IAS
+        (537,13€), ou 1,15 IAS (617,70€) se ganhavas pelo menos o salário mínimo, e o máximo é 2,5
+        IAS (1.342,83€).
+      </p>
+
+      <h2>Uma correção a um erro comum</h2>
+      <p>
+        Vais encontrar muita informação online (incluindo em artigos "atualizados para 2026") a
+        dizer que o subsídio desce 10% ao fim de 180 dias. Essa regra existiu, mas foi revogada em
+        2018 pela Lei n.º 114/2017 -- desde então, o valor mantém-se constante durante todo o
+        período de concessão, só mudando se o IAS for atualizado entretanto.
+      </p>
+
+      <h2>Como funciona a duração</h2>
+      <p>
+        A duração depende de dois fatores: a tua idade à data do desemprego, e há quanto tempo
+        descontas desde a última vez que estiveste desempregado. Quanto mais velho e mais tempo de
+        descontos, mais longo o período -- que pode ir dos 150 dias (menos de 30 anos, pouco tempo
+        de descontos) até 540 dias ou mais (50 ou mais anos, carreira longa). A cada 5 anos
+        completos com descontos registados nos últimos 20 anos, soma-se um bónus de dias, que
+        também aumenta com a idade.
+      </p>
+
+      <h2>O prazo de garantia</h2>
+      <p>
+        Para teres direito ao subsídio, precisas de 360 dias com registo de remunerações nos 24
+        meses antes de ficares desempregado -- aproximadamente 12 meses de trabalho contínuo ou
+        intercalado. Sem esse prazo cumprido, não há direito ao subsídio normal (pode haver direito
+        a outras prestações, como o subsídio social de desemprego, não modeladas aqui).
+      </p>
+
+      <h2>O que este simulador não faz</h2>
+      <p>
+        Não modela o limite adicional de 75% da remuneração de referência líquida (raramente é o
+        limite que mais pesa, mas existe), nem situações especiais como desemprego parcial,
+        trabalhadores independentes, ou o subsídio social de desemprego para quem não cumpre o
+        prazo de garantia normal.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Ferramentas relacionadas</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/ferramentas/fundo-de-emergencia"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Fundo de Emergência</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Vê quanto precisas de ter de lado para cobrir a diferença até ao subsídio chegar.
+          </p>
+        </a>
+        <a
+          href="/ferramentas/regra-50-30-20"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="chart-pie" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Regra 50/30/20</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Planeia como ajustar o orçamento a um rendimento temporariamente mais baixo.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="umbrella" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        Já sabes o número. Agora vê como fica o teu mês.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        O Otterbond mostra-te quanto podes gastar por dia com este rendimento, sem surpresas a
+        meio do mês.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/pt-pt/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Experimentar grátis
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimativa a partir de regras públicas de 2026, não é aconselhamento fiscal, legal ou
+      financeiro, nem substitui o cálculo oficial da Segurança Social.
+    </p>
+  </main>
+
+  <Footer lang="pt-pt" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import {
+    calculateUnemploymentBenefit,
+    type AgeBand,
+    type ContributionBand,
+  } from '../../lib/calculators/unemploymentBenefit';
+
+  const TOOL_SLUG = 'simulador-subsidio-desemprego';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function val(id: string): string {
+    return (document.getElementById(id) as HTMLSelectElement).value;
+  }
+
+  function recalc() {
+    const result = calculateUnemploymentBenefit({
+      averageMonthlySalary: num('averageMonthlySalary'),
+      ageBand: val('ageBand') as AgeBand,
+      contributionMonths: num('contributionMonths'),
+      contributionBand: val('contributionBand') as ContributionBand,
+      yearsRegisteredLast20: num('yearsRegisteredLast20'),
+    });
+
+    const headline = document.getElementById('result-headline')!;
+    const detail = document.getElementById('result-detail')!;
+
+    if (!result.eligible) {
+      headline.textContent = 'Não cumpres o prazo de garantia (360 dias nos últimos 24 meses).';
+      detail.textContent = 'Podes ainda ter direito a outras prestações -- confirma na Segurança Social Direta.';
+      return;
+    }
+
+    const months = Math.round((result.durationDays / 30) * 10) / 10;
+    headline.textContent = `Cerca de ${euro.format(result.monthlyBenefit)} por mês, durante ${result.durationDays} dias (${months} meses).`;
+    detail.textContent = `Total estimado ao longo do período: ${euro.format(result.totalOverDuration)}.`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>
