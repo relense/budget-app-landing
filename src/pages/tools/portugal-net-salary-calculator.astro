@@ -1,27 +1,31 @@
 ---
-// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
-// shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
-// English counterpart: /tools/portugal-net-salary-calculator.
+// English counterpart of /ferramentas/salario-liquido.astro -- see that file's own comment for
+// the shared "front door, not a feature of the app" rationale. Deliberately NOT at a
+// /pt-pt/-mirrored path (its Portuguese equivalent lives at the unrelated
+// /ferramentas/salario-liquido), so BaseLayout gets `noAlternate` too. Framed explicitly as a
+// *Portugal* calculator (title, URL, copy) since the underlying math (IRS, Segurança Social) only
+// applies there -- this targets English-speaking expats/foreigners searching in English, not a
+// generic "net salary calculator" audience.
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
 import Icon from '../../components/Icon.astro';
 
-const title = 'Calculadora de Salário Líquido 2026: IRS, Segurança Social e subsídios';
+const title = 'Portugal Net Salary Calculator 2026: IRS, Social Security & subsidies';
 const description =
-  'Calcula o teu salário líquido em 2026: retenção de IRS, Segurança Social, subsídio de alimentação e de férias/Natal. Continente, Açores e Madeira. Sem registo.';
+  'Calculate your net salary in Portugal for 2026: IRS withholding, Social Security, meal allowance, holiday/Christmas subsidies. Mainland, Azores & Madeira. Instant result, no sign-up.';
 ---
 
-<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
-  <NavBar lang="pt-pt" />
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
 
   <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
     <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
-      Calculadora de Salário Líquido 2026
+      Portugal Net Salary Calculator 2026
     </h1>
     <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-      Calcula o teu salário líquido a partir do bruto, ou o bruto que precisas para um líquido
-      específico, com as tabelas de retenção de 2026 para Continente, Açores e Madeira.
+      Calculate your net salary from your gross pay, or the gross you'd need for a target net, using
+      the 2026 Portuguese withholding tables for Mainland, Azores and Madeira.
     </p>
 
     <form
@@ -29,18 +33,18 @@ const description =
       class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
     >
       <label class="block text-sm sm:col-span-2">
-        <span class="font-medium text-[var(--color-ink)]">Calcular a partir de</span>
+        <span class="font-medium text-[var(--color-ink)]">Calculate from</span>
         <select
           id="direction"
           class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
         >
-          <option value="grossToNet" selected>Salário bruto → líquido</option>
-          <option value="netToGross">Líquido pretendido → bruto necessário</option>
+          <option value="grossToNet" selected>Gross salary → net</option>
+          <option value="netToGross">Target net → gross needed</option>
         </select>
       </label>
 
       <label class="block text-sm">
-        <span class="font-medium text-[var(--color-ink)]" id="amount-label">Vencimento base mensal (€)</span>
+        <span class="font-medium text-[var(--color-ink)]" id="amount-label">Monthly base salary (€)</span>
         <input
           type="number"
           id="amount"
@@ -52,30 +56,30 @@ const description =
       </label>
 
       <label class="block text-sm">
-        <span class="font-medium text-[var(--color-ink)]">Região</span>
+        <span class="font-medium text-[var(--color-ink)]">Region</span>
         <select
           id="region"
           class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
         >
-          <option value="continente" selected>Continente</option>
-          <option value="acores">Açores</option>
+          <option value="continente" selected>Mainland</option>
+          <option value="acores">Azores</option>
           <option value="madeira">Madeira</option>
         </select>
       </label>
 
       <label class="block text-sm">
-        <span class="font-medium text-[var(--color-ink)]">Situação</span>
+        <span class="font-medium text-[var(--color-ink)]">Filing status</span>
         <select
           id="filingStatus"
           class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
         >
-          <option value="single" selected>Não casado / casado, dois titulares</option>
-          <option value="marriedOneEarner">Casado, um único titular</option>
+          <option value="single" selected>Single / married, two earners</option>
+          <option value="marriedOneEarner">Married, single earner</option>
         </select>
       </label>
 
       <label class="block text-sm">
-        <span class="font-medium text-[var(--color-ink)]">Nº de dependentes</span>
+        <span class="font-medium text-[var(--color-ink)]">Number of dependents</span>
         <input
           type="number"
           id="dependents"
@@ -87,17 +91,17 @@ const description =
 
       <details class="sm:col-span-2">
         <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
-          Opções avançadas (subsídio de alimentação, deficiência)
+          Advanced options (meal allowance, disability)
         </summary>
 
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label class="mt-1 flex items-center gap-2.5 text-sm sm:col-span-2">
             <input type="checkbox" id="mealAllowanceEnabled" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
-            <span class="text-[var(--color-ink)]">Recebo subsídio de alimentação</span>
+            <span class="text-[var(--color-ink)]">I receive a meal allowance</span>
           </label>
 
           <label class="block text-sm" id="meal-amount-wrap" hidden>
-            <span class="font-medium text-[var(--color-ink)]">Valor diário (€)</span>
+            <span class="font-medium text-[var(--color-ink)]">Daily amount (€)</span>
             <input
               type="number"
               id="mealAllowanceDaily"
@@ -109,19 +113,19 @@ const description =
           </label>
 
           <label class="block text-sm" id="meal-type-wrap" hidden>
-            <span class="font-medium text-[var(--color-ink)]">Forma de pagamento</span>
+            <span class="font-medium text-[var(--color-ink)]">Payment method</span>
             <select
               id="mealAllowanceType"
               class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
             >
-              <option value="card" selected>Cartão refeição</option>
-              <option value="cash">Dinheiro / transferência</option>
+              <option value="card" selected>Meal card</option>
+              <option value="cash">Cash / bank transfer</option>
             </select>
           </label>
 
           <label class="mt-1 flex items-center gap-2.5 text-sm sm:col-span-2">
             <input type="checkbox" id="disabled" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
-            <span class="text-[var(--color-ink)]">Trabalhador com deficiência (grau ≥ 60%)</span>
+            <span class="text-[var(--color-ink)]">Worker with disability (degree ≥ 60%)</span>
           </label>
         </div>
       </details>
@@ -133,21 +137,21 @@ const description =
       aria-live="polite"
     >
       <p class="text-sm font-medium text-[var(--color-mint-deep)]/70" id="result-label">
-        Salário líquido estimado / mês
+        Estimated net salary / month
       </p>
       <p class="mt-1 text-4xl font-medium text-[var(--color-mint-deep)]" id="result-net">€0</p>
 
       <div class="mt-5 grid grid-cols-2 gap-4 text-[15px] text-[var(--color-mint-deep)] sm:grid-cols-3">
         <div>
-          <p class="text-[var(--color-mint-deep)]/70">Vencimento base</p>
+          <p class="text-[var(--color-mint-deep)]/70">Base salary</p>
           <p class="font-medium" id="result-gross">€0</p>
         </div>
         <div>
-          <p class="text-[var(--color-mint-deep)]/70">IRS retido</p>
+          <p class="text-[var(--color-mint-deep)]/70">IRS withheld</p>
           <p class="font-medium" id="result-irs">€0</p>
         </div>
         <div>
-          <p class="text-[var(--color-mint-deep)]/70">Segurança Social (11%)</p>
+          <p class="text-[var(--color-mint-deep)]/70">Social Security (11%)</p>
           <p class="font-medium" id="result-ss">€0</p>
         </div>
       </div>
@@ -156,55 +160,54 @@ const description =
     </section>
 
     <div class="legal-body mt-14">
-      <h2>Como funciona a retenção na fonte</h2>
+      <h2>How withholding tax works in Portugal</h2>
       <p>
-        O valor que recebes todos os meses já vem com IRS retido na fonte, segundo tabelas oficiais
-        publicadas para cada ano (despachos específicos para Continente, Açores e Madeira, cada
-        região com a sua própria tabela). Essa retenção é uma estimativa do imposto anual, não o
-        imposto final, o valor definitivo só fica fechado com a declaração de IRS do ano seguinte,
-        que pode resultar em reembolso ou em imposto adicional a pagar. A Segurança Social, por
-        outro lado, é sempre 11% sobre o valor sujeito, sem escalões.
+        The amount you receive every month already has IRS (income tax) withheld at source,
+        following official tables published each year (separate orders for Mainland, Azores and
+        Madeira, each region with its own table). That withholding is an estimate of your annual
+        tax, not the final amount, the definitive figure is only settled with the following year's
+        IRS tax return, which can result in a refund or additional tax owed. Social Security, on
+        the other hand, is always a flat 11% of the amount subject to it, with no brackets.
       </p>
       <p>
-        A tabela aplicável depende da tua situação (não casado, casado com dois titulares, ou
-        casado com um único titular a trabalhar) e do número de dependentes, cada combinação tem a
-        sua própria tabela com taxas e deduções diferentes.
-      </p>
-
-      <h2>Continente, Açores e Madeira: porque o valor muda</h2>
-      <p>
-        As regiões autónomas têm tabelas de retenção próprias, com taxas mais baixas do que no
-        Continente. Nos Açores, a redução é uma percentagem fixa (cerca de 30%) sobre todas as
-        taxas marginais do Continente. Na Madeira a redução não segue uma fórmula única, é definida
-        tabela a tabela no despacho regional, e para 2026 foi alargada a mais escalões do que em
-        anos anteriores.
+        The applicable table depends on your situation (single, married with two earners, or
+        married with a single earner working) and your number of dependents, each combination has
+        its own table with different rates and deductions.
       </p>
 
-      <h2>Subsídio de alimentação: o que está isento e o que não está</h2>
+      <h2>Mainland, Azores and Madeira: why the amount changes</h2>
       <p>
-        O subsídio de alimentação tem um teto diário isento de IRS e Segurança Social: mais alto
-        se for pago em cartão refeição do que em dinheiro. A parte do subsídio que ultrapassa esse
-        teto é tratada como remuneração normal, entra no cálculo do IRS e da Segurança Social
-        desse mês, tal como o vencimento base.
+        The autonomous regions have their own withholding tables, with lower rates than the
+        Mainland. In the Azores, the reduction is a fixed percentage (around 30%) applied to all
+        Mainland marginal rates. In Madeira the reduction doesn't follow a single formula, it's set
+        table by table in the regional order, and for 2026 it was extended to more brackets than in
+        previous years.
       </p>
 
-      <h2>Subsídio de férias e de Natal: pagamento único ou duodécimos</h2>
+      <h2>Meal allowance: what's exempt and what isn't</h2>
       <p>
-        Por lei, tens direito a um subsídio de férias e a um subsídio de Natal, cada um
-        normalmente igual a um mês de vencimento base. Podem ser pagos de uma vez (no mês em que
-        são devidos) ou distribuídos ao longo do ano em duodécimos, 1/12 de cada subsídio somado a
-        todos os meses. O total ao longo do ano é o mesmo nos dois casos, muda apenas quando o
-        dinheiro chega. Cada subsídio pago de uma vez é retido à taxa que se aplicaria a esse valor
-        recebido de uma só vez, por isso pode parecer "mais pesado" nesse mês específico.
+        The meal allowance has a daily ceiling exempt from IRS and Social Security: higher if paid
+        via a meal card than in cash. The portion of the allowance above that ceiling is treated as
+        regular pay, it enters that month's IRS and Social Security calculation just like the base
+        salary does.
       </p>
 
-      <h2>O que esta calculadora não substitui</h2>
+      <h2>Holiday and Christmas subsidies: lump sum or spread out</h2>
       <p>
-        Os valores são uma estimativa cuidada com base nas tabelas oficiais de retenção de 2026,
-        mas a tua folha de vencimento real pode incluir outros elementos que este simulador não
-        modela (subsídios específicos do teu contrato, deduções por dependentes com deficiência,
-        entre outros). Para dúvidas sobre o teu recibo de vencimento em concreto, fala com o
-        departamento de recursos humanos da tua empresa.
+        By law, you're entitled to a holiday subsidy and a Christmas subsidy, each normally equal
+        to one month's base salary. They can be paid in full (in the month they're due) or spread
+        across the year in twelfths, 1/12 of each subsidy added to every month's pay. The total
+        over the year is the same either way, only the timing changes. Each subsidy paid as a lump
+        sum is withheld at the rate that would apply to that amount received all at once, so it can
+        look "heavier" in that specific month.
+      </p>
+
+      <h2>What this calculator doesn't replace</h2>
+      <p>
+        These figures are a careful estimate based on the official 2026 withholding tables, but
+        your actual payslip may include other elements this simulator doesn't model (allowances
+        specific to your contract, deductions for dependents with disabilities, among others). For
+        questions about your specific payslip, talk to your employer's HR department.
       </p>
     </div>
 
@@ -213,23 +216,23 @@ const description =
         <Icon name="check-circle" class="h-5 w-5" />
       </div>
       <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
-        Já sabes o teu líquido. Sabes quanto disso podes gastar hoje?
+        Now you know your net pay. Do you know how much of it you can spend today?
       </h2>
       <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-        O Otterbond diz-te quanto desse valor podes gastar hoje, depois das contas e das
-        poupanças.
+        Otterbond tells you how much of that you can spend today, after bills and savings are
+        already accounted for.
       </p>
       <a
-        href="/pt-pt/#get-the-app"
+        href="/#get-the-app"
         class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
       >
-        Experimentar grátis
+        Try it free
         <Icon name="arrow-right" class="h-4 w-4" />
       </a>
     </section>
   </main>
 
-  <Footer lang="pt-pt" />
+  <Footer lang="en" />
 </BaseLayout>
 
 <script>
@@ -242,7 +245,7 @@ const description =
   } from '../../lib/calculators/salaryCalculator';
 
   const form = document.getElementById('calc-form') as HTMLFormElement;
-  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
 
   function num(id: string): number {
     const el = document.getElementById(id) as HTMLInputElement;
@@ -265,11 +268,11 @@ const description =
   function syncVisibility() {
     const netToGross = directionSelect.value === 'netToGross';
     amountLabel.textContent = netToGross
-      ? 'Líquido mensal pretendido (€)'
-      : 'Vencimento base mensal (€)';
+      ? 'Target monthly net (€)'
+      : 'Monthly base salary (€)';
     resultLabel.textContent = netToGross
-      ? 'Vencimento bruto necessário / mês'
-      : 'Salário líquido estimado / mês';
+      ? 'Gross salary needed / month'
+      : 'Estimated net salary / month';
     mealAmountWrap.hidden = !mealEnabled.checked;
     mealTypeWrap.hidden = !mealEnabled.checked;
   }
@@ -302,7 +305,7 @@ const description =
     document.getElementById('result-ss')!.textContent = euro.format(month.employeeSocialSecurity);
 
     const detail = document.getElementById('result-detail')!;
-    detail.textContent = `Líquido mensal (com subsídio de alimentação, se aplicável): ${euro.format(month.net)} · Subsídio de férias/Natal (pagamento único): ${euro.format(result.subsidyMonth.net)} cada · Líquido anual (14 pagamentos): ${euro.format(result.annual.net)}`;
+    detail.textContent = `Monthly net (including meal allowance, if applicable): ${euro.format(month.net)} · Holiday/Christmas subsidy (lump sum): ${euro.format(result.subsidyMonth.net)} each · Annual net (14 payments): ${euro.format(result.annual.net)}`;
   }
 
   form.addEventListener('input', recalc);

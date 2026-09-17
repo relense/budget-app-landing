@@ -1,32 +1,31 @@
 ---
-// Standalone, Portuguese-only SEO tool page -- see this repo's docs/PLAN.md-adjacent session
-// notes for the "front door, not a feature of the app" rationale: someone searching "simulador
-// recibos verdes" doesn't know or care what Otterbond is yet, so this page's job is to answer
-// their actual question fast, rank well doing it, and only then offer the app as the next step.
-// `lang="pt-pt"` + `noAlternate` on BaseLayout for the same reason as juros-compostos.astro: this
-// URL has no `/pt-pt/` prefix and no true bilingual counterpart at a mirrored path. There IS now an
-// English counterpart for the same underlying tax rules, framed for expats rather than a literal
-// translation of "recibos verdes": /tools/portugal-freelancer-tax-calculator.
+// English counterpart of /ferramentas/recibos-verdes.astro -- see that file's own comment for the
+// shared "front door, not a feature of the app" rationale. Deliberately NOT at a /pt-pt/-mirrored
+// path (its Portuguese equivalent lives at the unrelated /ferramentas/recibos-verdes), so
+// BaseLayout gets `noAlternate` too. "Recibos verdes" has no English name, so this page is framed
+// by what it computes (freelance/self-employed tax in Portugal) for English-speaking expats
+// searching in English, not a literal translation of the Portuguese term.
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
 import Icon from '../../components/Icon.astro';
 
-const title = 'Simulador Recibos Verdes 2026: IRS, Segurança Social e valor líquido';
+const title = 'Portugal Freelancer Tax Calculator 2026: IRS, Social Security & net income';
 const description =
-  'Simula quanto ficas líquido em recibos verdes em 2026: IRS retido, Segurança Social, regime simplificado, isenção do 1º ano. Resultado imediato, sem registo.';
+  "Calculate your net income as a freelancer (recibos verdes) in Portugal for 2026: IRS withholding, Social Security, simplified regime, 1st-year exemption. Instant result, no sign-up.";
 ---
 
-<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
-  <NavBar lang="pt-pt" />
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
 
   <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
     <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
-      Simulador de Recibos Verdes 2026
+      Portugal Freelancer Tax Calculator 2026
     </h1>
     <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-      Indica o teu rendimento e vê uma estimativa do IRS retido, da Segurança Social e do valor
-      líquido, com as regras de 2026 (regime simplificado, Categoria B).
+      Enter your income and see an estimate of IRS withholding, Social Security, and net income as
+      a self-employed worker (recibos verdes) in Portugal, using the 2026 rules (simplified regime,
+      Category B).
     </p>
 
     <form
@@ -34,7 +33,7 @@ const description =
       class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
     >
       <label class="block text-sm sm:col-span-2">
-        <span class="font-medium text-[var(--color-ink)]">Rendimento</span>
+        <span class="font-medium text-[var(--color-ink)]">Income</span>
         <div class="mt-1.5 flex gap-2">
           <input
             type="number"
@@ -48,22 +47,22 @@ const description =
             id="incomeFrequency"
             class="rounded-xl border border-black/10 bg-white px-3 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
           >
-            <option value="month" selected>por mês</option>
-            <option value="year">por ano</option>
-            <option value="day">por dia</option>
+            <option value="month" selected>per month</option>
+            <option value="year">per year</option>
+            <option value="day">per day</option>
           </select>
         </div>
       </label>
 
       <label class="block text-sm">
-        <span class="font-medium text-[var(--color-ink)]">Regime simplificado</span>
+        <span class="font-medium text-[var(--color-ink)]">Simplified regime</span>
         <select
           id="simplifiedRegimeYear"
           class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
         >
-          <option value="standard" selected>Ano padrão (coeficiente 75%)</option>
-          <option value="firstYear">1º ano de atividade (37,5%)</option>
-          <option value="secondYear">2º ano de atividade (56,25%)</option>
+          <option value="standard" selected>Standard year (75% coefficient)</option>
+          <option value="firstYear">1st year of activity (37.5%)</option>
+          <option value="secondYear">2nd year of activity (56.25%)</option>
         </select>
       </label>
 
@@ -73,17 +72,17 @@ const description =
           id="socialSecurityFirstYearExempt"
           class="h-4 w-4 rounded accent-[var(--color-mint-deep)]"
         />
-        <span class="text-[var(--color-ink)]">Isento de Segurança Social (1º ano de atividade)</span>
+        <span class="text-[var(--color-ink)]">Exempt from Social Security (1st year of activity)</span>
       </label>
 
       <details class="sm:col-span-2">
         <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
-          Opções avançadas (dependentes, estado civil, RNH, IRS Jovem...)
+          Advanced options (dependents, marital status, NHR, Youth IRS...)
         </summary>
 
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label class="block text-sm">
-            <span class="font-medium text-[var(--color-ink)]">Dias sem atividade (além dos 248 dias úteis)</span>
+            <span class="font-medium text-[var(--color-ink)]">Days without activity (beyond the 248 working days)</span>
             <input
               type="number"
               id="daysOff"
@@ -94,7 +93,7 @@ const description =
           </label>
 
           <label class="block text-sm">
-            <span class="font-medium text-[var(--color-ink)]">Ajuste à base de incidência da SS</span>
+            <span class="font-medium text-[var(--color-ink)]">Adjustment to the Social Security base</span>
             <select
               id="socialSecurityDiscount"
               class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
@@ -104,7 +103,7 @@ const description =
               <option value="-0.15">-15%</option>
               <option value="-0.1">-10%</option>
               <option value="-0.05">-5%</option>
-              <option value="0" selected>Sem ajuste</option>
+              <option value="0" selected>No adjustment</option>
               <option value="0.05">+5%</option>
               <option value="0.1">+10%</option>
               <option value="0.15">+15%</option>
@@ -114,34 +113,34 @@ const description =
           </label>
 
           <label class="block text-sm">
-            <span class="font-medium text-[var(--color-ink)]">Despesas reais documentadas (€/ano)</span>
+            <span class="font-medium text-[var(--color-ink)]">Documented real expenses (€/year)</span>
             <input
               type="number"
               id="expenses"
-              placeholder="Deixa em branco para calcular automaticamente"
+              placeholder="Leave blank to calculate automatically"
               min="0"
               class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none placeholder:text-[var(--color-placeholder)] focus:ring-2 focus:ring-[var(--color-mint)]"
             />
           </label>
 
           <label class="block text-sm">
-            <span class="font-medium text-[var(--color-ink)]">Estado civil</span>
+            <span class="font-medium text-[var(--color-ink)]">Marital status</span>
             <select
               id="maritalStatus"
               class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
             >
-              <option value="single" selected>Solteiro / tributação separada</option>
-              <option value="married">Casado / união de facto (tributação conjunta)</option>
+              <option value="single" selected>Single / separate taxation</option>
+              <option value="married">Married / de facto union (joint taxation)</option>
             </select>
           </label>
 
           <label class="mt-1 flex items-center gap-2.5 text-sm" id="spouse-working-wrap" hidden>
             <input type="checkbox" id="spouseWorking" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
-            <span class="text-[var(--color-ink)]">O cônjuge também trabalha e tem rendimentos</span>
+            <span class="text-[var(--color-ink)]">Spouse also works and has income</span>
           </label>
 
           <label class="block text-sm" id="spouse-income-wrap" hidden>
-            <span class="font-medium text-[var(--color-ink)]">Rendimento coletável anual do cônjuge (€)</span>
+            <span class="font-medium text-[var(--color-ink)]">Spouse's annual taxable income (€)</span>
             <input
               type="number"
               id="spouseTaxableIncome"
@@ -151,7 +150,7 @@ const description =
           </label>
 
           <label class="block text-sm">
-            <span class="font-medium text-[var(--color-ink)]">Nº de dependentes</span>
+            <span class="font-medium text-[var(--color-ink)]">Number of dependents</span>
             <input
               type="number"
               id="dependents"
@@ -162,7 +161,7 @@ const description =
           </label>
 
           <label class="block text-sm">
-            <span class="font-medium text-[var(--color-ink)]">... dos quais com 6 anos ou menos</span>
+            <span class="font-medium text-[var(--color-ink)]">... of which age 6 or under</span>
             <input
               type="number"
               id="dependentsAgeSixOrUnder"
@@ -173,7 +172,7 @@ const description =
           </label>
 
           <label class="block text-sm">
-            <span class="font-medium text-[var(--color-ink)]">... dos quais com menos de 3 anos</span>
+            <span class="font-medium text-[var(--color-ink)]">... of which under 3 years old</span>
             <input
               type="number"
               id="dependentsUnderThree"
@@ -185,21 +184,21 @@ const description =
 
           <label class="mt-1 flex items-center gap-2.5 text-sm">
             <input type="checkbox" id="nonHabitualResident" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
-            <span class="text-[var(--color-ink)]">Residente Não Habitual (RNH, taxa fixa de 20%)</span>
+            <span class="text-[var(--color-ink)]">Non-Habitual Resident (NHR, flat 20% rate)</span>
           </label>
 
           <label class="mt-1 flex items-center gap-2.5 text-sm">
             <input type="checkbox" id="youthIrsEnabled" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
-            <span class="text-[var(--color-ink)]">IRS Jovem</span>
+            <span class="text-[var(--color-ink)]">Youth IRS</span>
           </label>
 
           <label class="block text-sm" id="youth-year-wrap" hidden>
-            <span class="font-medium text-[var(--color-ink)]">Que ano do benefício?</span>
+            <span class="font-medium text-[var(--color-ink)]">Which benefit year?</span>
             <select
               id="youthIrsBenefitYear"
               class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
             >
-              {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => <option value={n}>{n}º ano</option>)}
+              {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => <option value={n}>Year {n}</option>)}
             </select>
           </label>
         </div>
@@ -211,20 +210,20 @@ const description =
       class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
       aria-live="polite"
     >
-      <p class="text-sm font-medium text-[var(--color-mint-deep)]/70">Valor líquido estimado / mês</p>
+      <p class="text-sm font-medium text-[var(--color-mint-deep)]/70">Estimated net income / month</p>
       <p class="mt-1 text-4xl font-medium text-[var(--color-mint-deep)]" id="result-net">€0</p>
 
       <div class="mt-5 grid grid-cols-2 gap-4 text-[15px] text-[var(--color-mint-deep)] sm:grid-cols-3">
         <div>
-          <p class="text-[var(--color-mint-deep)]/70">Rendimento bruto</p>
+          <p class="text-[var(--color-mint-deep)]/70">Gross income</p>
           <p class="font-medium" id="result-gross">€0</p>
         </div>
         <div>
-          <p class="text-[var(--color-mint-deep)]/70">IRS retido</p>
+          <p class="text-[var(--color-mint-deep)]/70">IRS withheld</p>
           <p class="font-medium" id="result-irs">€0</p>
         </div>
         <div>
-          <p class="text-[var(--color-mint-deep)]/70">Segurança Social</p>
+          <p class="text-[var(--color-mint-deep)]/70">Social Security</p>
           <p class="font-medium" id="result-ss">€0</p>
         </div>
       </div>
@@ -233,56 +232,54 @@ const description =
     </section>
 
     <div class="legal-body mt-14">
-      <h2>Como é calculado o líquido em recibos verdes</h2>
+      <h2>How net income is calculated for freelancers (recibos verdes)</h2>
       <p>
-        Em regime simplificado (Categoria B), a Autoridade Tributária não tributa o rendimento
-        bruto diretamente. Primeiro aplica-se um coeficiente ao rendimento bruto anual, 75% no
-        regime padrão, para chegar ao rendimento coletável, que é depois sujeito aos escalões
-        progressivos de IRS. A Segurança Social é calculada em separado, sobre 70% do rendimento
-        relevante dos últimos três meses (com um teto de 12x o IAS por ano).
+        Under the simplified regime (Category B), Portugal's tax authority doesn't tax your gross
+        income directly. A coefficient is first applied to your annual gross income, 75% under the
+        standard regime, to reach your taxable income, which is then subject to progressive IRS
+        brackets. Social Security is calculated separately, on 70% of your relevant income over the
+        last three months (capped at 12x the IAS per year).
       </p>
       <p>
-        Este simulador aplica o método oficial simplificado de "taxa média + taxa marginal": até
-        ao limite do escalão anterior aplica-se a taxa média acumulada desse escalão, e só o
-        excedente é tributado à taxa marginal do escalão em que o rendimento coletável cai. É o
-        mesmo método usado nas tabelas oficiais de retenção.
-      </p>
-
-      <h2>Regime simplificado: os coeficientes reduzidos do 1º e 2º ano</h2>
-      <p>
-        Quem está a começar tem um coeficiente reduzido nos dois primeiros anos de atividade:
-        37,5% no primeiro ano e 56,25% no segundo, em vez dos 75% habituais, o que reduz bastante o
-        rendimento coletável (e por isso o IRS) nesse período. A partir do terceiro ano aplica-se o
-        coeficiente padrão de 75%.
+        This calculator applies the official "average rate + marginal rate" simplified method: up
+        to the previous bracket's limit, the accumulated average rate for that bracket applies, and
+        only the excess is taxed at the marginal rate of the bracket your taxable income falls
+        into. It's the same method used in the official withholding tables.
       </p>
 
-      <h2>Isenção de Segurança Social no primeiro ano</h2>
+      <h2>Simplified regime: reduced coefficients in the 1st and 2nd year</h2>
       <p>
-        Quem abre atividade como trabalhador independente pela primeira vez tem, geralmente, uma
-        isenção de contribuições para a Segurança Social nos primeiros 12 meses de atividade. Após
-        esse período, a contribuição passa a ser calculada normalmente (21,4% sobre 70% do
-        rendimento relevante, com um mínimo mensal). Este simulador modela essa isenção como uma
-        opção que podes ativar ou desativar.
+        Anyone just starting out gets a reduced coefficient in their first two years of activity:
+        37.5% in the first year and 56.25% in the second, instead of the usual 75%, which
+        significantly lowers taxable income (and therefore IRS) during that period. From the third
+        year onward, the standard 75% coefficient applies.
       </p>
 
-      <h2>Isenção de IVA (e porque não entra nesta conta)</h2>
+      <h2>Social Security exemption in the first year</h2>
       <p>
-        Quem fatura recibos verdes e prevê (ou faturou no ano anterior) menos de €15.000 está,
-        regra geral, automaticamente enquadrado no regime de isenção de IVA (artigo 53º do Código
-        do IVA), o que significa não liquidar IVA nos recibos nem o entregar ao Estado, mas também
-        não poder deduzir o IVA de despesas do negócio. Ultrapassado esse limiar, ou por opção
-        própria, passa a haver liquidação normal de IVA. Este simulador foca-se apenas em IRS e
-        Segurança Social, o IVA não afeta o valor líquido que fica no teu bolso da mesma forma que
-        o rendimento tributável em IRS, por isso não entra nesta conta.
+        Anyone opening activity as a self-employed worker for the first time generally gets an
+        exemption from Social Security contributions for the first 12 months of activity. After
+        that period, contributions are calculated normally (21.4% of 70% of relevant income, with a
+        monthly minimum). This calculator models that exemption as an option you can toggle.
       </p>
 
-      <h2>O que este simulador não substitui</h2>
+      <h2>VAT exemption (and why it isn't part of this calculation)</h2>
       <p>
-        Os valores aqui são uma estimativa cuidada, baseada nas tabelas e fórmulas oficiais de
-        2026, mas não têm em conta toda e qualquer particularidade da tua situação (por exemplo,
-        deduções específicas, ascendentes a cargo, ou regimes especiais menos comuns). Para a tua
-        declaração de IRS, ou para decisões que dependam de um valor exato, fala com um
-        contabilista certificado.
+        Anyone issuing recibos verdes who expects (or invoiced in the previous year) less than
+        €15,000 generally falls automatically under the VAT exemption regime (article 53 of the VAT
+        Code), meaning no VAT is charged on invoices or handed over to the state, but VAT on
+        business expenses can't be deducted either. Above that threshold, or by choice, normal VAT
+        charging applies. This calculator focuses only on IRS and Social Security, VAT doesn't
+        affect your take-home net income the same way taxable IRS income does, so it isn't part of
+        this calculation.
+      </p>
+
+      <h2>What this calculator doesn't replace</h2>
+      <p>
+        These figures are a careful estimate based on the official 2026 tables and formulas, but
+        they don't account for every particularity of your situation (for example, specific
+        deductions, dependent ascendants, or less common special regimes). For your actual IRS tax
+        return, or for decisions that depend on an exact figure, talk to a certified accountant.
       </p>
     </div>
 
@@ -291,23 +288,23 @@ const description =
         <Icon name="coins" class="h-5 w-5" />
       </div>
       <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
-        Já sabes quanto fica líquido. Sabes quanto podes gastar por dia até ao próximo pagamento?
+        Now you know your net income. Do you know how much you can spend per day until your next payment?
       </h2>
       <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-        O Otterbond faz essa conta todas as manhãs, e guarda automaticamente o que precisas para o
-        IRS e a Segurança Social.
+        Otterbond does that math every morning, and automatically sets aside what you'll need for
+        IRS and Social Security.
       </p>
       <a
-        href="/pt-pt/#get-the-app"
+        href="/#get-the-app"
         class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
       >
-        Experimentar grátis
+        Try it free
         <Icon name="arrow-right" class="h-4 w-4" />
       </a>
     </section>
   </main>
 
-  <Footer lang="pt-pt" />
+  <Footer lang="en" />
 </BaseLayout>
 
 <script>
@@ -320,8 +317,8 @@ const description =
   } from '../../lib/calculators/taxCalculator';
 
   const form = document.getElementById('calc-form') as HTMLFormElement;
-  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
-  const pct = new Intl.NumberFormat('pt-PT', { style: 'percent', maximumFractionDigits: 1 });
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const pct = new Intl.NumberFormat('en-IE', { style: 'percent', maximumFractionDigits: 1 });
 
   function num(id: string): number {
     const el = document.getElementById(id) as HTMLInputElement;
@@ -378,7 +375,7 @@ const description =
 
     const detail = document.getElementById('result-detail')!;
     if (result.bracket) {
-      detail.textContent = `Rendimento coletável: ${euro.format(result.taxableIncome)}/ano · Escalão de IRS: ${pct.format(result.bracket.normalRate)}${result.jointTaxationApplied ? ' · tributação conjunta aplicada' : ''}`;
+      detail.textContent = `Taxable income: ${euro.format(result.taxableIncome)}/year · IRS bracket: ${pct.format(result.bracket.normalRate)}${result.jointTaxationApplied ? ' · joint taxation applied' : ''}`;
     } else {
       detail.textContent = '';
     }
