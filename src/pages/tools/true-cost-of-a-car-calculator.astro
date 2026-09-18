@@ -1,0 +1,446 @@
+---
+// English counterpart of /ferramentas/custo-real-carro.astro -- see recibos-verdes.astro's own
+// comment for the shared "front door, not a feature of the app" rationale and the
+// `lang`/`noAlternate` reasoning. See src/lib/calculators/trueCarCost.ts's own comment for why
+// IUC is a direct input rather than derived from its own bracket tables.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'True Cost of a Car Calculator';
+const description =
+  'Calculate what a car actually costs you per month: depreciation, insurance, fuel, IUC, maintenance and financing. Instant result, no sign-up.';
+
+const faqs = [
+  {
+    question: "Why does depreciation count as a cost if I don't pay for it directly?",
+    answer:
+      "Because it's money you've lost, even if it doesn't leave your account every month -- it's the difference between what you paid for the car and what it's worth when you sell or trade it in. It's typically the biggest cost of owning a car, and the easiest to forget precisely because it's not a monthly bill.",
+  },
+  {
+    question: 'What is IUC and where do I find out how much I pay?',
+    answer:
+      "IUC (Imposto Único de Circulação) is Portugal's annual road tax, based on engine size, CO2 emissions, and the vehicle's registration year. The exact amount is on your latest payment notice (available on the Portal das Finanças) -- this calculator asks for that value directly rather than trying to derive it from the car's specs.",
+  },
+  {
+    question: 'New or used, which works out cheaper?',
+    answer:
+      "A new car depreciates faster in the first few years (as a percentage of its price), but has lower maintenance and warranty costs. A used car has already absorbed that steeper initial drop, but can have higher maintenance costs. There's no universal answer -- adjust the maintenance figure and resale percentage for each scenario to compare.",
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      True Cost of a Car Calculator
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Purchase price, insurance, fuel, IUC, maintenance and financing, all added up into a single
+      monthly number -- including depreciation, the cost nobody sees on a bill.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Purchase price (€)</span>
+        <input
+          type="number"
+          id="purchasePrice"
+          value="20000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Years you'll keep it</span>
+        <input
+          type="number"
+          id="yearsKept"
+          value="5"
+          min="1"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Expected resale value (% of price)</span>
+        <input
+          type="number"
+          id="resaleValuePercent"
+          value="40"
+          min="0"
+          max="100"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+        <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">Default: 40% after 5 years, a typical figure -- adjust it to your car.</p>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Annual insurance (€)</span>
+        <input
+          type="number"
+          id="annualInsurance"
+          value="400"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Annual IUC (€)</span>
+        <input
+          type="number"
+          id="annualIuc"
+          value="50"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+        <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">See the exact amount on your latest payment notice.</p>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Annual maintenance (€)</span>
+        <input
+          type="number"
+          id="annualMaintenance"
+          value="300"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+        <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">Default: 1.5% of the purchase price.</p>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Km per year</span>
+        <input
+          type="number"
+          id="kmPerYear"
+          value="15000"
+          min="0"
+          step="500"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Consumption (l or kWh / 100 km)</span>
+        <input
+          type="number"
+          id="consumptionPer100Km"
+          value="6"
+          min="0"
+          step="0.1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Fuel price (€ / litre or kWh)</span>
+        <input
+          type="number"
+          id="fuelPricePerUnit"
+          value="1.7"
+          min="0"
+          step="0.01"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <details class="sm:col-span-2">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
+          Car financing (optional)
+        </summary>
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Amount financed (€)</span>
+            <input
+              type="number"
+              id="loanAmount"
+              value="0"
+              min="0"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Annual rate (%)</span>
+            <input
+              type="number"
+              id="loanAnnualRatePercent"
+              value="7"
+              min="0"
+              step="0.1"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Term (months)</span>
+            <input
+              type="number"
+              id="loanTermMonths"
+              value="60"
+              min="0"
+              step="1"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+        </div>
+      </details>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+
+      <div class="mt-5 space-y-2.5" id="breakdown-bars"></div>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          How we calculated this
+        </summary>
+        <p class="mt-2 max-w-[58ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          Annual depreciation = (purchase price − resale value) ÷ years you keep the car. Annual
+          fuel = (km per year ÷ 100) × consumption × fuel price. If there's financing, the total
+          interest over the term is spread evenly across the loan's years. Everything is added up
+          with insurance, IUC and maintenance, then divided by 12.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>Why depreciation is always the surprise</h2>
+      <p>
+        When we think about the cost of a car, we think of fuel and insurance first -- expenses we
+        see every month. Depreciation is invisible in the same way: you don't get a bill for it,
+        but it's real money you've lost, measured by the difference between what you paid and what
+        the car is worth when you sell it. For most cars, it's the single biggest cost of all,
+        often bigger than fuel and maintenance combined -- and it's precisely because it's
+        invisible that it tends to be underestimated.
+      </p>
+
+      <h2>The IUC and inspection calendar</h2>
+      <p>
+        IUC is charged once a year, in a month that depends on the vehicle's registration, and the
+        exact amount is shown on the payment notice available on the Portal das Finanças. The
+        mandatory periodic inspection also has its own schedule, which depends on the vehicle's age
+        (starting from year 4, with increasing frequency) -- it's worth budgeting for the
+        inspection cost and any related repairs within your annual maintenance figure.
+      </p>
+
+      <h2>New vs. used, at three different price points</h2>
+      <p>
+        A new car loses a big chunk of its value in the first few years -- that's where
+        depreciation hits hardest in absolute terms. A mid-range car with a few years on it has
+        already absorbed that steeper initial drop, but can have less predictable maintenance
+        costs as it ages. An older, cheaper car has the lowest depreciation of all (there isn't
+        much value left for it to lose), but tends to make up for it with higher maintenance and
+        fuel consumption. Adjust this calculator's figures for each scenario to see which one
+        actually works out cheaper per month.
+      </p>
+
+      <h2>What this calculator doesn't do</h2>
+      <p>
+        It doesn't model IUC from the car's specs (it uses the amount you already pay), and it
+        doesn't include one-off costs like tolls, regular parking, or fines. Car financing is
+        simplified to a standard constant-instalment system -- if your contract has different
+        terms, the numbers may not match exactly.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Related tools</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/tools/emergency-fund-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Emergency Fund</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            An unexpected repair shouldn't turn into a financial crisis.
+          </p>
+        </a>
+        <a
+          href="/tools/50-30-20-rule-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="chart-pie" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">50/30/20 Rule</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            See whether this monthly cost fits inside your needs budget.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="car-simple" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        You know the true cost. Now it just needs setting aside, month by month.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        Otterbond helps you create a Car fund with this monthly figure, or with the full price and
+        a target date.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Try it free
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimate based on the values you enter, not financial advice.
+    </p>
+  </main>
+
+  <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateTrueCarCost } from '../../lib/calculators/trueCarCost';
+
+  const TOOL_SLUG = 'true-cost-of-a-car-calculator';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+
+  function recalc() {
+    const result = calculateTrueCarCost({
+      purchasePrice: num('purchasePrice'),
+      yearsKept: num('yearsKept'),
+      resaleValuePercent: num('resaleValuePercent'),
+      annualInsurance: num('annualInsurance'),
+      annualIuc: num('annualIuc'),
+      kmPerYear: num('kmPerYear'),
+      consumptionPer100Km: num('consumptionPer100Km'),
+      fuelPricePerUnit: num('fuelPricePerUnit'),
+      annualMaintenance: num('annualMaintenance'),
+      loanAmount: num('loanAmount'),
+      loanAnnualRatePercent: num('loanAnnualRatePercent'),
+      loanTermMonths: num('loanTermMonths'),
+    });
+
+    document.getElementById('result-headline')!.textContent =
+      `This car costs you ${euro.format(result.monthlyTotal)} per month.`;
+
+    const bars = [
+      { label: 'Depreciation', value: result.annualDepreciation / 12 },
+      { label: 'Fuel', value: result.annualFuel / 12 },
+      { label: 'Insurance', value: num('annualInsurance') / 12 },
+      { label: 'IUC', value: num('annualIuc') / 12 },
+      { label: 'Maintenance', value: num('annualMaintenance') / 12 },
+      { label: 'Loan interest', value: result.annualLoanInterest / 12 },
+    ].filter((bar) => bar.value > 0);
+
+    const maxValue = Math.max(...bars.map((bar) => bar.value), 1);
+    const container = document.getElementById('breakdown-bars')!;
+    container.innerHTML = '';
+    bars.forEach((bar) => {
+      const row = document.createElement('div');
+      const widthPercent = Math.max(4, (bar.value / maxValue) * 100);
+      row.innerHTML = `
+        <div class="flex items-center justify-between text-sm text-[var(--color-mint-deep)]">
+          <span>${bar.label}</span>
+          <span class="font-medium">${euro.format(bar.value)}/month</span>
+        </div>
+        <div class="mt-1 h-2 rounded-full bg-[var(--color-mint-deep)]/10">
+          <div class="h-2 rounded-full bg-[var(--color-mint-deep)]" style="width:${widthPercent}%"></div>
+        </div>`;
+      container.appendChild(row);
+    });
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>

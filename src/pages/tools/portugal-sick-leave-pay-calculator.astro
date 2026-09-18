@@ -1,0 +1,286 @@
+---
+// English counterpart of /ferramentas/simulador-baixa-medica.astro -- see recibos-verdes.astro's
+// own comment for the shared "front door, not a feature of the app" rationale and the
+// `lang`/`noAlternate` reasoning. See sickLeaveBenefit.ts's own comment for the full sourcing.
+// Employees (TCO) only -- self-employed workers have a different 10-day waiting period, not
+// modeled.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Portugal Sick Leave Pay Calculator 2026';
+const description =
+  "Estimate how much you'll receive per day and in total for sick leave, with 2026's waiting period and percentages. Instant result, no sign-up.";
+
+const faqs = [
+  {
+    question: "Are the first few days of sick leave really unpaid?",
+    answer:
+      'Usually, yes -- the first 3 days are a "waiting period" during which Social Security doesn\'t pay, and your employer generally isn\'t obliged to either (unless your contract or a CCT says otherwise). The exception is hospitalisation or outpatient surgery, where payment starts from day 1.',
+  },
+  {
+    question: 'Why does the percentage go up over time?',
+    answer:
+      "It's a way for the system to give more protection to longer leaves, which tend to correspond to more serious situations. It starts at 55% (days 1 to 30), rises to 60% (31 to 90), then 70% (91 to 365), and reaches 75% for leave lasting more than a year.",
+  },
+  {
+    question: 'Does this apply to self-employed workers?',
+    answer:
+      "Not exactly -- this calculator covers employees (TCO). Self-employed workers (recibos verdes) have a different waiting period (10 days instead of 3), among other rule differences.",
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Portugal Sick Leave Pay Calculator
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Enter your average salary and days of leave, and see how much you'll receive in total and
+      per day, after the waiting period.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Average monthly gross salary (€)</span>
+        <input
+          type="number"
+          id="averageMonthlySalary"
+          value="1500"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Days of leave</span>
+        <input
+          type="number"
+          id="totalLeaveDays"
+          value="15"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="mt-1 flex items-center gap-2.5 text-sm sm:col-span-2">
+        <input type="checkbox" id="isHospitalization" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
+        <span class="text-[var(--color-ink)]">Hospitalisation or outpatient surgery (no waiting period)</span>
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail"></p>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          How we calculated this
+        </summary>
+        <p class="mt-2 max-w-[58ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          Daily reference remuneration = average monthly salary ÷ 30. The first 3 days of leave
+          aren't paid (0 days if hospitalised). Each paid day uses the percentage for its period:
+          55% (days 1-30), 60% (31-90), 70% (91-365), 75% (over 365 days).
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>The waiting period</h2>
+      <p>
+        The first 3 days of any sick leave are a "waiting period" -- Social Security doesn't pay
+        for them, and your employer generally isn't obliged to either (unless your contract or
+        collective agreement says otherwise). The only exception is hospitalisation or outpatient
+        surgery, in which cases payment starts from day 1, with no waiting period.
+      </p>
+
+      <h2>Why the percentage rises with duration</h2>
+      <p>
+        Sick leave benefit doesn't always pay the same percentage -- it starts at 55% of your
+        reference remuneration for the first 30 days, rises to 60% between days 31 and 90, to 70%
+        between days 91 and 365, and reaches 75% for leave lasting more than a year. The logic is
+        to give more protection to longer situations, which tend to be more serious too.
+      </p>
+
+      <h2>How reference remuneration is calculated</h2>
+      <p>
+        Daily reference remuneration comes from dividing by 180 the total gross pay registered
+        over the 6 civil months before the leave began (not counting holiday or Christmas
+        subsidies). This calculator simplifies that into a single average monthly salary figure --
+        if your income varied a lot over that period, the real result may differ.
+      </p>
+
+      <h2>What this calculator doesn't do</h2>
+      <p>
+        It only covers employees -- self-employed workers (recibos verdes) have a different
+        waiting period (10 days). It doesn't model leave from occupational illness or workplace
+        accidents, which follow their own rules, nor risk-pregnancy situations.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Related tools</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/tools/emergency-fund-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Emergency Fund</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Covers the waiting-period days and the income gap.
+          </p>
+        </a>
+        <a
+          href="/tools/portugal-unemployment-benefit-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="umbrella" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Unemployment Benefit</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Another Social Security benefit with a similar calculation logic.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="first-aid" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        You know the number. Now see how your month looks.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        Otterbond shows you how much you can spend per day with a temporarily lower income, no
+        surprises.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Try it free
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimate based on 2026 public rules, not financial, legal or tax advice, and not a substitute
+      for Social Security's official calculation.
+    </p>
+  </main>
+
+  <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateSickLeaveBenefit } from '../../lib/calculators/sickLeaveBenefit';
+
+  const TOOL_SLUG = 'portugal-sick-leave-pay-calculator';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function checked(id: string): boolean {
+    return (document.getElementById(id) as HTMLInputElement).checked;
+  }
+
+  function recalc() {
+    const result = calculateSickLeaveBenefit({
+      averageMonthlySalary: num('averageMonthlySalary'),
+      totalLeaveDays: num('totalLeaveDays'),
+      isHospitalization: checked('isHospitalization'),
+    });
+
+    document.getElementById('result-headline')!.textContent =
+      `You'll receive around ${euro.format(result.totalBenefit)} in total, ${euro.format(result.averageDailyBenefit)} per day after the waiting period.`;
+    document.getElementById('result-detail')!.textContent =
+      `Unpaid waiting days: ${result.waitingDays} · Paid days: ${result.payableDays}`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>

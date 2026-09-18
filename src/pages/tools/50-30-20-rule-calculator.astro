@@ -1,0 +1,353 @@
+---
+// English counterpart of /ferramentas/regra-50-30-20.astro -- see recibos-verdes.astro's own
+// comment for the shared "front door, not a feature of the app" rationale and the
+// `lang`/`noAlternate` reasoning. Not Portugal-specific as a rule, but the explainer keeps the
+// Lisbon/Porto rent example since this page's audience is still mainly English speakers living in
+// Portugal, same as every other /tools page.
+//
+// Year-less title/H1: a fixed-percentage budgeting rule isn't annually-versioned data.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = '50/30/20 Rule Calculator';
+const description =
+  'Calculate the three buckets of your budget with the 50/30/20 rule: needs, wants, and savings, from your net salary. Instant result, no sign-up.';
+
+const faqs = [
+  {
+    question: 'What goes in each bucket?',
+    answer:
+      "Needs (50%): rent or mortgage, bills, groceries, transport, insurance -- what you have to pay whether you like it or not. Wants (30%): eating out, subscriptions, leisure, non-essential clothing -- what you choose to spend, not what you're obligated to pay. Savings (20%): your emergency fund, retirement, goals, and any debt payment above the minimum.",
+  },
+  {
+    question: "What if rent alone already goes over 50%?",
+    answer:
+      "That's common in expensive cities -- Lisbon and Porto included -- and it doesn't mean you're doing anything wrong. Adjust the percentages to your reality, for example 60/20/20 or 65/15/20, instead of forcing 50% somewhere that's rarely realistic. What matters is keeping savings as a deliberate slice, even if small, not zero.",
+  },
+  {
+    question: 'Does the 50/30/20 rule use gross or net income?',
+    answer:
+      "Net -- what you actually take home after tax and social security, and what you can actually spend or save. That's the number to use in this calculator.",
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      50/30/20 Rule Calculator
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Enter your net salary and see how much should go to needs, wants, and savings -- with
+      whatever percentages you want, not just the classic ones.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Net monthly salary (€)</span>
+        <input
+          type="number"
+          id="netMonthlyIncome"
+          value="1500"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <details class="sm:col-span-2">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
+          Adjust the percentages
+        </summary>
+
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Needs (%)</span>
+            <input
+              type="number"
+              id="needsPercent"
+              value="50"
+              min="0"
+              max="100"
+              step="1"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Wants (%)</span>
+            <input
+              type="number"
+              id="wantsPercent"
+              value="30"
+              min="0"
+              max="100"
+              step="1"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Savings (%)</span>
+            <input
+              type="number"
+              id="savingsPercent"
+              value="20"
+              min="0"
+              max="100"
+              step="1"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+        </div>
+        <p class="mt-2 text-xs text-[var(--color-ink-faint)]" id="percent-total-caption"></p>
+      </details>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div class="rounded-xl bg-[var(--color-mint-deep)]/10 p-4">
+          <p class="text-sm font-medium text-[var(--color-mint-deep)]/70" id="result-needs-label"></p>
+          <p class="mt-2 text-2xl font-medium text-[var(--color-mint-deep)]" id="result-needs"></p>
+        </div>
+        <div class="rounded-xl bg-[var(--color-mint-deep)]/10 p-4">
+          <p class="text-sm font-medium text-[var(--color-mint-deep)]/70" id="result-wants-label"></p>
+          <p class="mt-2 text-2xl font-medium text-[var(--color-mint-deep)]" id="result-wants"></p>
+        </div>
+        <div class="rounded-xl bg-[var(--color-mint-deep)]/10 p-4">
+          <p class="text-sm font-medium text-[var(--color-mint-deep)]/70" id="result-savings-label"></p>
+          <p class="mt-2 text-2xl font-medium text-[var(--color-mint-deep)]" id="result-savings"></p>
+        </div>
+      </div>
+
+      <p class="mt-5 text-[15px] text-[var(--color-mint-deep)]/80" id="result-annual"></p>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          How we calculated this
+        </summary>
+        <p class="mt-2 max-w-[55ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          Each bucket = net salary × its percentage. By definition, 50% + 30% + 20% = your whole
+          salary -- if you adjust the percentages, the same principle applies to the new split.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>What goes in each bucket</h2>
+      <p>
+        Needs are what you have to pay regardless of whether you want to: rent or mortgage, water,
+        electricity and internet bills, basic groceries, transport to work, mandatory insurance.
+        If you stopped paying them, you'd have a real problem, not just an inconvenience. Wants are
+        everything you choose to spend by choice, not obligation: eating out, streaming
+        subscriptions, clothing beyond the essentials, nights out, hobbies. The line between need
+        and want is personal to some extent -- a car can be a need for someone who lives far from
+        work and a want for someone with public transport at the door. Savings include your
+        emergency fund, retirement contributions, specific goals, and any amount paid toward debt
+        above the required minimum.
+      </p>
+
+      <h2>Why the rule breaks down in expensive cities</h2>
+      <p>
+        The 50/30/20 rule was born in the United States, in a context where average rent is a much
+        smaller share of income than in many parts of Lisbon or Porto today. If your rent alone
+        already eats up 45% or 50% of your net salary, there's little or nothing left for the rest
+        of your needs, and the classic rule stops being realistic. That doesn't mean you're
+        managing money badly -- it means the rule's starting point doesn't match your market
+        reality. In those cases, it makes more sense to use a split like 60/20/20 or 65/15/20,
+        always keeping a deliberate slice for savings, even if small.
+      </p>
+
+      <h2>How to adapt the percentages to your life</h2>
+      <p>
+        There's nothing wrong with adjusting the three numbers, as long as they still add up to
+        100% of your income. What matters is keeping the discipline of having a defined slice for
+        savings -- even if it's 10% instead of 20% during some periods of your life -- instead of
+        letting savings be "whatever happens to be left over" at the end of the month, which tends
+        to be zero.
+      </p>
+
+      <h2>What this calculator doesn't do</h2>
+      <p>
+        It doesn't categorise your actual expenses for you, and it doesn't know whether you're
+        spending more on wants than you think. It's a starting point for splitting your income
+        into three slices -- the work of seeing where your money is actually going is still yours.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Related tools</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/tools/portugal-net-salary-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="check-circle" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Net Salary Calculator</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Don't know your net salary off the top of your head? Work it out from your gross first.
+          </p>
+        </a>
+        <a
+          href="/tools/emergency-fund-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Emergency Fund</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Use the savings slice to work out how much of a cushion you need.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="chart-pie" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        You know the three numbers. Now they need following, every month.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        Otterbond turns these three buckets into a real budget that tracks what you spend
+        automatically.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Try it free
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimates based on general personal-finance rules, not financial, legal or tax advice.
+    </p>
+  </main>
+
+  <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateRule502030 } from '../../lib/calculators/rule502030';
+
+  const TOOL_SLUG = '50-30-20-rule-calculator';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+
+  function recalc() {
+    const needsPercent = num('needsPercent');
+    const wantsPercent = num('wantsPercent');
+    const savingsPercent = num('savingsPercent');
+
+    const result = calculateRule502030({
+      netMonthlyIncome: num('netMonthlyIncome'),
+      needsPercent,
+      wantsPercent,
+      savingsPercent,
+    });
+
+    document.getElementById('result-needs-label')!.textContent = `Needs (${needsPercent}%)`;
+    document.getElementById('result-wants-label')!.textContent = `Wants (${wantsPercent}%)`;
+    document.getElementById('result-savings-label')!.textContent = `Savings (${savingsPercent}%)`;
+
+    document.getElementById('result-needs')!.textContent = euro.format(result.needs);
+    document.getElementById('result-wants')!.textContent = euro.format(result.wants);
+    document.getElementById('result-savings')!.textContent = euro.format(result.savings);
+
+    document.getElementById('result-annual')!.textContent =
+      `${euro.format(result.savings)}/month in savings is ${euro.format(result.annualSavings)} a year.`;
+
+    const totalPercent = needsPercent + wantsPercent + savingsPercent;
+    const caption = document.getElementById('percent-total-caption')!;
+    caption.textContent =
+      totalPercent === 100
+        ? 'The percentages add up to 100%.'
+        : `Heads up: the percentages add up to ${totalPercent}%, not 100%.`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>
