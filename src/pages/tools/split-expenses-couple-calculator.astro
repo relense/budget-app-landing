@@ -1,0 +1,360 @@
+---
+// English counterpart of /ferramentas/dividir-despesas-casal.astro -- see that file's own comment
+// for the fixed-fields-not-dynamic-rows rationale, and recibos-verdes.astro's own comment for the
+// shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
+// Not Portugal-specific in any way -- this is a generic couples'-budgeting tool, useful anywhere.
+//
+// Year-less title/H1: the three split methods aren't annually-versioned data.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'How to Split Expenses as a Couple';
+const description =
+  "Compare three ways to split shared expenses as a couple: 50/50, proportional to income, and equal money left over. Instant result, no sign-up.";
+
+const faqs = [
+  {
+    question: "Which method is the fairest?",
+    answer:
+      'There\'s no objectively "fairest" method -- it depends on what the two of you value. 50/50 treats you both as equals regardless of what you each earn. Proportional-to-income means whoever earns more pays more, at the same percentage of their own income. Equal-leftover guarantees you both keep the same amount of free money at the end of the month. All three are "correct" in different contexts.',
+  },
+  {
+    question: "What if one of us doesn't have a fixed income?",
+    answer:
+      "Use an average of the last few months (or a conservative estimate) for that field. If income varies a lot month to month, it's worth revisiting the split regularly instead of setting it once and forgetting about it.",
+  },
+  {
+    question: 'Should we have a joint account?',
+    answer:
+      "Not required for any of the three methods. Many couples prefer to keep personal accounts and transfer each person's share into a joint account or shared space just for the common expenses -- that way each of you keeps full visibility over the rest of your own money.",
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      How to Split Expenses as a Couple
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Compare three ways to split rent, bills, and groceries: 50/50, proportional to what each of
+      you earns, or with the same amount left over for both of you at the end of the month.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Net income, person A (€)</span>
+        <input
+          type="number"
+          id="incomeA"
+          value="1800"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Net income, person B (€)</span>
+        <input
+          type="number"
+          id="incomeB"
+          value="1200"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Rent or mortgage (€)</span>
+        <input
+          type="number"
+          id="expenseRent"
+          value="900"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Bills (water, power, gas, internet) (€)</span>
+        <input
+          type="number"
+          id="expenseBills"
+          value="150"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Groceries (€)</span>
+        <input
+          type="number"
+          id="expenseGroceries"
+          value="300"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Other shared expenses (€)</span>
+        <input
+          type="number"
+          id="expenseOther"
+          value="0"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+
+      <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div class="rounded-xl bg-[var(--color-mint-deep)]/10 p-4">
+          <p class="text-sm font-medium text-[var(--color-mint-deep)]/70">50/50</p>
+          <p class="mt-2 text-[15px] text-[var(--color-mint-deep)]" id="result-5050"></p>
+        </div>
+        <div class="rounded-xl bg-[var(--color-mint-deep)]/15 p-4 ring-1 ring-[var(--color-mint-deep)]/20">
+          <p class="text-sm font-medium text-[var(--color-mint-deep)]/70">Proportional to income</p>
+          <p class="mt-2 text-[15px] text-[var(--color-mint-deep)]" id="result-proportional"></p>
+          <p class="mt-1 text-xs text-[var(--color-mint-deep)]/60">The most commonly used method</p>
+        </div>
+        <div class="rounded-xl bg-[var(--color-mint-deep)]/10 p-4">
+          <p class="text-sm font-medium text-[var(--color-mint-deep)]/70">Equal leftover for both</p>
+          <p class="mt-2 text-[15px] text-[var(--color-mint-deep)]" id="result-leftover"></p>
+        </div>
+      </div>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          How we calculated this
+        </summary>
+        <p class="mt-2 max-w-[55ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          50/50: each of you pays half the total. Proportional: each of you pays the same
+          percentage of the total as your income represents of the combined income. Equal
+          leftover: we work out how much each of you can contribute so that, after paying your
+          share, you both end up with the same amount left over.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>The three methods, and when each one makes sense</h2>
+      <p>
+        50/50 is the simplest: each of you pays half of everything, regardless of what you earn.
+        It works well when incomes are similar, or when the couple prefers to keep accounts
+        completely separate and easy to calculate. The problem shows up when there's a big
+        difference in income: half the expenses can be a much bigger slice of the lower earner's
+        budget than the higher earner's.
+      </p>
+      <p>
+        The proportional-to-income method solves that: each of you contributes the same percentage
+        of what you earn, not the same amount. If A earns twice what B does, A pays twice the
+        expenses -- but proportionally, you're both "feeling" the same effort. It's the most
+        commonly used method among couples with quite different incomes, for exactly this reason.
+      </p>
+      <p>
+        The equal-leftover method goes a step further: it doesn't just look at the income
+        proportion, but at the absolute amount each of you has left after paying your share. It
+        guarantees that, at the end of the month, you both have exactly the same amount of free
+        money to spend however you like -- even if that means the higher earner pays an even
+        bigger slice of expenses than the pure proportional split would suggest.
+      </p>
+
+      <h2>When incomes are very unequal</h2>
+      <p>
+        When the income gap is large, it's worth talking openly about which of the three methods
+        feels most balanced to both of you, rather than assuming one of them is "the correct one."
+        There's nothing wrong with revisiting the split whenever either of your financial
+        situations change -- a promotion, a job change, or a period without income shouldn't be
+        awkward reasons to avoid reopening the conversation.
+      </p>
+
+      <h2>Shared vs. personal expenses</h2>
+      <p>
+        This calculator only deals with shared expenses -- the ones that exist because you live
+        together (rent, bills, household groceries). Personal expenses (clothing, individual nights
+        out, your own subscriptions) usually stay outside this split, paid from what's left over to
+        each of you after your share of the common expenses.
+      </p>
+
+      <h2>Joint account or not</h2>
+      <p>
+        None of the three methods requires a joint account. Many couples prefer to keep personal
+        accounts separate and transfer each person's share into an account or shared space just
+        for common expenses every month -- that way each of you keeps full visibility over the rest
+        of your own money, without mixing everything together.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Related tools</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/tools/emergency-fund-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Emergency Fund</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Once you've split your expenses, work out together how much of a cushion you need.
+          </p>
+        </a>
+        <a
+          href="/tools/50-30-20-rule-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="chart-pie" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">50/30/20 Rule</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Use what's left after your share of expenses to plan your own personal budget.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="heart" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        You know who pays what. Now keep it visible every month.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        Otterbond lets you share a space with your partner to track your common expenses together,
+        no spreadsheets required.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Try it free
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimates based on general personal-finance rules, not financial, legal or tax advice.
+    </p>
+  </main>
+
+  <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateSplitExpenses } from '../../lib/calculators/splitExpensesCouple';
+
+  const TOOL_SLUG = 'split-expenses-couple-calculator';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+
+  function recalc() {
+    const totalExpenses = num('expenseRent') + num('expenseBills') + num('expenseGroceries') + num('expenseOther');
+    const result = calculateSplitExpenses({ incomeA: num('incomeA'), incomeB: num('incomeB'), totalExpenses });
+
+    document.getElementById('result-headline')!.textContent =
+      `Shared expenses: ${euro.format(totalExpenses)}/month.`;
+
+    document.getElementById('result-5050')!.textContent =
+      `A: ${euro.format(result.fiftyFifty.a)} · B: ${euro.format(result.fiftyFifty.b)}`;
+    document.getElementById('result-proportional')!.textContent =
+      `A: ${euro.format(result.proportional.a)} · B: ${euro.format(result.proportional.b)}`;
+    document.getElementById('result-leftover')!.textContent =
+      `A: ${euro.format(result.equalLeftover.a)} · B: ${euro.format(result.equalLeftover.b)}`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>

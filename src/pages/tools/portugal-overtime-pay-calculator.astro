@@ -1,0 +1,336 @@
+---
+// English counterpart of /ferramentas/calculadora-horas-extra.astro -- see recibos-verdes.astro's
+// own comment for the shared "front door, not a feature of the app" rationale and the
+// `lang`/`noAlternate` reasoning. See overtimePay.ts's own comment for the full Código do
+// Trabalho sourcing.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Portugal Overtime & Night Work Pay Calculator';
+const description =
+  "Calculate what your overtime and night hours are worth, with the Código do Trabalho's legal supplements. Instant result, no sign-up.";
+
+const faqs = [
+  {
+    question: 'Can my collective agreement set different figures?',
+    answer:
+      "Yes -- the supplements here are the Código do Trabalho's own, which apply when there's no collective bargaining agreement (CCT) that says otherwise. Many sectors have their own agreements, sometimes more favourable. Always check your CCT before treating these figures as final.",
+  },
+  {
+    question: 'What counts toward the 100-annual-hours limit?',
+    answer:
+      "The total overtime hours worked over the calendar year, which accumulates progressively. Once it's exceeded, the supplements rise to the higher figures (50%/75% on a working day, 100% on a rest day or holiday).",
+  },
+  {
+    question: 'Does overtime get different tax treatment for IRS?',
+    answer:
+      "Yes, overtime has its own separate withholding and a reduced rate compared with regular income, within certain limits -- but that's a matter of IRS withholding, not the gross amount calculated here, which is simply the amount due before tax.",
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Portugal Overtime & Night Work Pay Calculator
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Enter your base salary and the extra hours you worked, and see what they're worth -- with
+      the legal supplements for a working day, a rest day or holiday, and night work.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Monthly gross base salary (€)</span>
+        <input
+          type="number"
+          id="grossMonthlySalary"
+          value="1500"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Normal weekly hours</span>
+        <input
+          type="number"
+          id="weeklyHours"
+          value="40"
+          min="1"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Overtime hours on a working day</span>
+        <input
+          type="number"
+          id="weekdayOvertimeHours"
+          value="0"
+          min="0"
+          step="0.5"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Hours on a rest day or holiday</span>
+        <input
+          type="number"
+          id="restDayOrHolidayHours"
+          value="0"
+          min="0"
+          step="0.5"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Night hours</span>
+        <input
+          type="number"
+          id="nightHours"
+          value="0"
+          min="0"
+          step="0.5"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="mt-1 flex items-center gap-2.5 text-sm">
+        <input type="checkbox" id="aboveAnnualLimit" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
+        <span class="text-[var(--color-ink)]">I've already worked over 100 overtime hours this year</span>
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail"></p>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          How we calculated this
+        </summary>
+        <p class="mt-2 max-w-[58ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          Hourly rate = (monthly salary × 12) ÷ (52 × weekly hours). Up to 100 annual overtime
+          hours: +25% on the first working-day hour, +37.5% on subsequent ones, +50% on a rest day
+          or holiday. Above 100 hours: +50%, +75% and +100% respectively. Night work always adds
+          +25%, independent of the annual limit.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>How the hourly rate is calculated</h2>
+      <p>
+        The Código do Trabalho defines its own formula for the normal hourly rate, used as the
+        base for every supplement: the monthly salary multiplied by 12 (to annualise it) and
+        divided by 52 weeks times your normal weekly hours. It isn't simply the salary divided by
+        the month's hours -- this formula uses the whole year as its reference.
+      </p>
+
+      <h2>The two tiers of overtime</h2>
+      <p>
+        Within the first 100 overtime hours of the calendar year, the first hour (or fraction)
+        worked extra on a working day has a 25% supplement, and every subsequent hour that same
+        day has 37.5%. On a mandatory rest day or public holiday, the supplement is always 50% per
+        hour, with no distinction between the first and later hours. Once the 100 annual hours are
+        exceeded, these figures rise to 50%, 75% and 100% respectively -- a legal incentive against
+        normalising too much overtime across the year.
+      </p>
+
+      <h2>The night work supplement</h2>
+      <p>
+        Working during the night period (the exact window is defined by law or a CCT, typically
+        between 10pm and 7am) entitles you to a flat 25% supplement over the equivalent daytime
+        value -- regardless of whether you're a shift worker, and regardless of whether those hours
+        are also overtime or part of your normal schedule. This supplement doesn't apply to
+        activities that are inherently nocturnal by nature, like bars or nightclubs.
+      </p>
+
+      <h2>When a collective agreement changes everything</h2>
+      <p>
+        These are the figures the law sets by default, in the absence of a collective bargaining
+        agreement (CCT) of your own. Many sectors negotiate different terms -- sometimes more
+        favourable, sometimes with alternative mechanisms like a time bank or time off in lieu
+        instead of payment. Always check your CCT before treating these figures as final for your
+        situation.
+      </p>
+
+      <h2>What this calculator doesn't do</h2>
+      <p>
+        It doesn't model specific collective agreements, time banks, or the IRS withholding that
+        applies to overtime (which has its own rules, different from regular salary). The result
+        is always the gross amount due, before tax and Social Security.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Related tools</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/tools/portugal-net-salary-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="check-circle" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Net Salary Calculator</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            See how this extra amount translates to your take-home pay for the month.
+          </p>
+        </a>
+        <a
+          href="/tools/emergency-fund-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Emergency Fund</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            A good destination for a one-off extra income like this.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="moon-stars" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        You know the amount. Now don't lose track of it.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        Otterbond helps you add this as extra income, without it blending into your regular
+        salary.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Try it free
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimate from the Código do Trabalho's general regime, not legal advice, and not a substitute
+      for your collective agreement, if you have one.
+    </p>
+  </main>
+
+  <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateOvertimePay } from '../../lib/calculators/overtimePay';
+
+  const TOOL_SLUG = 'portugal-overtime-pay-calculator';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function checked(id: string): boolean {
+    return (document.getElementById(id) as HTMLInputElement).checked;
+  }
+
+  function recalc() {
+    const result = calculateOvertimePay({
+      grossMonthlySalary: num('grossMonthlySalary'),
+      weeklyHours: num('weeklyHours'),
+      weekdayOvertimeHours: num('weekdayOvertimeHours'),
+      restDayOrHolidayHours: num('restDayOrHolidayHours'),
+      nightHours: num('nightHours'),
+      aboveAnnualLimit: checked('aboveAnnualLimit'),
+    });
+
+    document.getElementById('result-headline')!.textContent = `Total amount: ${euro.format(result.total)}.`;
+    document.getElementById('result-detail')!.textContent =
+      `Normal hourly rate: ${euro.format(result.hourlyRate)} · Working day: ${euro.format(result.weekdayOvertimePay)} · Rest day/holiday: ${euro.format(result.restDayOrHolidayPay)} · Night: ${euro.format(result.nightPay)}`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>

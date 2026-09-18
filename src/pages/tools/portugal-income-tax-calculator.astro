@@ -1,40 +1,37 @@
 ---
-// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
-// shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
-// English counterpart: /tools/portugal-income-tax-calculator.
+// English counterpart of /ferramentas/simulador-irs.astro. That file's own comment originally said
+// "No English counterpart (Portuguese tax rules only make sense in a Portuguese-language
+// context)" -- on reflection that's inconsistent with this site's own established pattern
+// (portugal-net-salary-calculator.astro and portugal-freelancer-tax-calculator.astro are just as
+// Portugal-tax-specific and already have English versions for expats/foreigners searching in
+// English), so that earlier assumption is overridden here rather than carried forward.
 //
-// The most regulated page on the site so far -- see src/lib/calculators/irsCalculator.ts's own
-// file comment for the full sourcing list. Seasonal: IRS filing season is April-June, so this
-// page matters most Jan-Jun and should be reviewed every January for the new tax year's figures.
-//
-// `jointTaxation` (the calculator module's own clean boolean) is derived here from `maritalStatus`
-// + a `spouseWorking` checkbox, mirroring recibos-verdes.astro's exact same UI pattern for the same
-// underlying quociente-conjugal decision -- consistency with the one other page on this site that
-// already asks this question the same way, rather than inventing a different framing.
+// See irsCalculator.ts's own file comment for the full sourcing list. Seasonal: IRS filing season
+// is April-June.
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
 import Icon from '../../components/Icon.astro';
 
-const title = 'Simulador de IRS 2026';
+const title = 'Portugal Income Tax Calculator (IRS) 2026';
 const description =
-  'Estima se vais receber ou pagar IRS em 2026: rendimento coletável, escalão, dedução por dependentes e principais deduções à coleta. Resultado imediato, sem registo.';
+  "Estimate whether you'll get a refund or owe IRS in 2026: taxable income, bracket, dependent credit and the main deductible expenses. Instant result, no sign-up.";
 
 const faqs = [
   {
-    question: 'Isto substitui a simulação no Portal das Finanças?',
+    question: 'Does this replace the simulation on the Portal das Finanças?',
     answer:
-      'Não. É uma estimativa rápida com as regras e os limites principais de 2026, mas não modela todas as deduções possíveis (por exemplo, PPR, doações, ascendentes a cargo, ou o regime de estudante deslocado), nem tem acesso às faturas que já entregaste. A simulação oficial na Declaração de IRS, feita com os teus dados reais, é sempre a que conta.',
+      "No. It's a quick estimate using 2026's main rules and limits, but it doesn't model every possible deduction (for example PPR retirement savings, donations, dependent ascendants, or the displaced-student regime), and it doesn't have access to invoices you've already submitted. The official simulation inside your actual tax return, using your real data, is always what counts.",
   },
   {
-    question: 'Tributação conjunta ou separada, qual escolher?',
+    question: 'Joint or separate taxation, which should we choose?',
     answer:
-      'Em geral, a tributação conjunta favorece casais com rendimentos muito diferentes entre si (o quociente conjugal "empurra" o rendimento mais alto para um escalão mais baixo antes de calcular o imposto), enquanto casais com rendimentos parecidos raramente ganham muito com isso. Não há uma resposta universal -- em caso de dúvida, o Portal das Finanças permite simular os dois cenários antes de entregares.',
+      'In general, joint taxation favours couples with very different incomes from each other (the "quociente conjugal" pushes the higher income into a lower bracket before the tax is calculated), while couples with similar incomes rarely gain much from it. There\'s no universal answer -- if in doubt, the Portal das Finanças lets you simulate both scenarios before filing.',
   },
   {
-    question: 'Até quando tenho de entregar o IRS?',
+    question: 'By when do I have to file my IRS return?',
     answer:
-      'A entrega da Declaração de IRS decorre entre 1 de abril e 30 de junho, referente aos rendimentos do ano anterior. Quem tem a declaração automática validada pode nem precisar de fazer nada -- mas vale sempre a pena confirmar se todas as despesas dedutíveis foram corretamente registadas no e-fatura antes disso.',
+      "Filing runs between 1 April and 30 June, for the previous year's income. If you have a validated automatic return you may not need to do anything -- but it's always worth confirming that every deductible expense was correctly recorded in e-fatura beforehand.",
   },
 ];
 
@@ -58,21 +55,20 @@ const softwareApplicationJsonLd = {
 };
 ---
 
-<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
-  <NavBar lang="pt-pt" />
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
 
   <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
     <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
-      Simulador de IRS 2026
+      Portugal Income Tax Calculator (IRS) 2026
     </h1>
     <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-      Introduz o teu rendimento, o IRS retido, e as principais despesas dedutíveis, e vê se deves
-      esperar reembolso ou pagamento -- com os escalões e limites de 2026.
+      Enter your income, IRS withheld, and the main deductible expenses, and see whether you
+      should expect a refund or a payment -- with 2026's brackets and limits.
     </p>
     <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
-      Estimativa a partir de regras públicas, não é a tua declaração de IRS nem aconselhamento
-      fiscal. Valores de 2026 (declaração a entregar entre abril e junho de 2027). Fonte: Código
-      do IRS e Portal das Finanças.
+      An estimate from public rules, not your actual tax return or tax advice. 2026 figures (return
+      filed between April and June 2027). Source: Código do IRS and Portal das Finanças.
     </p>
 
     <form
@@ -80,7 +76,7 @@ const softwareApplicationJsonLd = {
       class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
     >
       <label class="block text-sm">
-        <span class="font-medium text-[var(--color-ink)]">Rendimento bruto anual (categoria A) (€)</span>
+        <span class="font-medium text-[var(--color-ink)]">Annual gross income (Category A) (€)</span>
         <input
           type="number"
           id="grossAnnualIncome"
@@ -92,7 +88,7 @@ const softwareApplicationJsonLd = {
       </label>
 
       <label class="block text-sm">
-        <span class="font-medium text-[var(--color-ink)]">IRS retido durante o ano (€)</span>
+        <span class="font-medium text-[var(--color-ink)]">IRS withheld during the year (€)</span>
         <input
           type="number"
           id="irsRetainedDuringYear"
@@ -102,29 +98,29 @@ const softwareApplicationJsonLd = {
           class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
         />
         <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">
-          Soma das retenções na fonte mensais, visível no teu recibo de vencimento ou na
-          Declaração Mod. 3 pré-preenchida.
+          The sum of your monthly withholdings, visible on your payslip or the pre-filled tax
+          return.
         </p>
       </label>
 
       <label class="block text-sm">
-        <span class="font-medium text-[var(--color-ink)]">Estado civil</span>
+        <span class="font-medium text-[var(--color-ink)]">Marital status</span>
         <select
           id="maritalStatus"
           class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
         >
-          <option value="single" selected>Solteiro / tributação separada</option>
-          <option value="married">Casado / união de facto (tributação conjunta)</option>
+          <option value="single" selected>Single / separate taxation</option>
+          <option value="married">Married / de facto union (joint taxation)</option>
         </select>
       </label>
 
       <label class="mt-1 flex items-center gap-2.5 text-sm" id="spouse-working-wrap" hidden>
         <input type="checkbox" id="spouseWorking" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
-        <span class="text-[var(--color-ink)]">O cônjuge também trabalha e tem rendimentos</span>
+        <span class="text-[var(--color-ink)]">My spouse also works and has income</span>
       </label>
 
       <label class="block text-sm">
-        <span class="font-medium text-[var(--color-ink)]">Nº de dependentes</span>
+        <span class="font-medium text-[var(--color-ink)]">Number of dependents</span>
         <input
           type="number"
           id="dependents"
@@ -135,7 +131,7 @@ const softwareApplicationJsonLd = {
       </label>
 
       <label class="block text-sm">
-        <span class="font-medium text-[var(--color-ink)]">... dos quais com 6 anos ou menos</span>
+        <span class="font-medium text-[var(--color-ink)]">... of which aged 6 or under</span>
         <input
           type="number"
           id="dependentsAgeSixOrUnder"
@@ -146,7 +142,7 @@ const softwareApplicationJsonLd = {
       </label>
 
       <label class="block text-sm sm:col-span-2">
-        <span class="font-medium text-[var(--color-ink)]">... dos quais com menos de 3 anos</span>
+        <span class="font-medium text-[var(--color-ink)]">... of which under 3</span>
         <input
           type="number"
           id="dependentsUnderThree"
@@ -158,12 +154,12 @@ const softwareApplicationJsonLd = {
 
       <details class="sm:col-span-2">
         <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
-          Despesas dedutíveis (saúde, educação, habitação, gerais)
+          Deductible expenses (health, education, housing, general)
         </summary>
 
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label class="block text-sm">
-            <span class="font-medium text-[var(--color-ink)]">Despesas de saúde (€/ano)</span>
+            <span class="font-medium text-[var(--color-ink)]">Health expenses (€/year)</span>
             <input
               type="number"
               id="healthExpenses"
@@ -173,7 +169,7 @@ const softwareApplicationJsonLd = {
             />
           </label>
           <label class="block text-sm">
-            <span class="font-medium text-[var(--color-ink)]">Educação e formação (€/ano)</span>
+            <span class="font-medium text-[var(--color-ink)]">Education and training (€/year)</span>
             <input
               type="number"
               id="educationExpenses"
@@ -183,7 +179,7 @@ const softwareApplicationJsonLd = {
             />
           </label>
           <label class="block text-sm">
-            <span class="font-medium text-[var(--color-ink)]">Renda de casa (habitação própria e permanente) (€/ano)</span>
+            <span class="font-medium text-[var(--color-ink)]">Rent (permanent home) (€/year)</span>
             <input
               type="number"
               id="housingRent"
@@ -193,7 +189,7 @@ const softwareApplicationJsonLd = {
             />
           </label>
           <label class="block text-sm">
-            <span class="font-medium text-[var(--color-ink)]">Juros de crédito habitação (contratos até 2011) (€/ano)</span>
+            <span class="font-medium text-[var(--color-ink)]">Mortgage interest (contracts up to 2011) (€/year)</span>
             <input
               type="number"
               id="housingLoanInterest"
@@ -203,7 +199,7 @@ const softwareApplicationJsonLd = {
             />
           </label>
           <label class="block text-sm sm:col-span-2">
-            <span class="font-medium text-[var(--color-ink)]">Despesas gerais familiares (€/ano)</span>
+            <span class="font-medium text-[var(--color-ink)]">General family expenses (€/year)</span>
             <input
               type="number"
               id="generalFamilyExpenses"
@@ -212,8 +208,8 @@ const softwareApplicationJsonLd = {
               class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
             />
             <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">
-              Água, luz, gás, telecomunicações, supermercado, combustível e outras não incluídas
-              nas categorias acima.
+              Water, electricity, gas, telecoms, supermarket, fuel and anything else not already
+              covered above.
             </p>
           </label>
         </div>
@@ -232,76 +228,76 @@ const softwareApplicationJsonLd = {
 
       <details class="mt-5">
         <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
-          Como calculámos
+          How we calculated this
         </summary>
         <p class="mt-2 max-w-[58ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
-          Rendimento coletável = rendimento bruto menos a dedução específica (mínimo 4.587,09€, ou
-          11% do bruto se as contribuições obrigatórias para a Segurança Social forem maiores).
-          Aplicam-se os escalões progressivos de 2026 a esse valor (a meias e a dobrar, se
-          escolheres tributação conjunta). Ao imposto resultante subtraem-se a dedução por
-          dependentes e as deduções à coleta (saúde, educação, habitação, despesas gerais), cada
-          uma com o seu limite próprio, e todas juntas limitadas pelo limite global do art. 78º
-          n.º 7 do Código do IRS. O que sobra é o imposto a pagar; a diferença para o que já foi
-          retido é o teu reembolso ou pagamento adicional.
+          Taxable income = gross income minus the specific deduction (a minimum of €4,587.09, or
+          11% of gross if your mandatory Social Security contributions are higher). 2026's
+          progressive brackets apply to that figure (halved and doubled, if you choose joint
+          taxation). The per-dependent credit and the deductible-expense credits (health,
+          education, housing, general expenses) are then subtracted from the resulting tax, each
+          with its own limit, and all together capped by Art. 78º n.º 7's global limit. What's left
+          is the tax due; the difference against what was already withheld is your refund or extra
+          payment.
         </p>
       </details>
     </section>
 
     <div class="legal-body mt-14">
-      <h2>Os escalões são progressivos, não um imposto fixo sobre tudo</h2>
+      <h2>Brackets are progressive, not a flat tax on everything</h2>
       <p>
-        Um erro comum é pensar que, ao entrares num escalão mais alto, todo o teu rendimento passa
-        a ser taxado a essa taxa. Não é assim: cada escalão só se aplica à fatia do rendimento
-        dentro desse intervalo. Se o teu rendimento coletável cair no 4º escalão, por exemplo, só
-        essa fatia acima do 3º escalão paga a taxa do 4º -- o resto continua a pagar as taxas mais
-        baixas dos escalões anteriores. É por isso que ganhar um pouco mais nunca te faz "perder
-        dinheiro" por passar de escalão.
+        A common mistake is thinking that entering a higher bracket makes your whole income taxed
+        at that rate. That's not how it works: each bracket only applies to the slice of income
+        within that range. If your taxable income falls in the 4th bracket, for example, only the
+        slice above the 3rd bracket's ceiling pays the 4th bracket's rate -- the rest keeps paying
+        the lower rates of the earlier brackets. That's why earning a bit more never makes you
+        "lose money" by moving up a bracket.
       </p>
 
-      <h2>A dedução específica: o primeiro corte antes de qualquer cálculo</h2>
+      <h2>The specific deduction: the first cut before any calculation</h2>
       <p>
-        Antes de qualquer escalão entrar em jogo, o rendimento bruto de trabalho dependente tem
-        direito a uma dedução específica automática -- em 2026, o maior valor entre 4.587,09€ e o
-        total das tuas contribuições obrigatórias para a Segurança Social. Para a maioria dos
-        trabalhadores, é o valor fixo que se aplica; só ultrapassa isso quem tem contribuições
-        obrigatórias mais altas (por exemplo, ordens profissionais). Só depois deste corte é que
-        se calcula o rendimento coletável, o valor efetivamente sujeito aos escalões.
+        Before any bracket comes into play, gross employment income gets an automatic specific
+        deduction -- in 2026, the larger of €4,587.09 and your total mandatory Social Security
+        contributions. For most workers, it's the fixed amount that applies; only those with higher
+        mandatory contributions (for example, professional association dues) go above that. Only
+        after this cut is your taxable income -- the amount actually subject to the brackets --
+        calculated.
       </p>
 
-      <h2>Tributação conjunta vs. separada</h2>
+      <h2>Joint vs. separate taxation</h2>
       <p>
-        Um casal pode escolher tributação separada (cada um entrega a sua declaração, com o seu
-        próprio rendimento) ou conjunta (juntam os rendimentos, dividem por dois para efeitos de
-        cálculo do escalão, e o imposto resultante é depois multiplicado por dois -- o "quociente
-        conjugal"). Este mecanismo tende a beneficiar mais quem tem rendimentos muito diferentes
-        entre si, porque "empurra" o rendimento mais alto para um escalão mais baixo antes do
-        cálculo. Quando os dois rendimentos são parecidos, o benefício tende a ser pequeno ou nulo.
+        A couple can choose separate taxation (each files their own return, with their own income)
+        or joint taxation (incomes are combined, divided by two for the bracket calculation, and
+        the resulting tax is then multiplied by two -- the "quociente conjugal"). This mechanism
+        tends to benefit couples with very different incomes from each other most, because it
+        "pushes" the higher income into a lower bracket before the calculation. When both incomes
+        are similar, the benefit tends to be small or nonexistent.
       </p>
 
-      <h2>As deduções à coleta, e o limite que as junta a todas</h2>
+      <h2>Deductible-expense credits, and the limit that caps them all</h2>
       <p>
-        Depois de calculado o imposto pelos escalões, ainda há deduções à coleta a subtrair:
-        saúde (15% até 1.000€), educação e formação (30% até 800€), renda de casa (15% até 900€),
-        juros de crédito habitação -- só para contratos celebrados até 2011 (15% até 296€), e
-        despesas gerais familiares (35% até 250€ por sujeito passivo, 500€ em tributação conjunta).
-        A soma de todas estas está sujeita a um limite global que depende do teu rendimento
-        coletável: sem limite até 7.479€, entre 1.000€ e 2.500€ numa escala decrescente até
-        78.834€, e fixo em 1.000€ acima disso. A dedução por dependente (600€ por dependente,
-        mais para dependentes até 6 anos) é separada e não entra neste limite.
+        After the bracket-based tax is calculated, there are still credits to subtract: health
+        (15% up to €1,000), education and training (30% up to €800), permanent-home rent (15% up to
+        €900), mortgage interest -- only for contracts signed up to 2011 (15% up to €296), and
+        general family expenses (35% up to €250 per taxpayer, €500 under joint taxation). The sum of
+        all of these is subject to a global limit that depends on your taxable income: no limit up
+        to €7,479, between €1,000 and €2,500 on a declining scale up to €78,834, and a flat €1,000
+        above that. The per-dependent credit (€600 per dependent, more for dependents aged 6 or
+        under) is separate and doesn't count toward this limit.
       </p>
 
-      <h2>O que este simulador não modela</h2>
+      <h2>What this calculator doesn't model</h2>
       <p>
-        Não inclui PPR, donativos, o regime de estudante deslocado, ascendentes a cargo, nem
-        situações de residente não habitual ou regimes especiais. Também assume rendimento
-        exclusivamente de categoria A (trabalho dependente) -- rendimentos prediais, de capitais
-        ou mais-valias não estão contemplados. Para a tua situação real e completa, a Declaração
-        de IRS no Portal das Finanças continua a ser a referência.
+        It doesn't include PPR retirement savings, donations, the displaced-student regime,
+        dependent ascendants, or non-habitual resident (NHR) or other special regimes. It also
+        assumes income exclusively from Category A (employment) -- rental income, investment
+        income, or capital gains aren't covered. For your real, complete situation, your actual tax
+        return on the Portal das Finanças remains the reference.
       </p>
     </div>
 
     <div class="mt-14">
-      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
       <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
         {
           faqs.map((faq) => (
@@ -323,30 +319,30 @@ const softwareApplicationJsonLd = {
     </div>
 
     <div class="mt-14">
-      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Ferramentas relacionadas</h2>
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Related tools</h2>
       <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
         <a
-          href="/ferramentas/salario-liquido"
+          href="/tools/portugal-net-salary-calculator"
           class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
         >
           <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
             <Icon name="check-circle" class="h-5 w-5" />
           </div>
-          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Salário Líquido</h3>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Net Salary Calculator</h3>
           <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
-            Confirma quanto do teu salário bruto realmente chega à conta todos os meses.
+            Check how much of your gross salary actually lands in your account every month.
           </p>
         </a>
         <a
-          href="/ferramentas/fundo-de-emergencia"
+          href="/tools/emergency-fund-calculator"
           class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
         >
           <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
             <Icon name="shield-check" class="h-5 w-5" />
           </div>
-          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Fundo de Emergência</h3>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Emergency Fund</h3>
           <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
-            Se vais ter reembolso, aqui está um destino óbvio para ele.
+            If you're getting a refund, here's an obvious place for it to go.
           </p>
         </a>
       </div>
@@ -357,29 +353,28 @@ const softwareApplicationJsonLd = {
         <Icon name="receipt" class="h-5 w-5" />
       </div>
       <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]" id="bridge-headline">
-        Já sabes a estimativa. Falta decidir o que fazer com ela.
+        You know the estimate. Now decide what to do with it.
       </h2>
       <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]" id="bridge-body">
-        O Otterbond ajuda-te a planear com antecedência, seja para guardar um reembolso ou para
-        te preparares para um pagamento.
+        Otterbond helps you plan ahead, whether that's saving a refund or preparing for a payment.
       </p>
       <a
         id="bridge-cta"
-        href="/pt-pt/#get-the-app"
+        href="/#get-the-app"
         class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
       >
-        Experimentar grátis
+        Try it free
         <Icon name="arrow-right" class="h-4 w-4" />
       </a>
     </section>
 
     <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
-      Estimativa a partir de regras públicas do Código do IRS, não é aconselhamento fiscal, legal
-      ou financeiro, nem substitui a tua declaração de IRS.
+      Estimate from public Código do IRS rules, not financial, legal or tax advice, and not a
+      substitute for your actual tax return.
     </p>
   </main>
 
-  <Footer lang="pt-pt" />
+  <Footer lang="en" />
 
   <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
   <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
@@ -388,7 +383,7 @@ const softwareApplicationJsonLd = {
 <script>
   import { calculateIrs } from '../../lib/calculators/irsCalculator';
 
-  const TOOL_SLUG = 'simulador-irs';
+  const TOOL_SLUG = 'portugal-income-tax-calculator';
 
   function trackEvent(name: string) {
     if (typeof window.gtag === 'function') {
@@ -397,7 +392,7 @@ const softwareApplicationJsonLd = {
   }
 
   const form = document.getElementById('calc-form') as HTMLFormElement;
-  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
 
   function num(id: string): number {
     const el = document.getElementById(id) as HTMLInputElement;
@@ -444,25 +439,25 @@ const softwareApplicationJsonLd = {
     const bridgeBody = document.getElementById('bridge-body')!;
 
     if (Math.round(result.balance) === 0) {
-      headline.textContent = 'As contas ficam certas: nem reembolso, nem pagamento.';
-      bridgeHeadline.textContent = 'Já sabes a estimativa. Falta decidir o que fazer com ela.';
+      headline.textContent = "The numbers come out even: no refund, no payment.";
+      bridgeHeadline.textContent = 'You know the estimate. Now decide what to do with it.';
       bridgeBody.textContent =
-        'O Otterbond ajuda-te a planear com antecedência, seja para guardar um reembolso ou para te preparares para um pagamento.';
+        'Otterbond helps you plan ahead, whether that\'s saving a refund or preparing for a payment.';
     } else if (result.balance > 0) {
-      headline.textContent = `Estimativa: recebes cerca de ${euro.format(result.balance)}.`;
-      bridgeHeadline.textContent = `Vais receber cerca de ${euro.format(result.balance)}. Já sabes o que vais fazer com isso?`;
-      bridgeBody.textContent = 'O Otterbond ajuda-te a criar um fundo para o reembolso não se perder no dia a dia.';
+      headline.textContent = `Estimate: you get back around ${euro.format(result.balance)}.`;
+      bridgeHeadline.textContent = `You'll get back around ${euro.format(result.balance)}. Do you know what you'll do with it?`;
+      bridgeBody.textContent = "Otterbond helps you create a fund so the refund doesn't get lost in day-to-day spending.";
     } else {
-      headline.textContent = `Estimativa: pagas cerca de ${euro.format(-result.balance)}.`;
-      bridgeHeadline.textContent = `Vais ter de pagar cerca de ${euro.format(-result.balance)}. Prepara-te com antecedência.`;
-      bridgeBody.textContent = 'O Otterbond ajuda-te a separar esse valor mês a mês, antes de o pagamento chegar.';
+      headline.textContent = `Estimate: you owe around ${euro.format(-result.balance)}.`;
+      bridgeHeadline.textContent = `You'll need to pay around ${euro.format(-result.balance)}. Get ready ahead of time.`;
+      bridgeBody.textContent = "Otterbond helps you set that amount aside month by month, before the payment is due.";
     }
 
     document.getElementById('result-detail-1')!.textContent =
-      `Rendimento coletável: ${euro.format(result.taxableIncome)}/ano · Imposto antes de deduções: ${euro.format(result.taxBeforeCredits)}`;
+      `Taxable income: ${euro.format(result.taxableIncome)}/year · Tax before credits: ${euro.format(result.taxBeforeCredits)}`;
     document.getElementById('result-detail-2')!.textContent =
-      `Dedução por dependentes: ${euro.format(result.dependentsDeduction)} · Deduções à coleta aplicadas: ${euro.format(result.deductionsACollectaApplied)}`;
-    document.getElementById('result-detail-3')!.textContent = `Imposto a pagar: ${euro.format(result.taxDue)}`;
+      `Dependent credit: ${euro.format(result.dependentsDeduction)} · Deductible-expense credits applied: ${euro.format(result.deductionsACollectaApplied)}`;
+    document.getElementById('result-detail-3')!.textContent = `Tax due: ${euro.format(result.taxDue)}`;
   }
 
   let hasFiredCompleted = false;

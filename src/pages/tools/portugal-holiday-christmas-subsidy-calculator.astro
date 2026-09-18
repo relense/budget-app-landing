@@ -1,0 +1,360 @@
+---
+// English counterpart of /ferramentas/subsidio-ferias-natal-duodecimos.astro -- see recibos-verdes.astro's
+// own comment for the shared "front door, not a feature of the app" rationale and the
+// `lang`/`noAlternate` reasoning. Reuses salaryCalculator.ts's `calculateSalary` directly, same as
+// the PT page -- see that page's own comment for why.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Portugal Holiday & Christmas Subsidy Calculator';
+const description =
+  "See exactly how much lands in your account each month with Portugal's holiday and Christmas subsidies, paid as a lump sum or spread by duodécimos. Instant result, no sign-up.";
+
+const faqs = [
+  {
+    question: 'Am I always entitled to both subsidies?',
+    answer:
+      "Yes -- the holiday subsidy and the Christmas subsidy are a legal right for any employee in Portugal, each worth one month of base pay (plus any other regular allowances). In your first year of work, the amount is proportional to time served that civil year.",
+  },
+  {
+    question: 'Can I switch to duodécimos partway through the year?',
+    answer:
+      "Choosing duodécimos is normally done by notifying your employer by 31 October of the previous year, to take effect from the following 1 January -- it's not something you can switch on partway through the current year. Check with your HR department for the exact deadline and process at your company.",
+  },
+  {
+    question: 'Are the subsidies taxed the same way as regular salary?',
+    answer:
+      "Not exactly -- each subsidy is withheld separately, at the rate that would apply if the entire subsidy were paid at once (even under duodécimos, the withholding calculation uses the full subsidy amount, only the payment itself is spread out). There's no meal allowance tied to the subsidy payment itself.",
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+
+const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+---
+
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Portugal Holiday & Christmas Subsidy Calculator
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      See exactly what lands in your account each month -- paid as a lump sum in June and
+      November, or spread by duodécimos across all 12 months.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Monthly gross base salary (€)</span>
+        <input
+          type="number"
+          id="amount"
+          value="1500"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Payment method</span>
+        <select
+          id="paymentMode"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="lumpSum" selected>Lump sum (June and November)</option>
+          <option value="duodecimos">Duodécimos (spread over 12 months)</option>
+        </select>
+      </label>
+
+      <details class="sm:col-span-2">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
+          Advanced options (region, marital status, dependents)
+        </summary>
+
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Region</span>
+            <select
+              id="region"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            >
+              <option value="continente" selected>Mainland</option>
+              <option value="acores">Açores</option>
+              <option value="madeira">Madeira</option>
+            </select>
+          </label>
+
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Marital status</span>
+            <select
+              id="filingStatus"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            >
+              <option value="single" selected>Single / married, two earners</option>
+              <option value="marriedOneEarner">Married, single earner</option>
+            </select>
+          </label>
+
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Number of dependents</span>
+            <input
+              type="number"
+              id="dependents"
+              value="0"
+              min="0"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+        </div>
+      </details>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+
+      <div class="mt-5 grid grid-cols-3 gap-2.5 sm:grid-cols-6" id="calendar-grid"></div>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          How we calculated this
+        </summary>
+        <p class="mt-2 max-w-[58ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          Each subsidy is withheld as if it were paid all at once, at the value of one month of
+          base salary. Under lump-sum payment, that full net amount lands in June and November. Under
+          duodécimos, the same annual total is split evenly across the 12 months.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>The right to both subsidies</h2>
+      <p>
+        Any employee in Portugal is legally entitled to a holiday subsidy and a Christmas subsidy,
+        each equivalent to one month of base pay (plus any other regular, periodic allowances). The
+        holiday subsidy is normally paid before taking leave, and the Christmas one by 15 December.
+        In your first year of work, the amount is proportional to time served that civil year, not
+        the full month.
+      </p>
+
+      <h2>Lump sum vs. duodécimos</h2>
+      <p>
+        By default, the subsidies are paid all at once, in their own months -- that's why June and
+        November tend to feel like "good" months and the other ten, tighter by comparison. The
+        duodécimos option, restored by Lei n.º 90/2019, lets an employee request that the value of
+        both subsidies be spread evenly across the 12 months of the year, smoothing monthly income
+        instead of concentrating it into two peaks. The total received over the year is exactly the
+        same either way -- only when the money arrives changes.
+      </p>
+
+      <h2>How to request duodécimos</h2>
+      <p>
+        The choice is made by written notice to the employer, normally by 31 October of the
+        previous year, to take effect from the following 1 January. It's not something you can
+        switch on partway through the current year -- if you're thinking of changing, it's worth
+        confirming the exact deadline and process with your HR department.
+      </p>
+
+      <h2>How the subsidies are withheld</h2>
+      <p>
+        Unlike your regular monthly salary, each subsidy is withheld separately: the rate applied
+        is the one that would correspond to receiving that full amount at once, even though in
+        practice (under duodécimos) only a fraction of it arrives each month. There's no meal
+        allowance tied to the subsidy payment itself -- that component only applies to your regular
+        monthly salary.
+      </p>
+
+      <h2>What this calculator doesn't do</h2>
+      <p>
+        It assumes both subsidies are worth exactly one month of base salary, the legal default --
+        if your contract or collective agreement sets a different amount, the numbers here won't
+        match your payslip exactly. It also doesn't model your first year of work (proportional
+        subsidy) or contract suspension situations.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Related tools</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/tools/portugal-net-salary-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="check-circle" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Net Salary Calculator</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            The same withholding, but for your regular month.
+          </p>
+        </a>
+        <a
+          href="/tools/emergency-fund-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Emergency Fund</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            A good destination for part of your holiday subsidy, before it gets spent on holidays.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="calendar-blank" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        You know the calendar. Now it just needs to stay visible.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        Otterbond adds your subsidies to your payment calendar, so you see them arrive alongside
+        the rest of your income.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Try it free
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimate from 2026 public withholding rules, not financial, legal or tax advice.
+    </p>
+  </main>
+
+  <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+  <script is:inline define:vars={{ monthLabels }}>
+    window.__monthLabels = monthLabels;
+  </script>
+</BaseLayout>
+
+<script>
+  import { calculateSalary, type FilingStatus, type Region, type SubsidyPaymentMode } from '../../lib/calculators/salaryCalculator';
+  import { buildPaySchedule } from '../../lib/calculators/paySchedule';
+
+  const TOOL_SLUG = 'portugal-holiday-christmas-subsidy-calculator';
+  const monthLabels: string[] = (window as unknown as { __monthLabels: string[] }).__monthLabels;
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function val(id: string): string {
+    return (document.getElementById(id) as HTMLSelectElement).value;
+  }
+
+  function recalc() {
+    const paymentMode = val('paymentMode') as SubsidyPaymentMode;
+
+    const salary = calculateSalary({
+      direction: 'grossToNet',
+      amount: num('amount'),
+      region: val('region') as Region,
+      filingStatus: val('filingStatus') as FilingStatus,
+      dependents: num('dependents'),
+      disabled: false,
+    });
+
+    const schedule = buildPaySchedule(salary, paymentMode);
+
+    if (paymentMode === 'lumpSum') {
+      document.getElementById('result-headline')!.textContent =
+        `${euro.format(salary.regularMonth.net)}/month, with ${euro.format(salary.regularMonth.net + salary.subsidyMonth.net)} in June and November.`;
+    } else {
+      document.getElementById('result-headline')!.textContent =
+        `${euro.format(salary.monthlyWithDuodecimos.net)} every month, no peaks in June or November.`;
+    }
+
+    const grid = document.getElementById('calendar-grid')!;
+    grid.innerHTML = '';
+    schedule.forEach((entry) => {
+      const cell = document.createElement('div');
+      cell.className = `rounded-xl p-3 text-center ${entry.isSubsidy ? 'bg-[var(--color-mint-deep)] text-white' : 'bg-[var(--color-mint-deep)]/10 text-[var(--color-mint-deep)]'}`;
+      cell.innerHTML = `<p class="text-xs font-medium opacity-70">${monthLabels[entry.month - 1]}</p><p class="mt-1 text-sm font-medium">${euro.format(entry.net)}</p>`;
+      grid.appendChild(cell);
+    });
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>
