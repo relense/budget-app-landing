@@ -1,0 +1,285 @@
+---
+// English counterpart of /ferramentas/calculadora-inflacao.astro -- see recibos-verdes.astro's own
+// comment for the shared "front door, not a feature of the app" rationale and the
+// `lang`/`noAlternate` reasoning. See inflationCalculator.ts's own comment for the full CPI series
+// sourcing.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+import { EARLIEST_YEAR, LATEST_YEAR } from '../../lib/calculators/inflationCalculator';
+
+const title = 'Portugal Inflation Calculator: what your euros were worth';
+const description =
+  "See what an amount in euros was worth (or will be worth) in another year, with INE's inflation series from 2000 to 2025. Instant result, no sign-up.";
+
+const faqs = [
+  {
+    question: 'What exactly does the CPI measure?',
+    answer:
+      "The Consumer Price Index tracks the average change in prices of a representative basket of goods and services consumed by Portuguese households -- food, housing, transport, health, leisure, among others. It's the official inflation indicator in Portugal, calculated monthly by INE.",
+  },
+  {
+    question: "Why isn't 2026 included?",
+    answer:
+      "Because the year hasn't finished yet -- INE only publishes the definitive annual average inflation rate once the civil year is closed. This calculator uses 2025 as the most recent available year, and will be updated once the definitive 2026 figure is published.",
+  },
+  {
+    question: 'Is underlying inflation different from headline inflation?',
+    answer:
+      "Yes -- underlying (core) inflation excludes energy and unprocessed food, more volatile categories, to show a steadier underlying trend. This calculator always uses the headline (total) index, the most commonly cited figure and the one that measures the full cost of living.",
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Portugal Inflation Calculator
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Enter an amount and two years, and see what it was worth (or will be worth) today -- with
+      INE's official CPI series, from {EARLIEST_YEAR} to {LATEST_YEAR}.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Amount (€)</span>
+        <input
+          type="number"
+          id="amount"
+          value="1000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Starting year</span>
+        <input
+          type="number"
+          id="startYear"
+          value={EARLIEST_YEAR}
+          min={EARLIEST_YEAR}
+          max={LATEST_YEAR}
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Ending year</span>
+        <input
+          type="number"
+          id="endYear"
+          value={LATEST_YEAR}
+          min={EARLIEST_YEAR}
+          max={LATEST_YEAR}
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail"></p>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>What the CPI measures</h2>
+      <p>
+        The Consumer Price Index tracks the changing cost of a representative basket of goods and
+        services -- food, housing, transport, health, leisure, among others -- that reflects the
+        average consumption habits of Portuguese households. It's the official inflation indicator
+        in Portugal, calculated and published monthly by INE (Instituto Nacional de Estatística).
+      </p>
+
+      <h2>Why your savings need to grow, not just exist</h2>
+      <p>
+        If you keep €1,000 under the mattress for 25 years, you'll still have €1,000 -- but with
+        much less purchasing power than when you put it there, because the prices of what you can
+        buy with that money have risen in the meantime. That's why any long-term savings goal is
+        worth considering growth that at least keeps pace with inflation, not just holding the
+        nominal amount steady.
+      </p>
+
+      <h2>Headline vs. underlying inflation</h2>
+      <p>
+        Headline inflation (the one used in this calculator) includes every category in the basket,
+        including the most volatile ones, like energy and fresh food. Underlying (core) inflation
+        excludes precisely those categories, to show a steadier underlying trend, less exposed to
+        one-off shocks (a drought pushing up vegetable prices, an energy crisis). The two figures
+        tell different stories -- underlying is more useful for spotting the trend, headline is
+        closer to what you actually feel at the supermarket.
+      </p>
+
+      <h2>About the series used here</h2>
+      <p>
+        The annual figures used in this calculator come from INE's official series, from{' '}
+        {EARLIEST_YEAR} to {LATEST_YEAR} -- the latest year with a published definitive figure. The
+        current year never appears in the list until it's closed and INE publishes the definitive
+        annual average, usually in January of the following year.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Related tools</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/tools/emergency-fund-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Emergency Fund</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Is your emergency fund losing value? Set a monthly amount that keeps pace.
+          </p>
+        </a>
+        <a
+          href="/tools/compound-interest"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="piggy-bank" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Compound Interest</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            See how savings that earn interest can outpace inflation over time.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="trend-up" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        You know what inflation does to money that just sits there.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        Otterbond helps you set savings goals with a monthly amount, so your money doesn't just sit
+        idle.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Try it free
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimate from INE's CPI series, not financial advice.
+    </p>
+  </main>
+
+  <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateInflation } from '../../lib/calculators/inflationCalculator';
+
+  const TOOL_SLUG = 'portugal-inflation-calculator';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const pct = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 1 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+
+  function recalc() {
+    const amount = num('amount');
+    const startYear = num('startYear');
+    const endYear = num('endYear');
+
+    const result = calculateInflation({ amount, startYear, endYear });
+
+    document.getElementById('result-headline')!.textContent =
+      `${euro.format(amount)} in ${startYear} is worth around ${euro.format(result.adjustedAmount)} in ${endYear}.`;
+    document.getElementById('result-detail')!.textContent =
+      `Cumulative change: ${pct.format(result.cumulativePercent)}% · Average annual: ${pct.format(result.averageAnnualPercent)}%`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>

@@ -1,0 +1,476 @@
+---
+// English counterpart of /ferramentas/simulador-irs.astro. That file's own comment originally said
+// "No English counterpart (Portuguese tax rules only make sense in a Portuguese-language
+// context)" -- on reflection that's inconsistent with this site's own established pattern
+// (portugal-net-salary-calculator.astro and portugal-freelancer-tax-calculator.astro are just as
+// Portugal-tax-specific and already have English versions for expats/foreigners searching in
+// English), so that earlier assumption is overridden here rather than carried forward.
+//
+// See irsCalculator.ts's own file comment for the full sourcing list. Seasonal: IRS filing season
+// is April-June.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Portugal Income Tax Calculator (IRS) 2026';
+const description =
+  "Estimate whether you'll get a refund or owe IRS in 2026: taxable income, bracket, dependent credit and the main deductible expenses. Instant result, no sign-up.";
+
+const faqs = [
+  {
+    question: 'Does this replace the simulation on the Portal das Finanças?',
+    answer:
+      "No. It's a quick estimate using 2026's main rules and limits, but it doesn't model every possible deduction (for example PPR retirement savings, donations, dependent ascendants, or the displaced-student regime), and it doesn't have access to invoices you've already submitted. The official simulation inside your actual tax return, using your real data, is always what counts.",
+  },
+  {
+    question: 'Joint or separate taxation, which should we choose?',
+    answer:
+      'In general, joint taxation favours couples with very different incomes from each other (the "quociente conjugal" pushes the higher income into a lower bracket before the tax is calculated), while couples with similar incomes rarely gain much from it. There\'s no universal answer -- if in doubt, the Portal das Finanças lets you simulate both scenarios before filing.',
+  },
+  {
+    question: 'By when do I have to file my IRS return?',
+    answer:
+      "Filing runs between 1 April and 30 June, for the previous year's income. If you have a validated automatic return you may not need to do anything -- but it's always worth confirming that every deductible expense was correctly recorded in e-fatura beforehand.",
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Portugal Income Tax Calculator (IRS) 2026
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Enter your income, IRS withheld, and the main deductible expenses, and see whether you
+      should expect a refund or a payment -- with 2026's brackets and limits.
+    </p>
+    <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+      An estimate from public rules, not your actual tax return or tax advice. 2026 figures (return
+      filed between April and June 2027). Source: Código do IRS and Portal das Finanças.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Annual gross income (Category A) (€)</span>
+        <input
+          type="number"
+          id="grossAnnualIncome"
+          value="25000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">IRS withheld during the year (€)</span>
+        <input
+          type="number"
+          id="irsRetainedDuringYear"
+          value="4000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+        <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">
+          The sum of your monthly withholdings, visible on your payslip or the pre-filled tax
+          return.
+        </p>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Marital status</span>
+        <select
+          id="maritalStatus"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="single" selected>Single / separate taxation</option>
+          <option value="married">Married / de facto union (joint taxation)</option>
+        </select>
+      </label>
+
+      <label class="mt-1 flex items-center gap-2.5 text-sm" id="spouse-working-wrap" hidden>
+        <input type="checkbox" id="spouseWorking" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
+        <span class="text-[var(--color-ink)]">My spouse also works and has income</span>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Number of dependents</span>
+        <input
+          type="number"
+          id="dependents"
+          value="0"
+          min="0"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">... of which aged 6 or under</span>
+        <input
+          type="number"
+          id="dependentsAgeSixOrUnder"
+          value="0"
+          min="0"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">... of which under 3</span>
+        <input
+          type="number"
+          id="dependentsUnderThree"
+          value="0"
+          min="0"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <details class="sm:col-span-2">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
+          Deductible expenses (health, education, housing, general)
+        </summary>
+
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Health expenses (€/year)</span>
+            <input
+              type="number"
+              id="healthExpenses"
+              value="0"
+              min="0"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Education and training (€/year)</span>
+            <input
+              type="number"
+              id="educationExpenses"
+              value="0"
+              min="0"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Rent (permanent home) (€/year)</span>
+            <input
+              type="number"
+              id="housingRent"
+              value="0"
+              min="0"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+          <label class="block text-sm">
+            <span class="font-medium text-[var(--color-ink)]">Mortgage interest (contracts up to 2011) (€/year)</span>
+            <input
+              type="number"
+              id="housingLoanInterest"
+              value="0"
+              min="0"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+          </label>
+          <label class="block text-sm sm:col-span-2">
+            <span class="font-medium text-[var(--color-ink)]">General family expenses (€/year)</span>
+            <input
+              type="number"
+              id="generalFamilyExpenses"
+              value="0"
+              min="0"
+              class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+            />
+            <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">
+              Water, electricity, gas, telecoms, supermarket, fuel and anything else not already
+              covered above.
+            </p>
+          </label>
+        </div>
+      </details>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail-1"></p>
+      <p class="mt-1 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail-2"></p>
+      <p class="mt-1 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail-3"></p>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          How we calculated this
+        </summary>
+        <p class="mt-2 max-w-[58ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          Taxable income = gross income minus the specific deduction (a minimum of €4,587.09, or
+          11% of gross if your mandatory Social Security contributions are higher). 2026's
+          progressive brackets apply to that figure (halved and doubled, if you choose joint
+          taxation). The per-dependent credit and the deductible-expense credits (health,
+          education, housing, general expenses) are then subtracted from the resulting tax, each
+          with its own limit, and all together capped by Art. 78º n.º 7's global limit. What's left
+          is the tax due; the difference against what was already withheld is your refund or extra
+          payment.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>Brackets are progressive, not a flat tax on everything</h2>
+      <p>
+        A common mistake is thinking that entering a higher bracket makes your whole income taxed
+        at that rate. That's not how it works: each bracket only applies to the slice of income
+        within that range. If your taxable income falls in the 4th bracket, for example, only the
+        slice above the 3rd bracket's ceiling pays the 4th bracket's rate -- the rest keeps paying
+        the lower rates of the earlier brackets. That's why earning a bit more never makes you
+        "lose money" by moving up a bracket.
+      </p>
+
+      <h2>The specific deduction: the first cut before any calculation</h2>
+      <p>
+        Before any bracket comes into play, gross employment income gets an automatic specific
+        deduction -- in 2026, the larger of €4,587.09 and your total mandatory Social Security
+        contributions. For most workers, it's the fixed amount that applies; only those with higher
+        mandatory contributions (for example, professional association dues) go above that. Only
+        after this cut is your taxable income -- the amount actually subject to the brackets --
+        calculated.
+      </p>
+
+      <h2>Joint vs. separate taxation</h2>
+      <p>
+        A couple can choose separate taxation (each files their own return, with their own income)
+        or joint taxation (incomes are combined, divided by two for the bracket calculation, and
+        the resulting tax is then multiplied by two -- the "quociente conjugal"). This mechanism
+        tends to benefit couples with very different incomes from each other most, because it
+        "pushes" the higher income into a lower bracket before the calculation. When both incomes
+        are similar, the benefit tends to be small or nonexistent.
+      </p>
+
+      <h2>Deductible-expense credits, and the limit that caps them all</h2>
+      <p>
+        After the bracket-based tax is calculated, there are still credits to subtract: health
+        (15% up to €1,000), education and training (30% up to €800), permanent-home rent (15% up to
+        €900), mortgage interest -- only for contracts signed up to 2011 (15% up to €296), and
+        general family expenses (35% up to €250 per taxpayer, €500 under joint taxation). The sum of
+        all of these is subject to a global limit that depends on your taxable income: no limit up
+        to €7,479, between €1,000 and €2,500 on a declining scale up to €78,834, and a flat €1,000
+        above that. The per-dependent credit (€600 per dependent, more for dependents aged 6 or
+        under) is separate and doesn't count toward this limit.
+      </p>
+
+      <h2>What this calculator doesn't model</h2>
+      <p>
+        It doesn't include PPR retirement savings, donations, the displaced-student regime,
+        dependent ascendants, or non-habitual resident (NHR) or other special regimes. It also
+        assumes income exclusively from Category A (employment) -- rental income, investment
+        income, or capital gains aren't covered. For your real, complete situation, your actual tax
+        return on the Portal das Finanças remains the reference.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Related tools</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/tools/portugal-net-salary-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="check-circle" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Net Salary Calculator</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Check how much of your gross salary actually lands in your account every month.
+          </p>
+        </a>
+        <a
+          href="/tools/emergency-fund-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Emergency Fund</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            If you're getting a refund, here's an obvious place for it to go.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="receipt" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]" id="bridge-headline">
+        You know the estimate. Now decide what to do with it.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]" id="bridge-body">
+        Otterbond helps you plan ahead, whether that's saving a refund or preparing for a payment.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Try it free
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimate from public Código do IRS rules, not financial, legal or tax advice, and not a
+      substitute for your actual tax return.
+    </p>
+  </main>
+
+  <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateIrs } from '../../lib/calculators/irsCalculator';
+
+  const TOOL_SLUG = 'portugal-income-tax-calculator';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function checked(id: string): boolean {
+    return (document.getElementById(id) as HTMLInputElement).checked;
+  }
+  function val(id: string): string {
+    return (document.getElementById(id) as HTMLSelectElement).value;
+  }
+
+  const maritalStatusSelect = document.getElementById('maritalStatus') as HTMLSelectElement;
+  const spouseWorkingWrap = document.getElementById('spouse-working-wrap') as HTMLElement;
+
+  function syncVisibility() {
+    spouseWorkingWrap.hidden = maritalStatusSelect.value !== 'married';
+  }
+
+  function recalc() {
+    syncVisibility();
+
+    const maritalStatus = val('maritalStatus') as 'single' | 'married';
+    const jointTaxation = maritalStatus === 'married' && !checked('spouseWorking');
+
+    const result = calculateIrs({
+      taxYear: 2026,
+      grossAnnualIncome: num('grossAnnualIncome'),
+      maritalStatus,
+      jointTaxation,
+      dependents: num('dependents'),
+      dependentsAgeSixOrUnder: num('dependentsAgeSixOrUnder'),
+      dependentsUnderThree: num('dependentsUnderThree'),
+      irsRetainedDuringYear: num('irsRetainedDuringYear'),
+      healthExpenses: num('healthExpenses'),
+      educationExpenses: num('educationExpenses'),
+      housingRent: num('housingRent'),
+      housingLoanInterest: num('housingLoanInterest'),
+      generalFamilyExpenses: num('generalFamilyExpenses'),
+    });
+
+    const headline = document.getElementById('result-headline')!;
+    const bridgeHeadline = document.getElementById('bridge-headline')!;
+    const bridgeBody = document.getElementById('bridge-body')!;
+
+    if (Math.round(result.balance) === 0) {
+      headline.textContent = "The numbers come out even: no refund, no payment.";
+      bridgeHeadline.textContent = 'You know the estimate. Now decide what to do with it.';
+      bridgeBody.textContent =
+        'Otterbond helps you plan ahead, whether that\'s saving a refund or preparing for a payment.';
+    } else if (result.balance > 0) {
+      headline.textContent = `Estimate: you get back around ${euro.format(result.balance)}.`;
+      bridgeHeadline.textContent = `You'll get back around ${euro.format(result.balance)}. Do you know what you'll do with it?`;
+      bridgeBody.textContent = "Otterbond helps you create a fund so the refund doesn't get lost in day-to-day spending.";
+    } else {
+      headline.textContent = `Estimate: you owe around ${euro.format(-result.balance)}.`;
+      bridgeHeadline.textContent = `You'll need to pay around ${euro.format(-result.balance)}. Get ready ahead of time.`;
+      bridgeBody.textContent = "Otterbond helps you set that amount aside month by month, before the payment is due.";
+    }
+
+    document.getElementById('result-detail-1')!.textContent =
+      `Taxable income: ${euro.format(result.taxableIncome)}/year · Tax before credits: ${euro.format(result.taxBeforeCredits)}`;
+    document.getElementById('result-detail-2')!.textContent =
+      `Dependent credit: ${euro.format(result.dependentsDeduction)} · Deductible-expense credits applied: ${euro.format(result.deductionsACollectaApplied)}`;
+    document.getElementById('result-detail-3')!.textContent = `Tax due: ${euro.format(result.taxDue)}`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>

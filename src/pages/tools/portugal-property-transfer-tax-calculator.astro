@@ -1,0 +1,316 @@
+---
+// English counterpart of /ferramentas/imt-imposto-selo.astro -- see recibos-verdes.astro's own
+// comment for the shared "front door, not a feature of the app" rationale and the
+// `lang`/`noAlternate` reasoning. Mainland Portugal only -- see imtStampDuty.ts's own file comment
+// for why Açores/Madeira aren't modeled, and for the full sourcing.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Portugal Property Transfer Tax Calculator (IMT & Stamp Duty) 2026';
+const description =
+  "Calculate the IMT and Stamp Duty you'll pay at the deed signing, with 2026's tables and the IMT Jovem exemption. Mainland. Instant result, no sign-up.";
+
+const faqs = [
+  {
+    question: 'Is IMT the only tax due at the deed signing?',
+    answer:
+      "No -- besides IMT, you always pay Stamp Duty (0.8% of the value), even when IMT is zero. On top of these come costs that aren't taxes: the deed or private authenticated document, land registry, and any bank fee if there's an associated mortgage.",
+  },
+  {
+    question: 'How does the IMT Jovem exemption work?',
+    answer:
+      "If you're 35 or under, you're buying your first permanent own home, you're not a dependent for IRS purposes, and you haven't owned a home in the last 3 years, you get a full IMT and Stamp Duty exemption up to €330,539, and a partial exemption (you only pay on the difference above that value) up to €660,982. Above that, there's no benefit.",
+  },
+  {
+    question: 'Is the value to use the deed price or the tax value?',
+    answer:
+      "It's always the higher of the two -- the price declared in the deed, or the property's Valor Patrimonial Tributário (VPT, its official tax value), whichever is higher. This calculator assumes you've already entered that reference value.",
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Portugal Property Transfer Tax Calculator
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Enter the property's value and see how much you'll pay in IMT and Stamp Duty at the deed
+      signing -- with 2026's tables (mainland) and the IMT Jovem exemption.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Property value (€)</span>
+        <input
+          type="number"
+          id="price"
+          value="250000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+        <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">
+          The higher of the deed price and the official tax value (VPT).
+        </p>
+      </label>
+
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Type of purchase</span>
+        <select
+          id="propertyType"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="permanentHome" selected>Permanent own home</option>
+          <option value="secondaryOrOther">Secondary home or other</option>
+        </select>
+      </label>
+
+      <label class="mt-1 flex items-center gap-2.5 text-sm sm:col-span-2" id="youth-wrap">
+        <input type="checkbox" id="youthExemptionEligible" class="h-4 w-4 rounded accent-[var(--color-mint-deep)]" />
+        <span class="text-[var(--color-ink)]">
+          I'm 35 or under and this is my first permanent own home (IMT Jovem)
+        </span>
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail"></p>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          How we calculated this
+        </summary>
+        <p class="mt-2 max-w-[58ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          IMT uses a bracket table: we find the property value's bracket, multiply the value by
+          that bracket's rate, and subtract the "parcela a abater" deduction (in the two highest
+          brackets, the rate applies to the full value, with no deduction). Stamp Duty is always
+          0.8% of the same value. The IMT Jovem exemption, when it applies, zeroes both up to
+          €330,539, or applies them only to the difference above that up to €660,982.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>How the IMT brackets work</h2>
+      <p>
+        IMT isn't a flat rate on the full property value -- it's a bracket table, higher for a
+        permanent own home than for a second home or other purchase (which already pays from the
+        first euro, with no exempt bracket). Each bracket has a marginal rate and a "parcela a
+        abater" deduction that corrects for applying that rate only to the slice of value within
+        that bracket, not to the whole value. In the two highest brackets (above roughly €660,000
+        for a permanent home), there's no longer a deduction and the rate applies to the full
+        value -- a deliberate rule for very high-value properties.
+      </p>
+
+      <h2>The IMT Jovem exemption</h2>
+      <p>
+        Anyone 35 or under buying their first permanent own home gets a full IMT and Stamp Duty
+        exemption up to €330,539 (2026 value), and a partial exemption -- you only pay on the
+        difference above that value -- up to €660,982. Above that, there's no benefit and the
+        standard table applies. To qualify, you can't have owned any home in the last 3 years, nor
+        be a dependent for IRS purposes in the year of purchase.
+      </p>
+
+      <h2>Other closing costs</h2>
+      <p>
+        Besides IMT and Stamp Duty, there are costs that aren't taxes but still add to the bill:
+        the deed or private authenticated document, land registry (registering the purchase and,
+        if there's a mortgage, the lien), and any bank fees tied to the mortgage. It's worth
+        budgeting for these separately, since they vary depending on the notary or solicitor you
+        choose.
+      </p>
+
+      <h2>What this calculator doesn't do</h2>
+      <p>
+        It only covers mainland Portugal -- Açores and Madeira have their own IMT tables, with
+        different values. It doesn't model other specific exemptions (for example, resale within a
+        real estate business activity, or urban rehabilitation), nor deed and registry costs,
+        which vary case by case.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Related tools</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/tools/portugal-mortgage-prepayment-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="house-line" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Mortgage Prepayment</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            After the deed, see how to save on interest over the life of your mortgage.
+          </p>
+        </a>
+        <a
+          href="/tools/emergency-fund-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="shield-check" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Emergency Fund</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Make sure these closing costs don't wipe out your cushion.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="house-line" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        You know the closing cost. Now it just needs saving up.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        Otterbond helps you create a Home fund with this total as the target, and a deadline of
+        your choice.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Try it free
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimate from 2026 IMT and Stamp Duty tables for mainland Portugal, not financial, legal or
+      tax advice.
+    </p>
+  </main>
+
+  <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateImtStampDuty, type PropertyType } from '../../lib/calculators/imtStampDuty';
+
+  const TOOL_SLUG = 'portugal-property-transfer-tax-calculator';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function checked(id: string): boolean {
+    return (document.getElementById(id) as HTMLInputElement).checked;
+  }
+  function val(id: string): string {
+    return (document.getElementById(id) as HTMLSelectElement).value;
+  }
+
+  const propertyTypeSelect = document.getElementById('propertyType') as HTMLSelectElement;
+  const youthWrap = document.getElementById('youth-wrap') as HTMLElement;
+
+  function syncVisibility() {
+    youthWrap.hidden = propertyTypeSelect.value !== 'permanentHome';
+  }
+
+  function recalc() {
+    syncVisibility();
+
+    const result = calculateImtStampDuty({
+      price: num('price'),
+      propertyType: val('propertyType') as PropertyType,
+      youthExemptionEligible: checked('youthExemptionEligible'),
+    });
+
+    document.getElementById('result-headline')!.textContent =
+      `IMT ${euro.format(result.imt)} + Stamp Duty ${euro.format(result.stampDuty)} = ${euro.format(result.total)} due at the deed signing.`;
+
+    const detail = document.getElementById('result-detail')!;
+    if (result.youthExemptionApplied === 'full') {
+      detail.textContent = 'Full exemption under IMT Jovem.';
+    } else if (result.youthExemptionApplied === 'partial') {
+      detail.textContent = "Partial exemption under IMT Jovem: you only pay on the difference above €330,539.";
+    } else {
+      detail.textContent = '';
+    }
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>

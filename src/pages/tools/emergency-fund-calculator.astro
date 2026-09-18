@@ -1,0 +1,335 @@
+---
+// English counterpart of /ferramentas/fundo-de-emergencia.astro -- see that file's own comment
+// for the "most direct bridge" rationale, and recibos-verdes.astro's own comment for the shared
+// "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning. No true
+// bilingual pair: this is a standalone English page for anyone budgeting in any country, not a
+// translation of the Portuguese one specifically for Portuguese speakers.
+//
+// Year-less title/H1, like the PT page: a fund target from your own costs isn't annually-versioned
+// data.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Emergency Fund Calculator';
+const description =
+  'Calculate how much you need in your emergency fund: the target, how much is left to save, and how many months until you get there. Instant result, no sign-up.';
+
+const faqs = [
+  {
+    question: 'How many months of expenses should I save?',
+    answer:
+      "6 months of essential expenses is the most common starting point. Lean closer to 3 months if you have stable employment, no dependants, and a second income at home. Lean closer to 9 or 12 months if you're self-employed or have irregular income, you're the household's only income, or you have dependants to support.",
+  },
+  {
+    question: 'Where should I keep my emergency fund?',
+    answer:
+      "Somewhere liquid -- meaning you can withdraw it within a few days, with no penalty and no risk of it being worth less than you put in: a plain savings account or a short-term term deposit. It's not money for stocks, ETFs, or any investment product, even if the expected return looks better -- the point of this fund is to be there when you need it, not to grow.",
+  },
+  {
+    question: 'What actually counts as an emergency?',
+    answer:
+      "An unexpected, necessary expense: losing your job, an urgent repair (car, home), a health expense not covered by insurance. A sale you \"can't miss\" or a spontaneous holiday isn't an emergency -- that's regular budgeting, not this fund.",
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Emergency Fund Calculator
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      How much you should set aside before anything else. Enter your fixed monthly costs and what
+      you've already saved, and see the target amount, what's left, and how many months until you
+      get there at your own pace.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Fixed monthly expenses (€)</span>
+        <input
+          type="number"
+          id="monthlyEssentials"
+          value="1000"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+        <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">
+          Rent or mortgage, bills, groceries, transport, insurance -- what you'd still have to pay
+          every month even without income.
+        </p>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Months of cushion</span>
+        <select
+          id="cushionMonths"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="3">3 months</option>
+          <option value="6" selected>6 months</option>
+          <option value="9">9 months</option>
+          <option value="12">12 months</option>
+        </select>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Already saved (€)</span>
+        <input
+          type="number"
+          id="alreadySaved"
+          value="0"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">How much you can save per month (€)</span>
+        <input
+          type="number"
+          id="monthlyContribution"
+          value="200"
+          min="0"
+          step="1"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail"></p>
+
+      <details class="mt-5">
+        <summary class="cursor-pointer text-sm font-medium text-[var(--color-mint-deep)]/70">
+          How we calculated this
+        </summary>
+        <p class="mt-2 max-w-[55ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          Target = fixed monthly expenses × months of cushion. Remaining = target minus what
+          you've already saved (never below zero). Months to reach it = remaining ÷ how much you
+          save per month, always rounded up, so you never fall short of the goal.
+        </p>
+      </details>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>Why 6 months, and when to adjust it</h2>
+      <p>
+        6 months of essential expenses is the most commonly cited figure, and it's a solid
+        starting point for most situations: it covers the typical gap between losing an income and
+        finding another, without having to resort to credit or sell something on bad terms. But
+        it's not a fixed number for everyone. If you have stable employment in a low-turnover
+        field, no dependants, and another income at home that keeps coming in even if yours stops,
+        3 months may be enough -- the real risk of needing the whole fund at once is lower. If, on
+        the other hand, you're self-employed or have variable income, you're the household's only
+        income, or you have children or other dependants to support, it makes more sense to aim
+        for 9 or even 12 months. There's no single right answer -- what matters is being honest
+        about how predictable your income is and how many people depend on it.
+      </p>
+
+      <h2>Where to keep your emergency fund</h2>
+      <p>
+        The rule is simple: it has to be liquid. That means you need to be able to access the
+        money within a few days, with no penalties and no risk of it being worth less than you put
+        in. A plain savings account or a short-term term deposit both work. It's not the place for
+        stocks, ETFs, crypto, or any product whose value could drop right when you need it most --
+        the goal of this money isn't to earn the highest possible return, it's to be there when
+        the rest of your budget doesn't stretch far enough.
+      </p>
+
+      <h2>What counts as an emergency (and what doesn't)</h2>
+      <p>
+        An emergency is an unexpected, necessary expense: losing your job, an urgent repair on the
+        car you need for work, a leak at home, a health expense not covered by insurance. A
+        promotion you "can't miss," an unexpected windfall, or a spontaneously decided holiday
+        isn't an emergency -- that's regular budgeting, not this fund. Keeping that distinction
+        clear is what stops the fund from being drained for reasons that were really just a lack
+        of planning in that month's budget.
+      </p>
+
+      <h2>What this calculator doesn't do</h2>
+      <p>
+        It doesn't know whether you have other debt that might be worth prioritising before
+        filling this fund completely, doesn't know your specific health or family situation, and
+        doesn't replace thinking carefully about what you actually need. It's a starting point
+        built from one number -- your essential expenses -- not a complete financial plan.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Related tools</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/tools/50-30-20-rule-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="chart-pie" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">50/30/20 Rule</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Work out how much of your income should go to savings before deciding your emergency
+            target.
+          </p>
+        </a>
+        <a
+          href="/tools/split-expenses-couple-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="heart" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Split Expenses as a Couple</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            If you live together, an emergency fund is usually easier to keep once shared expenses
+            are split fairly first.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="shield-check" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        You know the number. Now it just needs saving, month by month.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        Otterbond helps you set this fund up as a goal and track progress every month, no
+        spreadsheets required.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Try it free
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimates based on general personal-finance rules, not financial, legal or tax advice.
+    </p>
+  </main>
+
+  <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateEmergencyFund } from '../../lib/calculators/emergencyFund';
+
+  const TOOL_SLUG = 'emergency-fund-calculator';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const monthYear = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+
+  function recalc() {
+    const alreadySaved = num('alreadySaved');
+    const result = calculateEmergencyFund({
+      monthlyEssentials: num('monthlyEssentials'),
+      cushionMonths: num('cushionMonths'),
+      alreadySaved,
+      monthlyContribution: num('monthlyContribution'),
+    });
+
+    document.getElementById('result-headline')!.textContent =
+      `You need ${euro.format(result.target)}. You already have ${euro.format(Math.max(0, alreadySaved))}.`;
+
+    const detail = document.getElementById('result-detail')!;
+    if (result.remaining === 0) {
+      detail.textContent = 'Your emergency fund is already complete.';
+    } else if (result.monthsToReach === null || result.targetDate === null) {
+      detail.textContent =
+        `${euro.format(result.remaining)} left to go. Set how much you can save per month to see a date.`;
+    } else {
+      detail.textContent =
+        `${euro.format(result.remaining)} left, or ${result.monthsToReach} ${result.monthsToReach === 1 ? 'month' : 'months'} at ${euro.format(num('monthlyContribution'))}/month, until ${monthYear.format(result.targetDate)}.`;
+    }
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>

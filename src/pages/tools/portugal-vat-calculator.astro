@@ -1,0 +1,299 @@
+---
+// English counterpart of /ferramentas/calculadora-iva.astro -- see recibos-verdes.astro's own
+// comment for the shared "front door, not a feature of the app" rationale and the
+// `lang`/`noAlternate` reasoning. See vatCalculator.ts's own comment for the rate sourcing.
+// `rateTier` select values stay the Portuguese literals ('normal'/'intermedia'/'reduzida') since
+// those are the VatRateTier type's own values in the shared calculator module -- only the visible
+// labels are translated.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+
+const title = 'Portugal VAT Calculator (IVA) 2026';
+const description =
+  "Add or extract VAT from an amount, with 2026's rates for mainland Portugal, Açores and Madeira. Instant result, no sign-up.";
+
+const faqs = [
+  {
+    question: 'Which goods and services pay which rate?',
+    answer:
+      "The reduced rate (6% on the mainland) applies to essential goods -- bread, milk, meat, fish, medicine, hotel accommodation, among others in the CIVA's List I. The intermediate rate (13%) covers a narrower, specific list, like certain ready meals or event tickets. The standard rate (23%) applies to everything else.",
+  },
+  {
+    question: "I'm self-employed on recibos verdes -- do I have to charge VAT?",
+    answer:
+      "Only if you go over €15,000 in turnover in the previous year (the Article 53 small-taxpayer exemption regime). Below that limit, you can choose not to charge VAT on your invoices -- but you also don't deduct VAT on your own purchases. Going over €18,750 (€15,000 + 25%) partway through the year forces you out of the exemption immediately.",
+  },
+  {
+    question: 'How does quarterly VAT work?',
+    answer:
+      "For most taxpayers under the standard regime, the periodic VAT return is filed quarterly -- by the 20th of the 2nd month after the quarter ends. Businesses with higher turnover move to the monthly regime. This applies to those charging VAT, not to those exempt under Article 53.",
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const softwareApplicationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
+
+  <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
+    <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
+      Portugal VAT Calculator
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+      Add or extract VAT from an amount, with 2026's rates for mainland Portugal, Açores and
+      Madeira.
+    </p>
+
+    <form
+      id="calc-form"
+      class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
+    >
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Amount (€)</span>
+        <input
+          type="number"
+          id="amount"
+          value="100"
+          min="0"
+          step="0.01"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        />
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Direction</span>
+        <select
+          id="direction"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="add" selected>Add VAT (net → gross)</option>
+          <option value="extract">Extract VAT (gross → net)</option>
+        </select>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Region</span>
+        <select
+          id="region"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="continente" selected>Mainland</option>
+          <option value="acores">Açores</option>
+          <option value="madeira">Madeira</option>
+        </select>
+      </label>
+
+      <label class="block text-sm sm:col-span-2">
+        <span class="font-medium text-[var(--color-ink)]">Rate</span>
+        <select
+          id="rateTier"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="normal" selected>Standard</option>
+          <option value="intermedia">Intermediate</option>
+          <option value="reduzida">Reduced</option>
+        </select>
+        <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]" id="rate-caption"></p>
+      </label>
+    </form>
+
+    <section
+      id="results"
+      class="mt-6 rounded-[var(--radius-card)] bg-[var(--color-mint)] p-6 sm:p-8"
+      aria-live="polite"
+    >
+      <p class="text-lg leading-snug font-medium text-[var(--color-mint-deep)]" id="result-headline"></p>
+      <p class="mt-4 text-[15px] text-[var(--color-mint-deep)]/80" id="result-detail"></p>
+    </section>
+
+    <div class="legal-body mt-14">
+      <h2>The three rates, and what each covers</h2>
+      <p>
+        Portugal has three VAT rates, different by region: on the mainland, 23% (standard), 13%
+        (intermediate) and 6% (reduced). In the Açores, 16%, 9% and 4%. In Madeira, 22%, 12% and
+        4%. The reduced rate covers essential goods -- basic groceries, medicine, hotel
+        accommodation. The intermediate rate covers a narrower, specific list. The standard rate
+        applies to everything not on the other two lists.
+      </p>
+
+      <h2>The small-taxpayer exemption</h2>
+      <p>
+        Anyone self-employed on recibos verdes billing up to €15,000 a year can choose not to
+        charge VAT on their invoices, under Article 53 of the VAT Code -- but in exchange, they also
+        don't deduct VAT on their own purchases and expenses. Going over €18,750 (€15,000 plus a
+        25% tolerance margin) partway through the year forces an immediate exit from the exemption
+        regime; going over just €15,000 without reaching €18,750 keeps the exemption until the end
+        of the current year, switching to the standard regime the following January.
+      </p>
+
+      <h2>How quarterly VAT works</h2>
+      <p>
+        For those charging VAT under the standard regime, the periodic return is filed quarterly
+        (by the 20th of the 2nd month after the quarter ends), unless turnover requires the
+        monthly regime. This doesn't apply to those exempt under Article 53 -- those entities don't
+        file periodic VAT returns at all.
+      </p>
+
+      <h2>What this calculator doesn't do</h2>
+      <p>
+        It doesn't determine which rate applies to a specific good or service -- that depends on
+        the VAT Code's Lists I and II, which this calculator doesn't reproduce. It also doesn't
+        model the Article 53 exemption regime in detail, only the direct calculation of adding or
+        extracting VAT from a rate you already know.
+      </p>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Related tools</h2>
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <a
+          href="/tools/portugal-freelancer-tax-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="coins" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">Freelancer Tax Calculator</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Self-employed on recibos verdes? Simulate your full net income.
+          </p>
+        </a>
+        <a
+          href="/tools/50-30-20-rule-calculator"
+          class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6"
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            <Icon name="chart-pie" class="h-5 w-5" />
+          </div>
+          <h3 class="mt-4 text-[15px] font-medium text-[var(--color-ink)]">50/30/20 Rule</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            Organise the rest of your income once the numbers are settled.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+        <Icon name="percent" class="h-5 w-5" />
+      </div>
+      <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
+        You know the VAT numbers. Now organise the rest.
+      </h2>
+      <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        Otterbond helps self-employed workers separate what's for taxes from what's for spending.
+      </p>
+      <a
+        id="bridge-cta"
+        href="/#get-the-app"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+      >
+        Try it free
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </section>
+
+    <p class="mt-8 max-w-[60ch] text-xs leading-relaxed text-[var(--color-ink-faint)]">
+      Estimate from 2026 VAT rates, not tax advice.
+    </p>
+  </main>
+
+  <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationJsonLd)} />
+</BaseLayout>
+
+<script>
+  import { calculateVat, type VatDirection, type VatRateTier, type VatRegion } from '../../lib/calculators/vatCalculator';
+
+  const TOOL_SLUG = 'portugal-vat-calculator';
+
+  function trackEvent(name: string) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, { tool: TOOL_SLUG });
+    }
+  }
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 });
+
+  function num(id: string): number {
+    const el = document.getElementById(id) as HTMLInputElement;
+    return Number(el.value) || 0;
+  }
+  function val(id: string): string {
+    return (document.getElementById(id) as HTMLSelectElement).value;
+  }
+
+  function recalc() {
+    const result = calculateVat({
+      amount: num('amount'),
+      direction: val('direction') as VatDirection,
+      region: val('region') as VatRegion,
+      rateTier: val('rateTier') as VatRateTier,
+    });
+
+    document.getElementById('rate-caption')!.textContent = `Rate applied: ${result.ratePercent}%`;
+
+    document.getElementById('result-headline')!.textContent =
+      `${euro.format(result.net)} excl. VAT + ${euro.format(result.vat)} VAT = ${euro.format(result.gross)} incl. VAT.`;
+    document.getElementById('result-detail')!.textContent = `Rate applied: ${result.ratePercent}%.`;
+  }
+
+  let hasFiredCompleted = false;
+  form.addEventListener('input', () => {
+    if (!hasFiredCompleted) {
+      hasFiredCompleted = true;
+      trackEvent('tool_completed');
+    }
+    recalc();
+  });
+
+  recalc();
+  trackEvent('tool_view');
+
+  document.getElementById('bridge-cta')?.addEventListener('click', () => trackEvent('tool_bridge_click'));
+</script>
