@@ -1,39 +1,38 @@
 ---
-// Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
-// shared "front door, not a feature of the app" rationale. English counterpart: /tools/fire-calculator.
+// English counterpart of /ferramentas/calculadora-fire.astro -- see recibos-verdes.astro's own
+// comment for the shared "front door, not a feature of the app" rationale and the
+// `lang`/`noAlternate` reasoning. Last of the 14 English mirrors -- FIRE isn't part of the
+// original 13-tool brief (it's the peer session's own tool), built PT-first per the product brief
+// at the time; this fills that gap now that "all" tools are getting an EN version.
 //
-// Chart: two-series inline SVG line chart (no charting library), colors validated with the
-// dataviz skill's own six-checks validator against this site's dark surface (#1e1e1e) --
-// #3987e5 (primary/current-pace scenario) and #d95926 (lower-return scenario) both pass every
-// gate; this site's own pastel brand tokens (mint, cat-*) do not (too light/low-chroma for a mark
-// on a dark surface) so they were not force-fit here. FIRE-number reference line uses the
-// existing neutral --color-ink-faint token, not a categorical color (it's a reference, not a
-// series).
+// Chart mechanics (inline SVG, colors, hover/tooltip) are copied verbatim from the PT page's own
+// script -- see that file's own comment for the color-validation rationale. Only text content
+// (labels, headline copy, FAQ, explainer) is translated.
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
 import Icon from '../../components/Icon.astro';
 
-const title = 'Calculadora FIRE: quanto precisas para a independência financeira';
+const title = 'FIRE Calculator: how much you need for financial independence';
 const description =
-  'Calcula quanto precisas investido para viveres dos rendimentos, quando lá chegas ao teu ritmo atual, e o que muda se a rentabilidade for mais baixa. Sem registo.';
+  "Calculate how much you need invested to live off your portfolio, when you'll get there at your current pace, and what changes with a lower return. No sign-up.";
 
 const faqs = [
   {
-    question: '4% é seguro em Portugal?',
+    question: 'Is 4% safe in Portugal?',
     answer:
-      'A regra dos 4% vem do Trinity Study (1998, EUA), com base apenas no histórico das bolsas norte-americanas. Investigação mais recente (nomeadamente de Wade Pfau, sobre 20 mercados desenvolvidos entre 1900 e 2010) mostra que fora dos EUA a taxa historicamente segura ronda antes os 2,8% a 3,5%, porque os mercados europeus tiveram retornos reais mais baixos ao longo do século XX (duas guerras mundiais, períodos de hiperinflação, bolsas encerradas ou destruídas). Por isso, muita gente na Europa usa 3% a 3,5% em vez de 4%, sobretudo com uma carteira globalmente diversificada (não só ações europeias).',
+      "The 4% rule comes from the Trinity Study (1998, US), based only on the historical record of US markets. More recent research (notably Wade Pfau's, covering 20 developed markets between 1900 and 2010) shows that outside the US, the historically safe rate is closer to 2.8%-3.5%, because European markets had lower real returns over the 20th century (two world wars, periods of hyperinflation, exchanges closed or destroyed). That's why many people in Europe use 3% to 3.5% instead of 4%, especially with a globally diversified portfolio (not just European stocks).",
   },
   {
-    question: 'Conta com a pensão do Estado?',
+    question: 'Does this account for the state pension?',
     answer:
-      'Não. Esta calculadora assume que precisas de gerar o teu rendimento desejado inteiramente a partir da tua carteira, sem contar com qualquer pensão pública futura. Se quiseres perceber quanto da tua reforma a pensão pública deverá cobrir, e ajustar as tuas contas de acordo, usa o nosso Simulador de Reforma.',
-    link: { label: 'Simulador de Reforma', hash: '/ferramentas/simulador-reforma' },
+      "No. This calculator assumes you need to generate your desired income entirely from your own portfolio, without counting on any future state pension. If you want to understand how much of your retirement the state pension should cover, and adjust your numbers accordingly, use our State Pension Calculator.",
+    link: { label: 'Portugal State Pension Calculator', hash: '/tools/portugal-state-pension-calculator' },
   },
   {
-    question: 'E os impostos sobre mais-valias?',
+    question: 'What about capital gains tax?',
     answer:
-      'Também não estão incluídos. Quando vendes participações com ganho, esse ganho está normalmente sujeito a tributação (em Portugal, mais-valias de ações/ETFs são tributadas à taxa liberatória de 28%, com regras específicas consoante o prazo de detenção e o tipo de produto). O número de FIRE aqui é bruto desse efeito, o valor líquido que realmente consegues levantar pode ser algo menor consoante a tua situação fiscal.',
+      "Also not included. When you sell holdings at a gain, that gain is normally subject to tax (in Portugal, capital gains on stocks/ETFs are taxed at a flat 28% rate, with specific rules depending on holding period and product type). The FIRE number here is gross of that effect -- the net amount you can actually withdraw may be somewhat lower depending on your tax situation.",
   },
 ];
 
@@ -48,20 +47,20 @@ const faqJsonLd = {
 };
 ---
 
-<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
-  <NavBar lang="pt-pt" />
+<BaseLayout title={title} description={description} lang="en" noAlternate>
+  <NavBar lang="en" />
 
   <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
     <h1 class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-4xl">
-      Calculadora FIRE
+      FIRE Calculator
     </h1>
     <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-      Quanto precisas investido para viveres dos rendimentos, quando lá chegas ao teu ritmo atual,
-      e o que muda se a rentabilidade for mais baixa.
+      How much you need invested to live off your portfolio, when you'll get there at your
+      current pace, and what changes with a lower return.
     </p>
     <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
-      Esta é uma projeção a partir de pressupostos que podes editar, não uma previsão pessoal nem
-      aconselhamento financeiro. Sem nomes de índices, corretoras ou produtos.
+      This is a projection from assumptions you can edit, not a personal forecast or financial
+      advice. No index, broker or product names.
     </p>
 
     <form
@@ -69,7 +68,7 @@ const faqJsonLd = {
       class="mt-8 grid grid-cols-1 gap-4 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6 sm:grid-cols-2 sm:p-8"
     >
       <label class="block text-sm">
-        <span class="font-medium text-[var(--color-ink)]">Rendimento mensal desejado na reforma (€)</span>
+        <span class="font-medium text-[var(--color-ink)]">Desired monthly income in retirement (€)</span>
         <input
           type="number"
           id="desiredMonthlyIncome"
@@ -81,7 +80,7 @@ const faqJsonLd = {
       </label>
 
       <label class="block text-sm">
-        <span class="font-medium text-[var(--color-ink)]">Já investido (€)</span>
+        <span class="font-medium text-[var(--color-ink)]">Already invested (€)</span>
         <input
           type="number"
           id="currentAmount"
@@ -93,7 +92,7 @@ const faqJsonLd = {
       </label>
 
       <label class="block text-sm sm:col-span-2">
-        <span class="font-medium text-[var(--color-ink)]">Contribuição mensal (€)</span>
+        <span class="font-medium text-[var(--color-ink)]">Monthly contribution (€)</span>
         <input
           type="number"
           id="monthlyContribution"
@@ -103,7 +102,7 @@ const faqJsonLd = {
           class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
         />
         <div class="mt-3 flex items-center gap-3">
-          <span class="text-xs whitespace-nowrap text-[var(--color-ink-faint)]">E se poupasses...</span>
+          <span class="text-xs whitespace-nowrap text-[var(--color-ink-faint)]">What if you saved...</span>
           <input
             type="range"
             id="monthlyContributionSlider"
@@ -117,27 +116,27 @@ const faqJsonLd = {
       </label>
 
       <label class="block text-sm">
-        <span class="font-medium text-[var(--color-ink)]">Idade atual (opcional)</span>
+        <span class="font-medium text-[var(--color-ink)]">Current age (optional)</span>
         <input
           type="number"
           id="currentAge"
           min="16"
           max="90"
           step="1"
-          placeholder="Para veres a idade na FIRE"
+          placeholder="To see your age at FIRE"
           class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none placeholder:text-[var(--color-placeholder)] focus:ring-2 focus:ring-[var(--color-mint)]"
         />
-        <p class="mt-1 text-xs text-[var(--color-ink-faint)]">Também torna o Coast FIRE mais preciso.</p>
+        <p class="mt-1 text-xs text-[var(--color-ink-faint)]">Also makes Coast FIRE more accurate.</p>
       </label>
 
       <details class="sm:col-span-2">
         <summary class="cursor-pointer text-sm font-medium text-[var(--color-ink-soft)]">
-          Pressupostos (rentabilidade, inflação, taxa de levantamento)
+          Assumptions (return, inflation, withdrawal rate)
         </summary>
 
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label class="block text-sm">
-            <span class="font-medium text-[var(--color-ink)]">Rentabilidade nominal anual esperada (%)</span>
+            <span class="font-medium text-[var(--color-ink)]">Expected annual nominal return (%)</span>
             <input
               type="number"
               id="nominalReturnPercent"
@@ -149,7 +148,7 @@ const faqJsonLd = {
           </label>
 
           <label class="block text-sm">
-            <span class="font-medium text-[var(--color-ink)]">Inflação anual esperada (%)</span>
+            <span class="font-medium text-[var(--color-ink)]">Expected annual inflation (%)</span>
             <input
               type="number"
               id="inflationPercent"
@@ -161,7 +160,7 @@ const faqJsonLd = {
           </label>
 
           <label class="block text-sm sm:col-span-2">
-            <span class="font-medium text-[var(--color-ink)]">Taxa de levantamento segura (%)</span>
+            <span class="font-medium text-[var(--color-ink)]">Safe withdrawal rate (%)</span>
             <input
               type="number"
               id="withdrawalRatePercent"
@@ -171,8 +170,8 @@ const faqJsonLd = {
               class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
             />
             <p class="mt-1 text-xs text-[var(--color-ink-faint)]">
-              A "regra dos 4%" vem do Trinity Study (1998, EUA); fora dos EUA, muita gente usa 3%
-              a 3,5% por segurança (ver explicação abaixo).
+              The "4% rule" comes from the Trinity Study (1998, US); outside the US, many people
+              use 3% to 3.5% for safety (see explanation below).
             </p>
           </label>
         </div>
@@ -198,7 +197,7 @@ const faqJsonLd = {
       <div class="flex flex-wrap items-center gap-5 text-sm text-[var(--color-ink-soft)]">
         <span class="flex items-center gap-2">
           <span class="h-2.5 w-2.5 rounded-full" style="background:#3987e5"></span>
-          Ao ritmo atual
+          At current pace
         </span>
         <span class="flex items-center gap-2">
           <span class="h-2.5 w-2.5 rounded-full" style="background:#d95926"></span>
@@ -206,10 +205,10 @@ const faqJsonLd = {
         </span>
         <span class="flex items-center gap-2">
           <span class="h-0.5 w-3.5" style="background:var(--color-ink-faint)"></span>
-          Objetivo FIRE
+          FIRE target
         </span>
       </div>
-      <svg id="fire-chart" viewBox="0 0 640 300" class="mt-4 w-full touch-none select-none" role="img" aria-label="Projeção da carteira ao longo do tempo">
+      <svg id="fire-chart" viewBox="0 0 640 300" class="mt-4 w-full touch-none select-none" role="img" aria-label="Portfolio projection over time">
         <g id="chart-gridlines"></g>
         <line id="chart-fire-line" x1="0" y1="0" x2="0" y2="0" stroke="var(--color-ink-faint)" stroke-width="1.5" stroke-dasharray="4 4" />
         <polyline id="chart-line-primary" fill="none" stroke="#3987e5" stroke-width="2" />
@@ -226,80 +225,76 @@ const faqJsonLd = {
     </div>
 
     <div class="legal-body mt-14">
-      <h2>O que é FIRE, e as suas variantes</h2>
+      <h2>What FIRE is, and its variants</h2>
       <p>
-        FIRE significa "Financial Independence, Retire Early" (independência financeira, reforma
-        antecipada): acumular capital suficiente para que os rendimentos desse capital cubram as
-        tuas despesas, sem dependeres de um salário. Não é um único objetivo, existem variantes
-        conforme o estilo de vida e o caminho até lá:
+        FIRE stands for "Financial Independence, Retire Early": building up enough capital that the
+        returns on that capital cover your expenses, without depending on a salary. It isn't a
+        single goal -- there are variants depending on lifestyle and the path to get there:
       </p>
       <p>
-        <strong>Lean FIRE</strong>: viver com um orçamento reduzido e um número-alvo mais baixo,
-        muitas vezes com um estilo de vida minimalista ou mudando para um local com custo de vida
-        menor.
+        <strong>Lean FIRE</strong>: living on a reduced budget with a lower target number, often
+        with a minimalist lifestyle or moving somewhere with a lower cost of living.
       </p>
       <p>
-        <strong>Coast FIRE</strong>: já tens investido o suficiente para que, só com o crescimento
-        composto (sem mais nenhuma contribuição), o teu capital chegue ao número de FIRE por volta
-        da idade normal de reforma. Continuas a trabalhar para pagar as despesas correntes, mas já
-        não precisas de poupar mais para o futuro.
+        <strong>Coast FIRE</strong>: you already have enough invested that, through compound growth
+        alone (with no further contributions), your capital reaches your FIRE number by around the
+        normal retirement age. You keep working to cover current expenses, but no longer need to
+        save more for the future.
       </p>
       <p>
-        <strong>Barista FIRE</strong>: um meio-termo, tens investido o suficiente para cobrir a
-        maior parte das despesas, mas continuas a trabalhar a tempo parcial para cobrir o resto (e,
-        nalguns países, para manter benefícios como seguro de saúde).
+        <strong>Barista FIRE</strong>: a middle ground -- you have enough invested to cover most of
+        your expenses, but keep working part-time to cover the rest (and, in some countries, to
+        keep benefits like health insurance).
       </p>
 
-      <h2>De onde vem a regra dos 4%, e porque muita gente usa 3,5%</h2>
+      <h2>Where the 4% rule comes from, and why many people use 3.5%</h2>
       <p>
-        A "regra dos 4%" tem origem no trabalho de William Bengen (1994) e ficou popular através do
-        Trinity Study (1998), um estudo académico que testou taxas de levantamento contra o
-        histórico do mercado norte-americano. A conclusão: levantar 4% do capital inicial por ano
-        (ajustado à inflação depois) sobrevive à esmagadora maioria dos períodos históricos de 30
-        anos nos EUA.
+        The "4% rule" originates from William Bengen's work (1994) and became popular through the
+        Trinity Study (1998), an academic study that tested withdrawal rates against the historical
+        US market. The conclusion: withdrawing 4% of the initial capital per year (adjusted for
+        inflation afterward) survives the vast majority of historical 30-year periods in the US.
       </p>
       <p>
-        O problema é que esse estudo usa apenas dados dos EUA, que tiveram um dos melhores
-        históricos de mercado acionista do século XX. Investigação que olha para outros países
-        desenvolvidos (nomeadamente a de Wade Pfau, cobrindo 20 mercados entre 1900 e 2010) mostra
-        que, fora dos EUA, uma taxa historicamente segura ronda antes os 2,8% a 3,5%, porque os
-        mercados europeus sofreram mais com guerras, hiperinflação e encerramentos de bolsa ao
-        longo do século XX. É por isso que muita gente na Europa usa 3% a 3,5% como margem de
-        segurança em vez do clássico 4%, sobretudo se a carteira não for amplamente diversificada
-        a nível global.
+        The problem is that study uses only US data, which had one of the best stock market
+        records of the 20th century. Research looking at other developed countries (notably Wade
+        Pfau's, covering 20 markets between 1900 and 2010) shows that outside the US, a
+        historically safe rate is closer to 2.8% to 3.5%, because European markets suffered more
+        from wars, hyperinflation and exchange closures over the 20th century. That's why many
+        people in Europe use 3% to 3.5% as a safety margin instead of the classic 4%, especially if
+        the portfolio isn't broadly globally diversified.
       </p>
 
-      <h2>Porque esta calculadora trabalha em termos reais</h2>
+      <h2>Why this calculator works in real terms</h2>
       <p>
-        Todos os valores aqui — o rendimento desejado, o número de FIRE, o capital acumulado ao
-        longo do tempo — estão em euros de hoje, não em euros nominais do futuro. A rentabilidade
-        nominal que indicas é convertida internamente numa rentabilidade real (acima da inflação),
-        para que não tenhas de pensar separadamente no efeito da inflação em cada número.
+        Every figure here -- the desired income, the FIRE number, the capital accumulated over time
+        -- is in today's euros, not future nominal euros. The nominal return you enter is converted
+        internally into a real return (above inflation), so you don't have to think separately
+        about inflation's effect on each figure.
       </p>
 
-      <h2>O risco da sequência de retornos</h2>
+      <h2>Sequence-of-returns risk</h2>
       <p>
-        A rentabilidade média ao longo de vários anos não conta toda a história: a ordem em que os
-        retornos acontecem importa, sobretudo nos primeiros anos depois de parares de trabalhar. Se
-        os mercados caírem logo no início da tua reforma antecipada e continuares a levantar o
-        mesmo valor, estás a vender mais unidades a preços mais baixos, o que pode esgotar o
-        capital muito mais depressa do que a média histórica sugere, mesmo que a rentabilidade
-        média ao longo de todo o período acabe por ser boa. É por isso que a taxa de levantamento
-        segura tende a ser mais conservadora do que uma simples média de retornos esperados.
+        Average returns over several years don't tell the whole story: the order in which returns
+        happen matters, especially in the first few years after you stop working. If markets drop
+        right at the start of your early retirement and you keep withdrawing the same amount,
+        you're selling more units at lower prices, which can deplete capital much faster than the
+        historical average suggests, even if the average return over the whole period ends up
+        being good. That's why the safe withdrawal rate tends to be more conservative than a
+        simple average of expected returns.
       </p>
 
-      <h2>O que esta calculadora ignora</h2>
+      <h2>What this calculator ignores</h2>
       <p>
-        Não modela impostos sobre mais-valias (que reduzem o valor líquido que realmente consegues
-        levantar), comissões de gestão ou de transação, nem a evolução real do teu salário ou das
-        tuas contribuições ao longo da carreira. Assume uma rentabilidade constante todos os anos,
-        o que os mercados reais nunca oferecem. É uma ferramenta para perceberes a ordem de
-        grandeza e o mecanismo, não uma previsão exata do teu percurso.
+        It doesn't model capital gains tax (which reduces the net amount you can actually
+        withdraw), management or transaction fees, or the real evolution of your salary or
+        contributions over your career. It assumes a constant return every year, which real
+        markets never offer. It's a tool for understanding the order of magnitude and the
+        mechanism, not an exact forecast of your path.
       </p>
     </div>
 
     <div class="mt-14">
-      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
       <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
         {
           faqs.map((faq) => (
@@ -330,16 +325,16 @@ const faqJsonLd = {
     </div>
 
     <div class="mt-14">
-      <h2 class="text-lg font-medium text-[var(--color-ink)]">Ferramentas relacionadas</h2>
+      <h2 class="text-lg font-medium text-[var(--color-ink)]">Related tools</h2>
       <ul class="mt-3 space-y-2 text-[15px] text-[var(--color-mint)]">
         <li>
-          <a href="/ferramentas/simulador-reforma" class="inline-flex items-center gap-1 hover:underline">
-            Simulador de Reforma <Icon name="arrow-right" class="h-3.5 w-3.5" />
+          <a href="/tools/portugal-state-pension-calculator" class="inline-flex items-center gap-1 hover:underline">
+            Portugal State Pension Calculator <Icon name="arrow-right" class="h-3.5 w-3.5" />
           </a>
         </li>
         <li>
-          <a href="/ferramentas/salario-liquido" class="inline-flex items-center gap-1 hover:underline">
-            Calculadora de Salário Líquido <Icon name="arrow-right" class="h-3.5 w-3.5" />
+          <a href="/tools/portugal-net-salary-calculator" class="inline-flex items-center gap-1 hover:underline">
+            Portugal Net Salary Calculator <Icon name="arrow-right" class="h-3.5 w-3.5" />
           </a>
         </li>
       </ul>
@@ -350,24 +345,24 @@ const faqJsonLd = {
         <Icon name="fire" class="h-5 w-5" />
       </div>
       <h2 class="mt-5 text-xl font-medium text-[var(--color-ink)]">
-        Já sabes o número. Agora é acompanhar se estás no ritmo.
+        You know the number. Now it's about staying on pace.
       </h2>
       <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-        O Otterbond ajuda-te a guardar esse valor todos os meses, e a ver se os depósitos reais
-        acompanham o plano.
+        Otterbond helps you save that amount every month, and see whether your actual deposits
+        keep up with the plan.
       </p>
       <a
         id="bridge-cta"
-        href="/pt-pt/#get-the-app"
+        href="/#get-the-app"
         class="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
       >
-        Experimentar grátis
+        Try it free
         <Icon name="arrow-right" class="h-4 w-4" />
       </a>
     </section>
   </main>
 
-  <Footer lang="pt-pt" />
+  <Footer lang="en" />
 
   <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
 </BaseLayout>
@@ -376,7 +371,7 @@ const faqJsonLd = {
   import { calculateFire, projectPortfolioByYear } from '../../lib/calculators/fireCalculator';
 
   const form = document.getElementById('calc-form') as HTMLFormElement;
-  const euro = new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
   const contributionInput = document.getElementById('monthlyContribution') as HTMLInputElement;
   const contributionSlider = document.getElementById('monthlyContributionSlider') as HTMLInputElement;
 
@@ -390,15 +385,15 @@ const faqJsonLd = {
   }
 
   function formatYears(years: number | null): string {
-    if (years === null) return 'nunca, a este ritmo';
-    if (years <= 0) return 'já lá chegaste';
-    return `${years.toFixed(1)} anos`;
+    if (years === null) return 'never, at this pace';
+    if (years <= 0) return "you've already got there";
+    return `${years.toFixed(1)} years`;
   }
 
   // gtag may not exist yet (cookie consent not accepted) -- guard every call.
   function track(event: string) {
     if (typeof (window as any).gtag === 'function') {
-      (window as any).gtag('event', event, { tool: 'calculadora-fire' });
+      (window as any).gtag('event', event, { tool: 'fire-calculator' });
     }
   }
 
@@ -420,22 +415,22 @@ const faqJsonLd = {
     });
 
     document.getElementById('result-headline')!.textContent =
-      `Precisas de ${euro.format(result.fireNumber)} investidos para viver com ${euro.format(num('desiredMonthlyIncome'))} por mês.`;
+      `You need ${euro.format(result.fireNumber)} invested to live on ${euro.format(num('desiredMonthlyIncome'))} per month.`;
 
-    const primaryAge = result.primary.ageAtFire !== null ? ` (${result.primary.ageAtFire.toFixed(1)} anos)` : '';
+    const primaryAge = result.primary.ageAtFire !== null ? ` (age ${result.primary.ageAtFire.toFixed(1)})` : '';
     document.getElementById('result-primary-pace')!.textContent =
-      `Ao ritmo atual: ${formatYears(result.primary.yearsToFire)}${primaryAge}.`;
+      `At current pace: ${formatYears(result.primary.yearsToFire)}${primaryAge}.`;
 
     const lowerReturnLabel = `${result.lowerReturn.nominalReturnPercent.toFixed(1)}%`;
-    document.getElementById('legend-lower-return')!.textContent = `Com ${lowerReturnLabel} nominal`;
+    document.getElementById('legend-lower-return')!.textContent = `At ${lowerReturnLabel} nominal`;
     document.getElementById('result-lower-pace')!.textContent =
-      `Com ${lowerReturnLabel}: ${formatYears(result.lowerReturn.yearsToFire)}.`;
+      `At ${lowerReturnLabel}: ${formatYears(result.lowerReturn.yearsToFire)}.`;
 
     const coastEl = document.getElementById('result-coast')!;
     if (result.primary.coastFireAchieved) {
-      coastEl.textContent = 'Já atingiste o Coast FIRE: mesmo sem investir mais nada, o crescimento sozinho deve chegar lá.';
+      coastEl.textContent = "You've already reached Coast FIRE: even without investing anything else, growth alone should get you there.";
     } else if (result.primary.coastFireNumber !== null) {
-      coastEl.textContent = `Se parasses de investir hoje, precisarias de ${euro.format(result.primary.coastFireNumber)} para lá chegar sozinho.`;
+      coastEl.textContent = `If you stopped investing today, you'd need ${euro.format(result.primary.coastFireNumber)} to get there on growth alone.`;
     } else {
       coastEl.textContent = '';
     }
@@ -554,7 +549,7 @@ const faqJsonLd = {
       label.setAttribute('text-anchor', year === 0 ? 'start' : year === horizonYears ? 'end' : 'middle');
       label.setAttribute('font-size', '10');
       label.setAttribute('fill', 'var(--color-ink-faint)');
-      label.textContent = `${year}a`;
+      label.textContent = `${year}y`;
       gridGroup.appendChild(label);
     });
   }
@@ -590,9 +585,9 @@ const faqJsonLd = {
     const tooltipX = Math.min(lineX + 10, CHART_WIDTH - 158);
     tooltip.setAttribute('transform', `translate(${tooltipX}, ${PADDING_TOP + 4})`);
     tooltip.setAttribute('opacity', '1');
-    tooltipYear.textContent = `Ano ${clampedYear}`;
-    tooltipPrimary.textContent = `Ritmo atual: ${formatEuroShort(currentPrimarySeries[clampedYear] ?? 0)}`;
-    tooltipLower.textContent = `Retorno menor: ${formatEuroShort(currentLowerSeries[clampedYear] ?? 0)}`;
+    tooltipYear.textContent = `Year ${clampedYear}`;
+    tooltipPrimary.textContent = `Current pace: ${formatEuroShort(currentPrimarySeries[clampedYear] ?? 0)}`;
+    tooltipLower.textContent = `Lower return: ${formatEuroShort(currentLowerSeries[clampedYear] ?? 0)}`;
   });
 
   hoverArea.addEventListener('mouseleave', () => {

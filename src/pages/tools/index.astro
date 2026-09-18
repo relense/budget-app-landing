@@ -22,12 +22,9 @@ const groups = [
         body: 'See how a starting balance and a monthly amount grow over time.',
       },
       {
-        // No English version yet (this one launched PT-only, per the product brief) -- link
-        // straight to the PT page rather than a non-existent /tools/fire-calculator, same as the
-        // other calculators did before they got English counterparts.
-        href: '/ferramentas/calculadora-fire',
+        href: '/tools/fire-calculator',
         icon: 'fire' as const,
-        title: 'FIRE Calculator (PT)',
+        title: 'FIRE Calculator',
         body: "How much you need invested to live off it, and when you'll get there at your current pace.",
       },
       {
@@ -35,6 +32,58 @@ const groups = [
         icon: 'hourglass' as const,
         title: 'Portugal State Pension Calculator',
         body: 'Estimate your future state pension and how much you need to save to close the gap.',
+      },
+      {
+        href: '/tools/emergency-fund-calculator',
+        icon: 'shield-check' as const,
+        title: 'Emergency Fund Calculator',
+        body: 'How much you should have set aside, and how many months until you get there.',
+      },
+      {
+        href: '/tools/50-30-20-rule-calculator',
+        icon: 'chart-pie' as const,
+        title: '50/30/20 Rule Calculator',
+        body: 'The three buckets of your budget -- needs, wants, savings -- from your net salary.',
+      },
+      {
+        href: '/tools/portugal-inflation-calculator',
+        icon: 'trend-up' as const,
+        title: 'Portugal Inflation Calculator',
+        body: 'What an amount was worth (or will be worth) in another year, with the INE series.',
+      },
+      {
+        href: '/tools/true-cost-of-a-car-calculator',
+        icon: 'car-simple' as const,
+        title: 'True Cost of a Car Calculator',
+        body: 'Depreciation, insurance, fuel, IUC, maintenance and financing, in a single monthly number.',
+      },
+    ],
+  },
+  {
+    heading: 'Home and credit',
+    tools: [
+      {
+        href: '/tools/portugal-mortgage-prepayment-calculator',
+        icon: 'house-line' as const,
+        title: 'Portugal Mortgage Prepayment Calculator',
+        body: 'How much you save in interest, and how much sooner you finish, by prepaying early.',
+      },
+      {
+        href: '/tools/portugal-property-transfer-tax-calculator',
+        icon: 'stamp' as const,
+        title: 'Portugal Property Transfer Tax Calculator (IMT & Stamp Duty)',
+        body: "What you'll pay at the deed signing, with 2026's tables and the IMT Jovem exemption.",
+      },
+    ],
+  },
+  {
+    heading: 'Couples and shared budgeting',
+    tools: [
+      {
+        href: '/tools/split-expenses-couple-calculator',
+        icon: 'heart' as const,
+        title: 'How to Split Expenses as a Couple',
+        body: 'Compare three ways to split rent and bills: 50/50, proportional, or equal leftover.',
       },
     ],
   },
@@ -52,6 +101,42 @@ const groups = [
         icon: 'coins' as const,
         title: 'Portugal Freelancer Tax Calculator',
         body: 'Estimate your net income as a freelancer, IRS and Social Security included.',
+      },
+      {
+        href: '/tools/portugal-vat-calculator',
+        icon: 'percent' as const,
+        title: 'Portugal VAT Calculator (IVA)',
+        body: "Add or extract VAT from an amount, with 2026's rates for all three regions.",
+      },
+      {
+        href: '/tools/portugal-income-tax-calculator',
+        icon: 'receipt' as const,
+        title: 'Portugal Income Tax Calculator (IRS)',
+        body: "Estimate whether you'll get a refund or owe IRS, with 2026's brackets and limits.",
+      },
+      {
+        href: '/tools/portugal-unemployment-benefit-calculator',
+        icon: 'umbrella' as const,
+        title: 'Portugal Unemployment Benefit Calculator',
+        body: 'Estimate the monthly amount and duration of the benefit, with 2026 limits and table.',
+      },
+      {
+        href: '/tools/portugal-overtime-pay-calculator',
+        icon: 'moon-stars' as const,
+        title: 'Portugal Overtime & Night Work Pay Calculator',
+        body: "What your overtime and night hours are worth, with the Código do Trabalho's supplements.",
+      },
+      {
+        href: '/tools/portugal-sick-leave-pay-calculator',
+        icon: 'first-aid' as const,
+        title: 'Portugal Sick Leave Pay Calculator',
+        body: "How much you'll receive per day and in total, with 2026's waiting period.",
+      },
+      {
+        href: '/tools/portugal-holiday-christmas-subsidy-calculator',
+        icon: 'calendar-blank' as const,
+        title: 'Portugal Holiday & Christmas Subsidy Calculator',
+        body: 'Your payment calendar: lump sum in June and November, or spread by duodécimos.',
       },
     ],
   },
