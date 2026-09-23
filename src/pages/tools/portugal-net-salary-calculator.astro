@@ -14,9 +14,47 @@ import Icon from '../../components/Icon.astro';
 const title = 'Portugal Net Salary Calculator 2026: IRS & Social Security';
 const description =
   'Calculate your net salary in Portugal for 2026: IRS withholding, Social Security, meal allowance, holiday/Christmas subsidies. Instant result, no sign-up.';
+
+const faqs = [
+  {
+    question: 'Is the IRS withheld here my final tax for the year?',
+    answer:
+      "No. Monthly withholding is an advance estimate based on official tables, not your final tax bill. The definitive amount is only settled the following year in your IRS tax return, which can result in a refund or additional tax owed.",
+  },
+  {
+    question: 'Why is Social Security always 11%, with no brackets?',
+    answer:
+      "Unlike IRS, employee Social Security contributions are a flat 11% of your taxable base (base salary plus any taxed meal-allowance excess), regardless of how much you earn. There's no progressive scale the way there is for IRS.",
+  },
+  {
+    question: 'Why is the amount different in the Azores or Madeira?',
+    answer:
+      "Both autonomous regions apply their own, lower withholding tables. In the Azores, the reduction is a flat ~30% off every Mainland marginal rate. In Madeira, the reduction isn't a single formula, it's set table by table in the regional order, and for 2026 it covers more brackets than in previous years.",
+  },
+  {
+    question: 'How much of my meal allowance is tax-free?',
+    answer:
+      "Up to a daily ceiling: €10.455 if paid via meal card, €6.15 if paid in cash or bank transfer (card is legally 70% higher). Any amount above that ceiling is treated as regular pay and taxed like your base salary.",
+  },
+  {
+    question: 'Should I take the holiday/Christmas subsidies as a lump sum or as duodécimos?',
+    answer:
+      'The total you receive over the year is exactly the same either way, only the timing changes. Paid as a lump sum, each subsidy is withheld at the rate that would apply to that full amount in one go, so it looks "heavier" in that specific month. Spread as duodécimos (1/12 of each subsidy added to every month\'s pay), the impact is smoother but less visible as a single payment.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
 ---
 
-<BaseLayout title={title} description={description} lang="en" noAlternate>
+<BaseLayout title={title} description={description} lang="en">
   <NavBar lang="en" />
 
   <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
@@ -211,6 +249,28 @@ const description =
       </p>
     </div>
 
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
     <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
       <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
         <Icon name="check-circle" class="h-5 w-5" />
@@ -233,6 +293,8 @@ const description =
   </main>
 
   <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
 </BaseLayout>
 
 <script>
