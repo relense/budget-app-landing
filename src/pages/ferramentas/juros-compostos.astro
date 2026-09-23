@@ -13,6 +13,44 @@ import Icon from '../../components/Icon.astro';
 const title = 'Calculadora de Juros Compostos 2026: simula a tua poupança';
 const description =
   'Calcula quanto o teu dinheiro pode valer com juros compostos: capital inicial, contribuições mensais, taxa de juro e prazo. Resultado imediato, sem registo.';
+
+const faqs = [
+  {
+    question: 'Esta calculadora tem em conta impostos sobre os meus juros?',
+    answer:
+      'Não. O tratamento fiscal de juros e mais-valias varia muito consoante o país e o produto financeiro, por isso esta calculadora mostra o crescimento bruto, antes de qualquer imposto. O teu retorno líquido real será mais baixo depois de aplicado o imposto.',
+  },
+  {
+    question: 'Qual é a diferença entre contribuir "no início" ou "no fim" do mês?',
+    answer:
+      'Determina se a contribuição desse mês rende juros já nesse mesmo mês. Com "no fim do mês" (a opção mais comum em contas poupança e contribuições mensais para investimentos), o juro desse mês é calculado primeiro, e a tua contribuição só começa a render juros no mês seguinte. Com "no início do mês", a contribuição entra antes do cálculo do juro, por isso já rende de imediato.',
+  },
+  {
+    question: 'O que é a regra dos 72?',
+    answer:
+      'Uma forma rápida de estimar quantos anos demora um capital a duplicar, sem mais contribuições: divide 72 pela taxa de juro anual. A 4%, isso dá 72 ÷ 4 = 18 anos. É uma aproximação, mas útil para comparar taxas diferentes rapidamente.',
+  },
+  {
+    question: 'Porque é que começar mais cedo importa mais do que contribuir mais?',
+    answer:
+      'Porque cada euro investido mais cedo passa por mais ciclos de capitalização. Duplicar a contribuição mensal duplica, no máximo, a parte do saldo final que vem das tuas próprias entregas, mas duplicar o número de anos pode multiplicar o resultado final por muito mais do que isso.',
+  },
+  {
+    question: 'A calculadora assume uma taxa de juro constante todos os anos?',
+    answer:
+      'Sim. Aplica a taxa anual única que indicas, dividida por 12, todos os meses durante todo o período. Os mercados reais são voláteis e raramente entregam um retorno constante, por isso trata o resultado como um modelo de como funciona a capitalização, não uma previsão do valor futuro real de um investimento.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
 ---
 
 <BaseLayout title={title} description={description} lang="pt-pt">
@@ -170,6 +208,28 @@ const description =
       </p>
     </div>
 
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
     <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
       <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
         <Icon name="piggy-bank" class="h-5 w-5" />
@@ -192,6 +252,8 @@ const description =
   </main>
 
   <Footer lang="pt-pt" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
 </BaseLayout>
 
 <script>
