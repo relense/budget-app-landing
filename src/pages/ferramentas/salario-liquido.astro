@@ -10,9 +10,47 @@ import Icon from '../../components/Icon.astro';
 const title = 'Calculadora de Salário Líquido 2026: IRS e Segurança Social';
 const description =
   'Calcula o teu salário líquido em 2026: retenção de IRS, Segurança Social, subsídio de alimentação e de férias/Natal. Continente, Açores e Madeira. Sem registo.';
+
+const faqs = [
+  {
+    question: 'O IRS retido aqui é o meu imposto final do ano?',
+    answer:
+      'Não. A retenção mensal é uma estimativa antecipada, baseada em tabelas oficiais, não é o imposto final. O valor definitivo só fica fechado no ano seguinte, com a tua declaração de IRS, que pode resultar em reembolso ou em imposto adicional a pagar.',
+  },
+  {
+    question: 'Porque é que a Segurança Social é sempre 11%, sem escalões?',
+    answer:
+      'Ao contrário do IRS, a contribuição do trabalhador para a Segurança Social é sempre uma taxa fixa de 11% sobre a base tributável (vencimento base mais qualquer excesso do subsídio de alimentação sujeito a imposto), independentemente de quanto ganhes. Não há uma escala progressiva como no IRS.',
+  },
+  {
+    question: 'Porque é que o valor muda nos Açores ou na Madeira?',
+    answer:
+      'As duas regiões autónomas aplicam as suas próprias tabelas de retenção, mais baixas. Nos Açores, a redução é uma percentagem fixa de cerca de 30% sobre todas as taxas marginais do Continente. Na Madeira, a redução não segue uma fórmula única, é definida tabela a tabela no despacho regional, e para 2026 abrange mais escalões do que em anos anteriores.',
+  },
+  {
+    question: 'Quanto do meu subsídio de alimentação está isento de imposto?',
+    answer:
+      'Até um teto diário: €10,455 se for pago em cartão refeição, €6,15 se for pago em dinheiro ou transferência (o cartão tem, por lei, um teto 70% mais alto). Qualquer valor acima desse teto é tratado como remuneração normal e tributado como o vencimento base.',
+  },
+  {
+    question: 'Devo escolher pagamento único ou duodécimos para os subsídios de férias e Natal?',
+    answer:
+      'O total que recebes ao longo do ano é exatamente o mesmo nos dois casos, muda apenas quando o dinheiro chega. Pago de uma vez, cada subsídio é retido à taxa que se aplicaria a esse valor recebido de uma só vez, por isso pode parecer "mais pesado" nesse mês específico. Distribuído em duodécimos (1/12 de cada subsídio somado a todos os meses), o impacto é mais suave mas menos visível como pagamento único.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
 ---
 
-<BaseLayout title={title} description={description} lang="pt-pt" noAlternate>
+<BaseLayout title={title} description={description} lang="pt-pt">
   <NavBar lang="pt-pt" />
 
   <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
@@ -209,6 +247,28 @@ const description =
     </div>
 
     <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Perguntas frequentes</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14">
       <h2 class="text-lg font-medium text-[var(--color-ink)]">Ferramentas relacionadas</h2>
       <ul class="mt-3 space-y-2 text-[15px] text-[var(--color-mint)]">
         <li>
@@ -246,6 +306,8 @@ const description =
   </main>
 
   <Footer lang="pt-pt" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
 </BaseLayout>
 
 <script>

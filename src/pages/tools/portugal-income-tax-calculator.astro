@@ -8,6 +8,13 @@
 //
 // See irsCalculator.ts's own file comment for the full sourcing list. Seasonal: IRS filing season
 // is April-June.
+//
+// `irsRetainedDuringYear` defaults to an auto-estimate (salaryCalculator.ts's official 2026
+// withholding tables, `annual.irs` at grossAnnualIncome/14) instead of a flat guessed number --
+// same fix as simulador-irs.astro (added 2026-09-18, see that file's own comment for the full
+// rationale): most people don't know this figure, and a static default is actively misleading once
+// it stops scaling with income. Stays auto-computed on every recalc until the user edits that field
+// directly (`retainedManuallyEdited`), with a one-click "use automatic estimate" reset.
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -55,7 +62,7 @@ const softwareApplicationJsonLd = {
 };
 ---
 
-<BaseLayout title={title} description={description} lang="en" noAlternate>
+<BaseLayout title={title} description={description} lang="en">
   <NavBar lang="en" />
 
   <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
@@ -63,8 +70,9 @@ const softwareApplicationJsonLd = {
       Portugal Income Tax Calculator (IRS) 2026
     </h1>
     <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-      Enter your income, IRS withheld, and the main deductible expenses, and see whether you
-      should expect a refund or a payment -- with 2026's brackets and limits.
+      Enter your income and the main deductible expenses, and see whether you should expect a
+      refund or a payment -- with 2026's brackets, and IRS withholding estimated automatically
+      from the official tables, no need to go dig it out of a payslip.
     </p>
     <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
       An estimate from public rules, not your actual tax return or tax advice. 2026 figures (return
@@ -92,14 +100,37 @@ const softwareApplicationJsonLd = {
         <input
           type="number"
           id="irsRetainedDuringYear"
-          value="4000"
           min="0"
           step="1"
           class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
         />
         <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">
-          The sum of your monthly withholdings, visible on your payslip or the pre-filled tax
-          return.
+          Estimated automatically from the 2026 withholding tables (income, region and situation
+          below) -- you don't need to know this figure off-hand. Overwrite it if you know the real
+          amount (payslip or pre-filled tax return), for example if you changed jobs mid-year.
+          <button
+            type="button"
+            id="reset-retained"
+            class="ml-1 cursor-pointer underline underline-offset-2"
+          >
+            Use automatic estimate
+          </button>
+        </p>
+      </label>
+
+      <label class="block text-sm">
+        <span class="font-medium text-[var(--color-ink)]">Region</span>
+        <select
+          id="region"
+          class="mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[15px] text-[var(--color-on-surface)] outline-none focus:ring-2 focus:ring-[var(--color-mint)]"
+        >
+          <option value="continente" selected>Mainland</option>
+          <option value="acores">Azores</option>
+          <option value="madeira">Madeira</option>
+        </select>
+        <p class="mt-1.5 text-xs text-[var(--color-ink-faint)]">
+          Only affects the withholding estimate above -- the final IRS brackets are the same
+          across the whole country.
         </p>
       </label>
 
@@ -239,6 +270,12 @@ const softwareApplicationJsonLd = {
           with its own limit, and all together capped by Art. 78º n.º 7's global limit. What's left
           is the tax due; the difference against what was already withheld is your refund or extra
           payment.
+        </p>
+        <p class="mt-3 max-w-[58ch] text-sm leading-relaxed text-[var(--color-mint-deep)]/80">
+          IRS withheld is estimated from the official 2026 withholding tables (dividing annual
+          income by 14 payments -- 12 months plus the holiday and Christmas subsidies -- and
+          applying the Mainland, Azores or Madeira table depending on the region chosen), the same
+          source and method as our Net Salary Calculator.
         </p>
       </details>
     </section>
@@ -382,6 +419,7 @@ const softwareApplicationJsonLd = {
 
 <script>
   import { calculateIrs } from '../../lib/calculators/irsCalculator';
+  import { calculateSalary, type FilingStatus, type Region } from '../../lib/calculators/salaryCalculator';
 
   const TOOL_SLUG = 'portugal-income-tax-calculator';
 
@@ -407,13 +445,54 @@ const softwareApplicationJsonLd = {
 
   const maritalStatusSelect = document.getElementById('maritalStatus') as HTMLSelectElement;
   const spouseWorkingWrap = document.getElementById('spouse-working-wrap') as HTMLElement;
+  const retainedInput = document.getElementById('irsRetainedDuringYear') as HTMLInputElement;
 
   function syncVisibility() {
     spouseWorkingWrap.hidden = maritalStatusSelect.value !== 'married';
   }
 
+  // Withholding tables only distinguish "sole earner" households from everyone else -- a married
+  // filer whose spouse also works uses the exact same table as a single filer (see
+  // salaryCalculator.ts's own Table I comment), so there's no separate "married, two earners"
+  // option here, mirroring the Net Salary Calculator's own filingStatus select.
+  function toFilingStatus(maritalStatus: 'single' | 'married', spouseWorking: boolean): FilingStatus {
+    return maritalStatus === 'married' && !spouseWorking ? 'marriedOneEarner' : 'single';
+  }
+
+  // Estimates the year's total withheld IRS from the official 2026 withholding tables, so the
+  // "IRS withheld" field has an accurate, income-scaled default instead of an arbitrary flat
+  // number -- most people don't know this figure off-hand. Divides by 14 (12 months + 2
+  // subsidies), the same annual-payment assumption salaryCalculator.ts itself makes.
+  function computeSuggestedRetention(): number {
+    const grossAnnual = num('grossAnnualIncome');
+    if (grossAnnual <= 0) return 0;
+    const result = calculateSalary({
+      direction: 'grossToNet',
+      amount: grossAnnual / 14,
+      region: val('region') as Region,
+      filingStatus: toFilingStatus(val('maritalStatus') as 'single' | 'married', checked('spouseWorking')),
+      dependents: num('dependents'),
+      disabled: false,
+      mealAllowance: null,
+    });
+    return Math.round(result.annual.irs);
+  }
+
+  let retainedManuallyEdited = false;
+
   function recalc() {
     syncVisibility();
+
+    if (!retainedManuallyEdited) {
+      // Guarded so a failure here (e.g. an unexpected region value) can't take down the rest of
+      // the results panel below -- worse to leave a stale/wrong retention estimate than to lose
+      // the whole calculator on every keystroke.
+      try {
+        retainedInput.value = String(computeSuggestedRetention());
+      } catch {
+        // Keep whatever was already in the field.
+      }
+    }
 
     const maritalStatus = val('maritalStatus') as 'single' | 'married';
     const jointTaxation = maritalStatus === 'married' && !checked('spouseWorking');
@@ -461,11 +540,19 @@ const softwareApplicationJsonLd = {
   }
 
   let hasFiredCompleted = false;
-  form.addEventListener('input', () => {
+  form.addEventListener('input', (event) => {
+    if (event.target === retainedInput) {
+      retainedManuallyEdited = true;
+    }
     if (!hasFiredCompleted) {
       hasFiredCompleted = true;
       trackEvent('tool_completed');
     }
+    recalc();
+  });
+
+  document.getElementById('reset-retained')?.addEventListener('click', () => {
+    retainedManuallyEdited = false;
     recalc();
   });
 

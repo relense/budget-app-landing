@@ -10,9 +10,47 @@ import Icon from '../../components/Icon.astro';
 const title = 'Compound Interest Calculator 2026: project your savings';
 const description =
   'Calculate what your money could be worth with compound interest: starting balance, monthly contributions, interest rate and time. Instant result, no sign-up.';
+
+const faqs = [
+  {
+    question: 'Does this calculator account for taxes on my interest?',
+    answer:
+      "No. Tax treatment of interest and investment gains varies a lot by country and by financial product, so this calculator shows the gross growth before any tax. Your actual take-home return will be lower once tax is applied.",
+  },
+  {
+    question: "What's the difference between contributing at the start or end of the month?",
+    answer:
+      'It changes whether that month\'s contribution earns interest in the same month it\'s added. With "end of the month" (the more common default for savings accounts and monthly investment contributions), that month\'s interest is calculated first, and your contribution only starts earning interest the following month. With "start of the month", the contribution is added before interest is calculated, so it earns interest immediately.',
+  },
+  {
+    question: 'What is the rule of 72?',
+    answer:
+      'A quick way to estimate how many years it takes a lump sum to double, with no further contributions: divide 72 by your annual interest rate. At 4%, that\'s 72 ÷ 4 = 18 years. It\'s an approximation, but useful for comparing different rates quickly.',
+  },
+  {
+    question: 'Why does starting earlier matter more than contributing more?',
+    answer:
+      'Because every euro invested earlier passes through more compounding cycles. Doubling your monthly contribution can at most double the portion of your final balance that comes from your own deposits, but doubling the number of years can multiply the final result by far more than that.',
+  },
+  {
+    question: 'Does this assume a constant interest rate every year?',
+    answer:
+      "Yes. It applies the single annual rate you enter, divided by 12, every month for the whole period. Real markets are volatile and rarely deliver a constant return, so treat the result as a model of how compounding works, not a prediction of an actual investment's future value.",
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
 ---
 
-<BaseLayout title={title} description={description} lang="en" noAlternate>
+<BaseLayout title={title} description={description} lang="en">
   <NavBar lang="en" />
 
   <main class="mx-auto max-w-3xl px-5 pt-12 pb-24 sm:px-8 sm:pt-16">
@@ -167,6 +205,28 @@ const description =
       </p>
     </div>
 
+    <div class="mt-14">
+      <h2 class="text-2xl font-medium text-[var(--color-ink)]">Frequently asked questions</h2>
+      <div class="mt-6 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+        {
+          faqs.map((faq) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-[var(--color-ink)] marker:content-none">
+                {faq.question}
+                <Icon
+                  name="caret-down"
+                  class="h-4 w-4 flex-shrink-0 text-[var(--color-ink-soft)] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <p class="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                {faq.answer}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
     <section class="mt-14 rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-7 sm:p-8">
       <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
         <Icon name="piggy-bank" class="h-5 w-5" />
@@ -189,6 +249,8 @@ const description =
   </main>
 
   <Footer lang="en" />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
 </BaseLayout>
 
 <script>
