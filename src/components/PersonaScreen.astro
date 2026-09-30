@@ -1,0 +1,42 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  /** A raster screenshot. Omit it to render the slotted content (a code-drawn `LiveScreen`) instead. */
+  image?: ImageMetadata;
+  alt?: string;
+  eager?: boolean;
+}
+
+const { image, alt = '', eager = false } = Astro.props;
+---
+
+<div class="screen screen-phone">
+  {
+    image ? (
+      <Image
+        src={image}
+        alt={alt}
+        width={520}
+        loading={eager ? 'eager' : 'lazy'}
+        class="block h-full w-full object-cover"
+      />
+    ) : (
+      <slot />
+    )
+  }
+</div>
+
+<style>
+  .screen {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-bg);
+    box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.45);
+  }
+  .screen-phone {
+    aspect-ratio: 1170 / 2532;
+    border-radius: 32px;
+    border: 5px solid var(--color-bg);
+  }
+</style>

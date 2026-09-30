@@ -6,6 +6,7 @@
 // See src/lib/calculators/unemploymentBenefit.ts's own comment for the full sourcing, and
 // specifically for the "-10% after 180 days" correction -- that rule was repealed in 2018 and
 // isn't modeled, even though the original brief this tool was built from assumed it still applied.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -64,6 +65,8 @@ const softwareApplicationJsonLd = {
       Introduz o teu salário médio, idade e tempo de descontos, e vê uma estimativa de quanto
       podes receber por mês, e durante quantos dias.
     </p>
+
+    <ToolBanner scene="desk" variant="board" tone="--color-mint" />
 
     <form
       id="calc-form"

@@ -26,6 +26,11 @@ export function getAlternatePath(pathname: string, lang: Lang): string {
   const calculatorAlternate = getCalculatorAlternatePath(pathname);
   if (calculatorAlternate) return calculatorAlternate;
 
+  // Pages whose PT slug is deliberately Portuguese, so the mirrored-path rule below can't derive it.
+  const trimmed = pathname.replace(/\/+$/, '');
+  if (trimmed === '/who-its-for') return '/pt-pt/para-quem/';
+  if (trimmed === '/pt-pt/para-quem') return '/who-its-for/';
+
   if (lang === 'en') {
     return `/pt-pt${pathname}`.replace(/\/+$/, '') + '/';
   }

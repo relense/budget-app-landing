@@ -5,6 +5,7 @@
 // `rateTier` select values stay the Portuguese literals ('normal'/'intermedia'/'reduzida') since
 // those are the VatRateTier type's own values in the shared calculator module -- only the visible
 // labels are translated.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -63,6 +64,8 @@ const softwareApplicationJsonLd = {
       Add or extract VAT from an amount, with 2026's rates for mainland Portugal, Açores and
       Madeira.
     </p>
+
+    <ToolBanner scene="desk" variant="percent" tone="--color-mint" />
 
     <form
       id="calc-form"

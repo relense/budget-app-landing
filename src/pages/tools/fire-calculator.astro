@@ -8,6 +8,7 @@
 // Chart mechanics (inline SVG, colors, hover/tooltip) are copied verbatim from the PT page's own
 // script -- see that file's own comment for the color-validation rationale. Only text content
 // (labels, headline copy, FAQ, explainer) is translated.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -58,6 +59,8 @@ const faqJsonLd = {
       How much you need invested to live off your portfolio, when you'll get there at your
       current pace, and what changes with a lower return.
     </p>
+
+    <ToolBanner scene="garden" variant="sun" tone="--color-cat-peach-bg" />
     <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
       This is a projection from assumptions you can edit, not a personal forecast or financial
       advice. No index, broker or product names.

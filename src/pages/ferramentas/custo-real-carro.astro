@@ -5,6 +5,7 @@
 //
 // See src/lib/calculators/trueCarCost.ts's own comment for why IUC is a direct input rather than
 // derived from its own bracket tables (scope cut, flagged there).
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -63,6 +64,8 @@ const softwareApplicationJsonLd = {
       Preço de compra, seguro, combustível, IUC, manutenção e crédito, tudo somado num único
       número por mês -- incluindo a depreciação, o custo que ninguém vê na fatura.
     </p>
+
+    <ToolBanner scene="car" variant="" tone="--color-cat-blue-bg" />
 
     <form
       id="calc-form"

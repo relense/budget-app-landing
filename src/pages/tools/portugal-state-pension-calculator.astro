@@ -4,6 +4,7 @@
 // lives at the unrelated /ferramentas/simulador-reforma), so BaseLayout gets `noAlternate` too.
 // Targets English-speaking expats who've paid into Portuguese Social Security and want to know
 // their pension gap. Title/H1 deliberately YEAR-LESS, see the PT file's comment for why.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -59,6 +60,8 @@ const faqJsonLd = {
       how much you'd need to save monthly to close the gap, based on the European Union's own
       official projections.
     </p>
+
+    <ToolBanner scene="garden" variant="rocker" tone="--color-cat-purple-bg" />
     <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
       This is a projection from public data, not a personal forecast or financial advice.
     </p>

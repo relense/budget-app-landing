@@ -7,6 +7,7 @@
 // salario-liquido.astro) rather than a separate net-salary calculation -- this page's own new code
 // is only `paySchedule.ts`'s 12-month calendar mapping on top of that existing result. Keeps the
 // two pages' numbers from ever silently diverging.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -67,6 +68,8 @@ const monthLabels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Se
       Vê exatamente quanto cai na tua conta em cada mês do ano -- a pagamento único em junho e
       novembro, ou espalhado por duodécimos ao longo dos 12 meses.
     </p>
+
+    <ToolBanner scene="desk" variant="suitcase" tone="--color-cat-peach-bg" />
 
     <form
       id="calc-form"

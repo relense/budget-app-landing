@@ -2,6 +2,7 @@
 // Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
 // shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
 // English counterpart: /tools/portugal-net-salary-calculator.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -61,6 +62,8 @@ const faqJsonLd = {
       Calcula o teu salário líquido a partir do bruto, ou o bruto que precisas para um líquido
       específico, com as tabelas de retenção de 2026 para Continente, Açores e Madeira.
     </p>
+
+    <ToolBanner scene="desk" variant="payslip" tone="--color-cat-blue-bg" />
 
     <form
       id="calc-form"

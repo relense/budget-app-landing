@@ -13,7 +13,7 @@ const t = useTranslations(lang);
 const homeHref = lang === 'en' ? '/' : '/pt-pt/';
 ---
 
-<header class="sticky top-0 z-40 border-b border-[var(--color-line)] bg-[var(--color-bg)]/85 backdrop-blur">
+<header class="sticky top-0 z-40 border-b border-[var(--color-line)] bg-[var(--color-bg)]/95 backdrop-blur-sm">
   <nav class="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
     <a href={homeHref} class="flex items-center gap-2.5">
       <Image src={logo} alt="Otterbond" width={32} height={32} class="h-8 w-8" />
@@ -32,9 +32,9 @@ const homeHref = lang === 'en' ? '/' : '/pt-pt/';
         >{t('nav.howItWorks')}</a
       >
       <a
-        href={`${homeHref}#screens`}
+        href={lang === 'en' ? '/who-its-for' : '/pt-pt/para-quem'}
         class="text-[15px] text-[var(--color-ink-soft)] transition-colors hover:text-[var(--color-ink)]"
-        >{t('nav.screens')}</a
+        >{t('nav.whoFor')}</a
       >
       <a
         href={`${homeHref}#pricing`}
@@ -42,7 +42,7 @@ const homeHref = lang === 'en' ? '/' : '/pt-pt/';
         >{t('nav.pricing')}</a
       >
       <a
-        href={`${homeHref}#faq`}
+        href={lang === 'en' ? '/faq' : '/pt-pt/faq'}
         class="text-[15px] text-[var(--color-ink-soft)] transition-colors hover:text-[var(--color-ink)]"
         >{t('nav.faq')}</a
       >
@@ -82,13 +82,15 @@ const homeHref = lang === 'en' ? '/' : '/pt-pt/';
       <a href={`${homeHref}#how-it-works`} class="rounded-lg px-2 py-3 text-[15px] text-[var(--color-ink)]"
         >{t('nav.howItWorks')}</a
       >
-      <a href={`${homeHref}#screens`} class="rounded-lg px-2 py-3 text-[15px] text-[var(--color-ink)]"
-        >{t('nav.screens')}</a
+      <a
+        href={lang === 'en' ? '/who-its-for' : '/pt-pt/para-quem'}
+        class="rounded-lg px-2 py-3 text-[15px] text-[var(--color-ink)]"
+        >{t('nav.whoFor')}</a
       >
       <a href={`${homeHref}#pricing`} class="rounded-lg px-2 py-3 text-[15px] text-[var(--color-ink)]"
         >{t('nav.pricing')}</a
       >
-      <a href={`${homeHref}#faq`} class="rounded-lg px-2 py-3 text-[15px] text-[var(--color-ink)]">{t('nav.faq')}</a>
+      <a href={lang === 'en' ? '/faq' : '/pt-pt/faq'} class="rounded-lg px-2 py-3 text-[15px] text-[var(--color-ink)]">{t('nav.faq')}</a>
       <a
         href={lang === 'en' ? '/tools' : '/ferramentas'}
         class="rounded-lg px-2 py-3 text-[15px] text-[var(--color-ink)]"

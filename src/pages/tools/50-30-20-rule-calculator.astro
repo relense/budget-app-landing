@@ -6,6 +6,7 @@
 // Portugal, same as every other /tools page.
 //
 // Year-less title/H1: a fixed-percentage budgeting rule isn't annually-versioned data.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -64,6 +65,8 @@ const softwareApplicationJsonLd = {
       Enter your net salary and see how much should go to needs, wants, and savings -- with
       whatever percentages you want, not just the classic ones.
     </p>
+
+    <ToolBanner scene="couple" variant="jars" tone="--color-cat-teal-bg" />
 
     <form
       id="calc-form"

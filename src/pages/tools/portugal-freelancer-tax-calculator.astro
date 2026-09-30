@@ -5,6 +5,7 @@
 // BaseLayout gets `noAlternate` too. "Recibos verdes" has no English name, so this page is framed
 // by what it computes (freelance/self-employed tax in Portugal) for English-speaking expats
 // searching in English, not a literal translation of the Portuguese term.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -60,6 +61,8 @@ const faqJsonLd = {
       a self-employed worker (recibos verdes) in Portugal, using the 2026 rules (simplified regime,
       Category B).
     </p>
+
+    <ToolBanner scene="desk" variant="invoices" tone="--color-cat-teal-bg" />
 
     <form
       id="calc-form"

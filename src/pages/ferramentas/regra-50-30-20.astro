@@ -4,6 +4,7 @@
 // No English counterpart yet (EN mirrors for the 3 new on-brand tools are a follow-up).
 //
 // Year-less title/H1: a fixed-percentage budgeting rule isn't annually-versioned data.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -62,6 +63,8 @@ const softwareApplicationJsonLd = {
       Introduz o teu salário líquido e vê quanto deveria ir para necessidades, desejos e
       poupança -- com as percentagens que quiseres, não só as clássicas.
     </p>
+
+    <ToolBanner scene="couple" variant="jars" tone="--color-cat-teal-bg" />
 
     <form
       id="calc-form"

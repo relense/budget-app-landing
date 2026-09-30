@@ -1,0 +1,705 @@
+---
+// The illustrated header on every tool page: a flat, faceless set that fits what the calculator is
+// about (a payslip, a tax stamp, a growing plant, a house...), with the person doing something and
+// props that move. Same figure rig and colours as the persona stages. When the calculator's numbers
+// change, the person cheers (see lib/liveNumbers.ts). 900x260 canvas, sits under the page intro.
+import { K, dark, light, person } from '../lib/figures';
+
+interface Props {
+  scene: 'desk' | 'garden' | 'rest' | 'home' | 'couple' | 'car' | 'hub';
+  variant?: string;
+  /** Wall colour: one of the global pastel tokens. */
+  tone?: string;
+}
+const { scene, variant = '', tone = '--color-mint' } = Astro.props;
+type Who = Parameters<typeof person>[0];
+const who = (o: Who) => person(o);
+---
+
+<div class="tool-banner" data-tool-banner style={`--bg: var(${tone})`}>
+  <svg class="psc" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <rect x="0" y="222" width="900" height="38" fill={dark(0.12)} />
+    <rect x="0" y="214" width="900" height="9" fill={dark(0.07)} />
+    <circle cx="70" cy="70" r="90" fill={light(0.22)} />
+    <circle cx="150" cy="230" r="60" fill={light(0.16)} />
+
+    {/* ------------------------------------------------------------------ DESK */}
+    {
+      scene === 'desk' && (
+        <g>
+          {variant === 'payslip' && (
+            <g>
+              <rect x="250" y="34" width="170" height="118" rx="12" fill={light(0.75)} />
+              <g class="bars" transform="translate(276 132)">
+                <rect x="0" y="-30" width="20" height="30" rx="4" fill={K.blue} style="--d:0s" />
+                <rect x="30" y="-50" width="20" height="50" rx="4" fill={K.teal} style="--d:.3s" />
+                <rect x="60" y="-40" width="20" height="40" rx="4" fill={K.blue} style="--d:.6s" />
+                <rect x="90" y="-72" width="20" height="72" rx="4" fill={K.green} style="--d:.9s" />
+              </g>
+              <g class="float"><circle cx="150" cy="112" r="28" fill={K.yellow} stroke={dark(0.25)} stroke-width="3" /><text x="150" y="122" text-anchor="middle" font-size="30" fill={dark(0.6)}>€</text></g>
+            </g>
+          )}
+          {variant === 'clock' && (
+            <g>
+              <rect x="70" y="26" width="130" height="138" rx="12" fill="#2A2740" stroke={dark(0.35)} stroke-width="8" />
+              <circle cx="150" cy="70" r="24" fill={K.paper} /><circle cx="160" cy="63" r="22" fill="#2A2740" />
+              <g fill={K.paper}><circle class="tw" cx="96" cy="62" r="2.6" /><circle class="tw" cx="112" cy="128" r="2" style="animation-delay:.7s" /><circle class="tw" cx="176" cy="122" r="2.4" style="animation-delay:1.4s" /></g>
+              <circle cx="340" cy="96" r="62" fill={light(0.92)} stroke={dark(0.3)} stroke-width="6" />
+              <g stroke={dark(0.35)} stroke-width="4" stroke-linecap="round"><path d="M340 44v10M340 138v10M288 96h10M382 96h10" /></g>
+              <g class="hand-slow" style="transform-origin:340px 96px"><path d="M340 96V66" stroke={dark(0.7)} stroke-width="6" stroke-linecap="round" /></g>
+              <g class="hand-fast" style="transform-origin:340px 96px"><path d="M340 96V52" stroke={K.pink} stroke-width="4" stroke-linecap="round" /></g>
+              <circle cx="340" cy="96" r="6" fill={dark(0.7)} />
+            </g>
+          )}
+          {variant === 'board' && (
+            <g>
+              <rect x="240" y="24" width="210" height="132" rx="10" fill={K.peach} opacity="0.55" />
+              {[0, 1, 2, 3, 4, 5].map((i) => (
+                <g transform={`translate(${258 + (i % 3) * 64} ${40 + Math.floor(i / 3) * 56}) rotate(${(i % 2) * 4 - 2})`}>
+                  <rect width="54" height="44" rx="4" fill={i === 4 ? K.mint : light(0.95)} class={i === 4 ? 'pulse' : ''} />
+                  <path d="M8 14h34M8 24h26" stroke={dark(0.3)} stroke-width="3" stroke-linecap="round" />
+                  <circle cx="27" cy="-1" r="3.5" fill={K.pink} />
+                </g>
+              ))}
+              <g class="scan"><circle cx="0" cy="0" r="18" fill={light(0.35)} stroke={dark(0.55)} stroke-width="5" /><path d="M13 13l16 16" stroke={dark(0.55)} stroke-width="6" stroke-linecap="round" /></g>
+            </g>
+          )}
+          {variant === 'invoices' && (
+            <g>
+              {[0, 1, 2, 3].map((i) => (
+                <g class="paper" style={`--i:${i}`}>
+                  <rect x={608 + i * 30} y="96" width="30" height="40" rx="4" fill={i % 2 ? K.mint : light(0.95)} transform={`rotate(${-14 + i * 9} ${623 + i * 30} 116)`} />
+                  <path d={`M${614 + i * 30} 108h18M${614 + i * 30} 118h12`} stroke={dark(0.3)} stroke-width="3" stroke-linecap="round" transform={`rotate(${-14 + i * 9} ${623 + i * 30} 116)`} />
+                </g>
+              ))}
+              <rect x="490" y="160" width="70" height="16" rx="3" fill={K.mint} /><rect x="494" y="148" width="70" height="14" rx="3" fill={light(0.95)} />
+              <g class="float"><rect x="250" y="60" width="120" height="86" rx="10" fill={light(0.85)} /><path d="M270 88h80M270 106h56M270 124h68" stroke={dark(0.25)} stroke-width="6" stroke-linecap="round" /><circle cx="352" cy="128" r="14" fill={K.green} /><path d="M346 128l5 5 9-10" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" /></g>
+            </g>
+          )}
+          {variant === 'percent' && (
+            <g>
+              <g class="float"><text x="250" y="150" font-size="150" fill={light(0.85)} font-weight="600">%</text></g>
+              <circle class="coin-a" cx="400" cy="70" r="16" fill={K.yellow} stroke={dark(0.25)} stroke-width="3" />
+              <circle class="coin-a" cx="120" cy="150" r="12" fill={K.yellow} stroke={dark(0.25)} stroke-width="3" style="animation-delay:1s" />
+              <rect x="490" y="146" width="60" height="30" rx="4" fill={light(0.95)} /><path d="M498 158h30M498 166h20" stroke={dark(0.3)} stroke-width="3" stroke-linecap="round" />
+            </g>
+          )}
+          {variant === 'stamp' && (
+            <g>
+              <rect x="250" y="40" width="150" height="110" rx="10" fill={light(0.8)} />
+              <path d="M272 70h100M272 90h70M272 110h86" stroke={dark(0.22)} stroke-width="6" stroke-linecap="round" />
+              <rect x="470" y="150" width="100" height="26" rx="3" fill={light(0.95)} />
+              <path class="inkcheck" d="M494 164l10 8 18-18" fill="none" stroke={K.green} stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+              <g class="stamp"><rect x="504" y="58" width="32" height="16" rx="8" fill={K.char} /><rect x="500" y="72" width="40" height="26" rx="4" fill={K.pink} /></g>
+            </g>
+          )}
+          {variant === 'suitcase' && (
+            <g>
+              <circle class="sun" cx="240" cy="84" r="46" fill={K.yellow} />
+              <g class="plane"><path d="M0 0l30 8-30 8 6-8z" fill={light(0.95)} transform="translate(0 0)" /></g>
+              <g><rect x="376" y="168" width="60" height="54" rx="9" fill={K.pink} /><rect x="394" y="156" width="24" height="14" rx="4" fill="none" stroke={dark(0.5)} stroke-width="4" /><path d="M392 172v46M420 172v46" stroke={dark(0.2)} stroke-width="4" /></g>
+            </g>
+          )}
+
+          {/* the person + desk (shared) */}
+          <g class="who" set:html={who({ x: 650, y: 100, scale: 0.9, skin: variant === 'clock' ? K.skinC : variant === 'board' ? K.skinB : K.skinA, hair: variant === 'stamp' ? K.hairAuburn : K.hairBlack, style: variant === 'stamp' ? 'long' : variant === 'suitcase' ? 'curly' : 'short', top: variant === 'payslip' ? K.blue : variant === 'invoices' ? K.teal : variant === 'stamp' ? K.purple : variant === 'clock' ? K.char : variant === 'suitcase' ? K.pink : K.green, arms: 'laptop', legs: false, act: 'nod', phase: 0.3 })} />
+          <rect x="450" y="176" width="400" height="16" rx="8" fill={dark(0.42)} />
+          <rect x="470" y="192" width="12" height="32" fill={dark(0.34)} /><rect x="818" y="192" width="12" height="32" fill={dark(0.34)} />
+          <rect x="600" y="126" width="100" height="54" rx="7" fill="#2E3B3A" /><circle cx="650" cy="153" r="6" fill={light(0.4)} />
+          <rect x="740" y="148" width="22" height="28" rx="6" fill={K.paper} /><path d="M762 156q10 2 0 14" fill="none" stroke={K.paper} stroke-width="5" />
+          <g class="steam"><path d="M751 142q-7-10 0-18t0-16" fill="none" stroke={light(0.75)} stroke-width="4" stroke-linecap="round" /></g>
+        </g>
+      )
+    }
+
+    {/* ---------------------------------------------------------------- GARDEN */}
+    {
+      scene === 'garden' && (
+        <g>
+          <path d="M0 222 Q200 190 380 214 T900 208 V260 H0Z" fill={dark(0.1)} />
+          {variant === 'grow' && (
+            <g>
+              <circle class="sun" cx="150" cy="72" r="42" fill={K.yellow} />
+              <path d="M494 222l8-44h36l8 44z" fill={K.peach} />
+              <g class="growplant">
+                <path d="M520 178V70M520 130q-34-6-40-40M520 104q32-6 38-38" fill="none" stroke={K.green} stroke-width="8" stroke-linecap="round" />
+                <circle class="coinpop" cx="480" cy="86" r="14" fill={K.yellow} stroke={dark(0.25)} stroke-width="3" style="--d:.5s" />
+                <circle class="coinpop" cx="560" cy="64" r="14" fill={K.yellow} stroke={dark(0.25)} stroke-width="3" style="--d:1.2s" />
+                <circle class="coinpop" cx="520" cy="58" r="16" fill={K.yellow} stroke={dark(0.25)} stroke-width="3" style="--d:1.9s" />
+              </g>
+            </g>
+          )}
+          {variant === 'umbrella' && (
+            <g>
+              <path d="M420 122Q560 20 700 122Q660 108 630 122Q600 106 560 122Q520 106 490 122Q460 108 420 122Z" fill={K.blue} />
+              <path d="M560 122V200" stroke={dark(0.5)} stroke-width="5" /><path d="M560 200q0 12 12 12" fill="none" stroke={dark(0.5)} stroke-width="5" stroke-linecap="round" />
+              <g stroke={light(0.85)} stroke-width="3" stroke-linecap="round">
+                {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                  <path class="rain" style={`--i:${i}`} d={`M${396 + i * 50} 20v14`} />
+                ))}
+              </g>
+              <path d="M520 222v-46h48v46z" fill={light(0.5)} stroke={light(0.9)} stroke-width="3" /><circle cx="544" cy="204" r="9" fill={K.yellow} /><circle cx="530" cy="212" r="7" fill={K.yellow} />
+            </g>
+          )}
+          {variant === 'sun' && (
+            <g>
+              <circle class="sun" cx="170" cy="98" r="64" fill={K.yellow} />
+              <path d="M0 196 Q60 184 120 196 T240 196 T360 196 T480 196 V230 H0Z" fill={light(0.45)} class="waves" />
+              <path d="M440 222Q456 140 470 60" fill="none" stroke={K.peach} stroke-width="12" stroke-linecap="round" />
+              <g class="sway" fill={K.green}><path d="M470 60q-56-4-72 30q40-16 72-12zM470 60q56-4 72 30q-40-16-72-12zM470 60q-16-40-56-42q28 14 56 42zM470 60q16-40 56-42q-28 14-56 42z" /></g>
+              <rect x="650" y="94" width="100" height="128" rx="20" fill={K.pink} opacity="0.9" />
+            </g>
+          )}
+          {variant === 'rocker' && (
+            <g>
+              <circle cx="180" cy="120" r="80" fill={K.peach} opacity="0.55" /><circle class="sun" cx="180" cy="120" r="56" fill={K.yellow} opacity="0.85" />
+              <g class="rocker" style="transform-origin:640px 222px">
+                <path d="M560 128q-4 60 4 86" fill="none" stroke={dark(0.4)} stroke-width="12" stroke-linecap="round" />
+                <path d="M556 150h170v40h-170z" fill="none" />
+                <rect x="580" y="170" width="120" height="16" rx="8" fill={dark(0.4)} />
+                <path d="M556 214Q640 236 724 214" fill="none" stroke={dark(0.5)} stroke-width="8" stroke-linecap="round" />
+              </g>
+            </g>
+          )}
+          {variant === 'tags' && (
+            <g>
+              <path d="M470 150h120l-16 66h-88z" fill={K.peach} opacity="0.75" /><path d="M486 150l8 66M520 150v66M554 150l-8 66" stroke={dark(0.25)} stroke-width="3" />
+              <g class="sway"><path d="M500 150q-6-30 6-44M540 150q4-34 22-46" fill="none" stroke={K.green} stroke-width="8" stroke-linecap="round" /><rect x="600" y="180" width="70" height="14" rx="7" fill={K.yellow} transform="rotate(-14 600 180)" /></g>
+              {[0, 1, 2, 3].map((i) => (
+                <g class="tagup" style={`--i:${i}`}><rect x={250 + i * 46} y="110" width="38" height="26" rx="6" fill={i % 2 ? K.mint : light(0.95)} /><circle cx={260 + i * 46} cy="123" r="3" fill={dark(0.4)} /><text x={282 + i * 46} y="129" text-anchor="middle" font-size="16" fill={dark(0.6)}>€</text></g>
+              ))}
+              <path class="up" d="M170 170V90M150 110l20-24 20 24" fill="none" stroke={K.pink} stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+            </g>
+          )}
+          <g class="who" set:html={who({ x: variant === 'sun' ? 700 : variant === 'rocker' ? 640 : 760, y: variant === 'sun' || variant === 'rocker' ? 112 : 65, scale: variant === 'sun' || variant === 'rocker' ? 0.82 : 0.58, skin: variant === 'rocker' ? K.skinA : K.skinB, hair: variant === 'rocker' ? '#B9B3AC' : K.hairDark, style: variant === 'rocker' ? 'bun' : 'curly', top: variant === 'rocker' ? K.pink : K.blue, bottom: K.char, arms: variant === 'sun' || variant === 'rocker' ? 'mug' : 'hold', stand: !(variant === 'sun' || variant === 'rocker'), legs: !(variant === 'sun' || variant === 'rocker'), act: 'nod', phase: 0.5 })} />
+          {variant === 'rocker' && (
+            <g>
+              <g class="rocker" style="transform-origin:640px 222px"><rect x="606" y="140" width="10" height="70" rx="5" fill={dark(0.3)} /></g>
+              <path d="M580 204q60 26 120 0l6 12q-66 30-132 0z" fill={dark(0.32)} />
+            </g>
+          )}
+          {variant === 'sun' && (
+            <g><rect x="640" y="176" width="130" height="16" rx="8" fill={K.pink} /><rect x="656" y="192" width="10" height="30" fill={dark(0.3)} /><rect x="744" y="192" width="10" height="30" fill={dark(0.3)} /></g>
+          )}
+        </g>
+      )
+    }
+
+    {/* ------------------------------------------------------------------ REST */}
+    {
+      scene === 'rest' && (
+        <g>
+          <rect x="70" y="26" width="130" height="138" rx="12" fill={light(0.7)} stroke={dark(0.25)} stroke-width="8" />
+          <g stroke={K.blue} stroke-width="3" stroke-linecap="round" opacity="0.7">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <path class="rain" style={`--i:${i}`} d={`M${96 + i * 22} 46v14`} />
+            ))}
+          </g>
+          <g class="float">
+            <rect x="290" y="56" width="16" height="84" rx="8" fill={light(0.95)} /><circle cx="298" cy="150" r="18" fill={light(0.95)} /><circle cx="298" cy="150" r="10" fill={K.pink} /><rect x="294" y="80" width="8" height="58" rx="4" fill={K.pink} />
+          </g>
+          <g class="heart"><path d="M380 96c-14-22-42-2-24 20l24 20 24-20c18-22-10-42-24-20z" fill={K.pink} /></g>
+          <rect x="440" y="120" width="400" height="104" rx="40" fill={dark(0.26)} />
+          <g class="who" set:html={who({ x: 640, y: 118, scale: 0.9, skin: K.skinB, hair: K.hairDark, style: 'curly', top: K.blue, arms: 'mug', legs: false, act: 'nod', phase: 0.4 })} />
+          <path d="M470 178q170 -22 340 0v46H470z" fill={K.mint} /><path d="M470 178q170 -22 340 0" fill="none" stroke={dark(0.2)} stroke-width="4" />
+          <rect x="430" y="150" width="46" height="74" rx="22" fill={dark(0.36)} /><rect x="806" y="150" width="46" height="74" rx="22" fill={dark(0.36)} />
+          <rect x="880" y="180" width="30" height="42" rx="6" fill={K.paper} />
+          <g class="steam"><path d="M700 132q-7-10 0-18t0-16" fill="none" stroke={light(0.75)} stroke-width="4" stroke-linecap="round" /></g>
+        </g>
+      )
+    }
+
+    {/* ------------------------------------------------------------------ HOME */}
+    {
+      scene === 'home' && (
+        <g>
+          <circle class="sun" cx="150" cy="80" r="44" fill={K.yellow} />
+          <rect x="520" y="104" width="220" height="118" fill={light(0.9)} />
+          <path d="M498 108L630 26l132 82z" fill={K.peach} />
+          <rect x="690" y="40" width="26" height="46" fill={dark(0.3)} />
+          <g class="steam"><path d="M703 34q-7-10 0-18t0-16" fill="none" stroke={light(0.85)} stroke-width="4" stroke-linecap="round" /></g>
+          <rect x="606" y="148" width="46" height="74" rx="6" fill={K.pink} /><circle cx="642" cy="188" r="4" fill={K.yellow} />
+          <rect x="540" y="124" width="46" height="40" rx="4" fill={dark(0.14)} /><rect x="676" y="124" width="46" height="40" rx="4" fill={dark(0.14)} />
+          {variant === 'keys' && (
+            <g class="swing" style="transform-origin:646px 190px"><circle cx="646" cy="206" r="8" fill="none" stroke={K.yellow} stroke-width="4" /><path d="M646 214v18" stroke={K.yellow} stroke-width="5" stroke-linecap="round" /></g>
+          )}
+          {variant === 'stamp' && (
+            <g>
+              <rect x="400" y="184" width="100" height="38" rx="5" fill={light(0.95)} /><path class="inkcheck" d="M424 204l10 9 20-20" fill="none" stroke={K.green} stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+              <g class="stamp"><rect x="440" y="96" width="30" height="16" rx="8" fill={K.char} /><rect x="434" y="110" width="42" height="28" rx="4" fill={K.pink} /></g>
+            </g>
+          )}
+          <g class="who" set:html={who({ x: 360, y: 64, scale: 0.58, skin: K.skinC, hair: K.hairBlack, style: 'short', top: K.teal, bottom: K.blue, arms: 'wave', stand: true, act: 'nod', phase: 0.2 })} />
+        </g>
+      )
+    }
+
+    {/* ---------------------------------------------------------------- COUPLE */}
+    {
+      scene === 'couple' && (
+        <g>
+          <g class="who" set:html={who({ x: 560, y: 104, scale: 0.86, skin: K.skinB, hair: K.hairDark, style: 'short', top: K.blue, arms: 'phone', legs: false, act: 'turn-r', phase: 0 })} />
+          <g class="who" set:html={who({ x: 760, y: 108, scale: 0.86, skin: K.skinA, hair: K.hairAuburn, style: 'long', top: K.pink, arms: 'mug', legs: false, act: 'turn-l', phase: 1.5 })} />
+          <rect x="470" y="176" width="380" height="16" rx="8" fill={dark(0.42)} /><rect x="490" y="192" width="12" height="32" fill={dark(0.34)} /><rect x="818" y="192" width="12" height="32" fill={dark(0.34)} />
+          {variant === 'split' && (
+            <g>
+              <g class="halfL"><path d="M622 112h34v66h-34z" fill={light(0.95)} /><path d="M628 128h22M628 142h18M628 156h22" stroke={dark(0.3)} stroke-width="3" stroke-linecap="round" /></g>
+              <g class="halfR"><path d="M660 112h34v66h-34z" fill={light(0.95)} /><path d="M666 128h22M666 142h18M666 156h22" stroke={dark(0.3)} stroke-width="3" stroke-linecap="round" /></g>
+              <text x="250" y="150" font-size="64" fill={light(0.85)} font-weight="600" class="float">50/50</text>
+            </g>
+          )}
+          {variant === 'jars' && (
+            <g>
+              {[
+                { x: 600, h: 50, c: K.green },
+                { x: 650, h: 30, c: K.blue },
+                { x: 700, h: 18, c: K.purple },
+              ].map((j, i) => (
+                <g>
+                  <rect x={j.x} y="120" width="38" height="58" rx="8" fill={light(0.5)} stroke={light(0.9)} stroke-width="3" />
+                  <rect class="jfill" x={j.x + 3} y={176 - j.h} width="32" height={j.h - 1} rx="4" fill={j.c} style={`--i:${i}`} />
+                </g>
+              ))}
+              <text x="250" y="150" font-size="64" fill={light(0.85)} font-weight="600" class="float">50/30/20</text>
+            </g>
+          )}
+        </g>
+      )
+    }
+
+    {/* ------------------------------------------------------------------- CAR */}
+    {
+      scene === 'car' && (
+        <g>
+          <circle class="sun" cx="150" cy="76" r="40" fill={K.yellow} />
+          <g class="drive">
+            <path d="M420 200v-42q0-16 16-20l70-8 40-34q8-8 20-8h90q12 0 20 8l36 34 52 6q14 2 14 18v46z" fill={K.blue} />
+            <path d="M540 122l30-28h74l30 28z" fill={light(0.75)} /><path d="M604 96v26" stroke={K.blue} stroke-width="5" />
+            <circle cx="500" cy="204" r="26" fill={K.char} /><circle cx="500" cy="204" r="11" fill={light(0.7)} class="wheel" />
+            <circle cx="700" cy="204" r="26" fill={K.char} /><circle cx="700" cy="204" r="11" fill={light(0.7)} class="wheel" />
+            <rect x="770" y="152" width="18" height="12" rx="4" fill={K.yellow} />
+          </g>
+          <rect x="820" y="96" width="44" height="126" rx="8" fill={K.pink} /><rect x="828" y="108" width="28" height="30" rx="4" fill={light(0.8)} /><path d="M864 130q22 6 22 36" fill="none" stroke={dark(0.5)} stroke-width="5" stroke-linecap="round" />
+          {[0, 1, 2].map((i) => (
+            <g class="tagup" style={`--i:${i}`}><circle cx={560 + i * 60} cy="70" r="14" fill={K.yellow} stroke={dark(0.25)} stroke-width="3" /><text x={560 + i * 60} y="76" text-anchor="middle" font-size="16" fill={dark(0.6)}>€</text></g>
+          ))}
+          <g class="who" set:html={who({ x: 350, y: 65, scale: 0.58, skin: K.skinA, hair: K.hairBrown, style: 'bun', top: K.purple, bottom: K.char, arms: 'wave', stand: true, act: 'nod', phase: 0.3 })} />
+        </g>
+      )
+    }
+
+    {/* ------------------------------------------------------------------- HUB */}
+    {
+      scene === 'hub' && (
+        <g>
+          <g class="float">
+            <rect x="210" y="34" width="150" height="196" rx="18" fill={dark(0.5)} />
+            <rect x="224" y="48" width="122" height="44" rx="8" fill={K.mint} />
+            <text x="338" y="80" text-anchor="end" font-size="26" fill={K.green}>1,462</text>
+            {[0, 1, 2].map((r) => [0, 1, 2].map((c) => <rect x={226 + c * 42} y={104 + r * 38} width="34" height="30" rx="7" fill={light(0.85)} />))}
+          </g>
+          {[
+            { x: 130, y: 60, t: '%', c: K.pink },
+            { x: 420, y: 60, t: '€', c: K.yellow },
+            { x: 110, y: 180, t: '2026', c: K.mint },
+            { x: 440, y: 176, t: '+', c: K.paper },
+          ].map((o, i) => (
+            <g class="orbit" style={`--i:${i}`}><circle cx={o.x} cy={o.y} r="30" fill={o.c} stroke={dark(0.2)} stroke-width="3" /><text x={o.x} y={o.y + 8} text-anchor="middle" font-size={o.t.length > 2 ? 16 : 26} fill={dark(0.6)}>{o.t}</text></g>
+          ))}
+          <g class="who" set:html={who({ x: 560, y: 66, scale: 0.6, skin: K.skinB, hair: K.hairDark, style: 'curly', top: K.pink, arms: 'wave', stand: true, act: 'nod', phase: 0 })} />
+          <g class="who" set:html={who({ x: 680, y: 74, scale: 0.55, skin: K.skinC, hair: K.hairBlack, style: 'cap', top: K.teal, bottom: K.blue, arms: 'phone', stand: true, act: 'raise', phase: 0.6 })} />
+          <g class="who" set:html={who({ x: 800, y: 66, scale: 0.6, skin: K.skinA, hair: K.hairAuburn, style: 'long', top: K.purple, arms: 'wave', flip: true, stand: true, act: 'nod', phase: 1.1 })} />
+        </g>
+      )
+    }
+
+    {/* cheer: shows when the calculator's numbers change */}
+    <g class="cheer">
+      <path class="st st1" d="M760 60l5 12 12 5-12 5-5 12-5-12-12-5 12-5z" fill={K.yellow} />
+      <path class="st st2" d="M820 100l4 9 9 4-9 4-4 9-4-9-9-4 9-4z" fill={K.mint} />
+      <path class="st st3" d="M700 40l4 9 9 4-9 4-4 9-4-9-9-4 9-4z" fill={light(0.95)} />
+    </g>
+  </svg>
+</div>
+
+<script>
+  // Play the set while it is on screen, and cheer whenever the calculator's numbers change.
+  document.querySelectorAll<HTMLElement>('[data-tool-banner]').forEach((banner) => {
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => banner.classList.toggle('is-live', entry.isIntersecting), { threshold: 0.2 }).observe(banner);
+    } else {
+      banner.classList.add('is-live');
+    }
+    let timer = 0;
+    document.addEventListener('tool:result', () => {
+      banner.classList.remove('react');
+      void banner.offsetWidth;
+      banner.classList.add('react');
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => banner.classList.remove('react'), 1500);
+    });
+  });
+</script>
+
+<style is:global>
+  .tool-banner {
+    position: relative;
+    margin-top: 1.75rem;
+    aspect-ratio: 900 / 260;
+    overflow: hidden;
+    border-radius: var(--radius-stage);
+    background: var(--bg);
+    isolation: isolate;
+  }
+  .tool-banner .psc {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .tool-banner text {
+    font-family: 'Fredoka', system-ui, sans-serif;
+  }
+  .tool-banner .cheer path {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tool-banner.is-live .float {
+      animation: tb-float 5s ease-in-out infinite;
+    }
+    .tool-banner.is-live .bars rect {
+      transform-box: fill-box;
+      transform-origin: 50% 100%;
+      animation: tb-bars 4s ease-in-out infinite;
+      animation-delay: var(--d);
+    }
+    .tool-banner.is-live .hand-slow {
+      animation: tb-spin 48s linear infinite;
+    }
+    .tool-banner.is-live .hand-fast {
+      animation: tb-spin 6s linear infinite;
+    }
+    .tool-banner.is-live .pulse {
+      animation: tb-pulse 1.8s ease-in-out infinite;
+    }
+    .tool-banner.is-live .scan {
+      animation: tb-scan 6s ease-in-out infinite;
+    }
+    .tool-banner.is-live .stamp {
+      animation: tb-stamp 3.4s ease-in infinite;
+    }
+    .tool-banner.is-live .inkcheck {
+      stroke-dasharray: 50;
+      animation: tb-ink 3.4s ease infinite;
+    }
+    .tool-banner.is-live .coin-a {
+      animation: tb-float 3.6s ease-in-out infinite;
+    }
+    .tool-banner.is-live .plane {
+      animation: tb-plane 9s linear infinite;
+    }
+    .tool-banner.is-live .growplant {
+      transform-box: fill-box;
+      transform-origin: 50% 100%;
+      animation: tb-grow 7s ease-in-out infinite;
+    }
+    .tool-banner.is-live .coinpop {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: tb-coinpop 7s ease infinite;
+      animation-delay: var(--d);
+    }
+    .tool-banner.is-live .rain {
+      animation: tb-rain 1.1s linear infinite;
+      animation-delay: calc(var(--i) * -0.16s);
+    }
+    .tool-banner.is-live .waves {
+      animation: tb-waves 6s ease-in-out infinite alternate;
+    }
+    .tool-banner.is-live .rocker {
+      animation: tb-rock 3.6s ease-in-out infinite;
+    }
+    .tool-banner.is-live .tagup {
+      animation: tb-tagup 5s ease-in-out infinite;
+      animation-delay: calc(var(--i) * 1s);
+    }
+    .tool-banner.is-live .up {
+      animation: tb-float 2.4s ease-in-out infinite;
+    }
+    .tool-banner.is-live .heart {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: tb-heart 1.6s ease-in-out infinite;
+    }
+    .tool-banner.is-live .swing {
+      animation: tb-swing 2.6s ease-in-out infinite;
+    }
+    .tool-banner.is-live .halfL {
+      animation: tb-halfL 4.4s ease-in-out infinite;
+    }
+    .tool-banner.is-live .halfR {
+      animation: tb-halfR 4.4s ease-in-out infinite;
+    }
+    .tool-banner.is-live .jfill {
+      transform-box: fill-box;
+      transform-origin: 50% 100%;
+      animation: tb-jfill 5s ease-in-out infinite;
+      animation-delay: calc(var(--i) * 0.35s);
+    }
+    .tool-banner.is-live .drive {
+      animation: tb-drive 1.2s steps(1, end) infinite;
+    }
+    .tool-banner.is-live .wheel {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: tb-spin 1.4s linear infinite;
+    }
+    .tool-banner.is-live .orbit {
+      animation: tb-orbit 6s ease-in-out infinite;
+      animation-delay: calc(var(--i) * -1.4s);
+    }
+    /* reaction to new numbers */
+    .tool-banner.react .who {
+      animation: tb-cheer 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .tool-banner.react .st {
+      animation: tb-star 1.2s ease-out both;
+    }
+    .tool-banner.react .st2 {
+      animation-delay: 0.15s;
+    }
+    .tool-banner.react .st3 {
+      animation-delay: 0.3s;
+    }
+  }
+  @keyframes tb-float {
+    50% {
+      transform: translateY(-9px);
+    }
+  }
+  @keyframes tb-bars {
+    0%,
+    100% {
+      transform: scaleY(0.55);
+    }
+    50% {
+      transform: scaleY(1);
+    }
+  }
+  @keyframes tb-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes tb-pulse {
+    50% {
+      opacity: 0.55;
+    }
+  }
+  @keyframes tb-scan {
+    0% {
+      transform: translate(280px, 66px);
+    }
+    35% {
+      transform: translate(400px, 70px);
+    }
+    65% {
+      transform: translate(318px, 132px);
+    }
+    100% {
+      transform: translate(280px, 66px);
+    }
+  }
+  @keyframes tb-stamp {
+    0%,
+    45% {
+      transform: translateY(-44px);
+    }
+    58%,
+    64% {
+      transform: translateY(0);
+    }
+    82%,
+    100% {
+      transform: translateY(-44px);
+    }
+  }
+  @keyframes tb-ink {
+    0%,
+    58% {
+      stroke-dashoffset: 50;
+    }
+    72%,
+    92% {
+      stroke-dashoffset: 0;
+    }
+    100% {
+      stroke-dashoffset: 50;
+    }
+  }
+  @keyframes tb-plane {
+    0% {
+      transform: translate(300px, 70px);
+    }
+    100% {
+      transform: translate(620px, 20px);
+    }
+  }
+  @keyframes tb-grow {
+    0%,
+    100% {
+      transform: scaleY(0.4);
+    }
+    60%,
+    85% {
+      transform: scaleY(1);
+    }
+  }
+  @keyframes tb-coinpop {
+    0%,
+    45% {
+      transform: scale(0);
+    }
+    62%,
+    88% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(0);
+    }
+  }
+  @keyframes tb-rain {
+    0% {
+      transform: translateY(0);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(150px);
+      opacity: 0;
+    }
+  }
+  @keyframes tb-waves {
+    to {
+      transform: translateX(-30px);
+    }
+  }
+  @keyframes tb-rock {
+    50% {
+      transform: rotate(3.5deg);
+    }
+    0%,
+    100% {
+      transform: rotate(-3.5deg);
+    }
+  }
+  @keyframes tb-tagup {
+    0% {
+      transform: translateY(40px);
+      opacity: 0;
+    }
+    25% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+  }
+  @keyframes tb-heart {
+    50% {
+      transform: scale(1.18);
+    }
+  }
+  @keyframes tb-swing {
+    0%,
+    100% {
+      transform: rotate(-8deg);
+    }
+    50% {
+      transform: rotate(8deg);
+    }
+  }
+  @keyframes tb-halfL {
+    0%,
+    35%,
+    100% {
+      transform: translateX(0);
+    }
+    55%,
+    80% {
+      transform: translateX(-26px);
+    }
+  }
+  @keyframes tb-halfR {
+    0%,
+    35%,
+    100% {
+      transform: translateX(0);
+    }
+    55%,
+    80% {
+      transform: translateX(26px);
+    }
+  }
+  @keyframes tb-jfill {
+    0%,
+    100% {
+      transform: scaleY(0.3);
+    }
+    50%,
+    85% {
+      transform: scaleY(1);
+    }
+  }
+  @keyframes tb-drive {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-1.5px);
+    }
+  }
+  @keyframes tb-orbit {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    25% {
+      transform: translate(10px, -12px);
+    }
+    50% {
+      transform: translate(0, -20px);
+    }
+    75% {
+      transform: translate(-10px, -10px);
+    }
+  }
+  @keyframes tb-cheer {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-16px);
+    }
+  }
+  @keyframes tb-star {
+    0% {
+      opacity: 0;
+      transform: scale(0) rotate(-40deg);
+    }
+    30% {
+      opacity: 1;
+      transform: scale(1.2) rotate(0);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.6) translateY(-24px);
+    }
+  }
+</style>

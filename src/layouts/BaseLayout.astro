@@ -56,6 +56,15 @@ const websiteJsonLd = {
     }
     <meta name="generator" content={Astro.generator} />
 
+    <noscript>
+      <style>
+        [data-reveal] {
+          opacity: 1;
+          transform: none;
+        }
+      </style>
+    </noscript>
+
     <title>{title}</title>
     <meta name="description" content={description} />
 
@@ -80,6 +89,12 @@ const websiteJsonLd = {
     <CookieConsent lang={lang} />
 
     <script>
+      import { initLiveNumbers } from '../lib/liveNumbers';
+      import { initSpotlight } from '../lib/spotlight';
+
+      initSpotlight();
+      initLiveNumbers();
+
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const targets = document.querySelectorAll('[data-reveal]');
 

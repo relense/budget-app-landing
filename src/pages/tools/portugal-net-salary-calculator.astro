@@ -6,6 +6,7 @@
 // *Portugal* calculator (title, URL, copy) since the underlying math (IRS, Segurança Social) only
 // applies there -- this targets English-speaking expats/foreigners searching in English, not a
 // generic "net salary calculator" audience.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -65,6 +66,8 @@ const faqJsonLd = {
       Calculate your net salary from your gross pay, or the gross you'd need for a target net, using
       the 2026 Portuguese withholding tables for Mainland, Azores and Madeira.
     </p>
+
+    <ToolBanner scene="desk" variant="payslip" tone="--color-cat-blue-bg" />
 
     <form
       id="calc-form"

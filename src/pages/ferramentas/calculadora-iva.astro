@@ -6,6 +6,7 @@
 // The simplest tool in this batch -- trivial arithmetic, no bracket tables, no real sourcing risk
 // beyond the three regions' rate tables themselves. See
 // src/lib/calculators/vatCalculator.ts's own comment for those.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -63,6 +64,8 @@ const softwareApplicationJsonLd = {
     <p class="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
       Soma ou extrai o IVA de um valor, com as taxas de 2026 para o Continente, Açores e Madeira.
     </p>
+
+    <ToolBanner scene="desk" variant="percent" tone="--color-mint" />
 
     <form
       id="calc-form"

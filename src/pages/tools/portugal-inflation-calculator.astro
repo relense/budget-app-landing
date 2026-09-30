@@ -3,6 +3,7 @@
 // comment for the shared "front door, not a feature of the app" rationale and the
 // `lang`/`noAlternate` reasoning. See inflationCalculator.ts's own comment for the full CPI series
 // sourcing.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -62,6 +63,8 @@ const softwareApplicationJsonLd = {
       Enter an amount and two years, and see what it was worth (or will be worth) today -- with
       INE's official CPI series, from {EARLIEST_YEAR} to {LATEST_YEAR}.
     </p>
+
+    <ToolBanner scene="garden" variant="tags" tone="--color-cat-pink-bg" />
 
     <form
       id="calc-form"

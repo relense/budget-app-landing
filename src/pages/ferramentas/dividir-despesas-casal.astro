@@ -9,6 +9,7 @@
 // add/remove-row list -- every existing calculator page in this repo uses fixed fields, and
 // introducing a new dynamic-row UI pattern for just this one page isn't worth the added
 // complexity. "Outras despesas" covers anything that doesn't fit the first three.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -67,6 +68,8 @@ const softwareApplicationJsonLd = {
       Compara três formas de dividir a renda, as contas e as compras: a meias, proporcional ao
       que cada um ganha, ou com o mesmo valor a sobrar para os dois no fim do mês.
     </p>
+
+    <ToolBanner scene="couple" variant="split" tone="--color-cat-pink-bg" />
 
     <form
       id="calc-form"

@@ -37,6 +37,140 @@ export const ui = {
     'hero.mobileAlt':
       "Otterbond home screen on mobile in dark mode, showing today's Safe to Spend amount, the balance in the account, and the days left until payday",
     'hero.scrollHint': 'See it in action',
+    'hero.waitlistCta': 'iOS and Android: join the list',
+    'hero.trustLine': 'No bank connection, on purpose. You log it, the app does the sums.',
+    'hero.chips': ['Bills and savings covered', 'Shared with your partner'],
+
+    'nav.whoFor': "Who it's for",
+
+    'worlds.heading': 'You log it. Otterbond does the thinking.',
+    'worlds.body':
+      'Type the expense. Every morning the app tells you what you can spend today, until payday, with bills and savings already covered.',
+    'worlds.opens': 'Opens the app',
+    'worlds.answer': 'What answers it',
+    'worlds.plusBadge': 'Plus',
+    'worlds.seeAll': 'See all eight',
+    'worlds.portugal': 'Built for Portugal first, where payday is the 25th and the tax rules are ours.',
+    'worlds.exampleNote':
+      "Personas are illustrative, not real customers. The screens are the app's real layouts with sample numbers, replayed as a demo (the app itself doesn't animate like this).",
+    'worlds.chips': {
+      couple: ['Rui logged the shop', 'Marta sorted it'],
+      spreadsheet: ['Coffee added', 'Sums done'],
+      payday: ['Bills covered', 'Lowest point marked'],
+      saver: ['Get there 22 months earlier', 'About €6 less a day'],
+      freelancer: ['IRS and Social Security', 'Net income at a glance'],
+      privacy: ['No bank connected', 'Code sign-in'],
+      expat: ['14 payments', 'Net salary clear'],
+      closer: ['Month locked', 'Wrap ready'],
+    },
+    'worlds.items': [
+      {
+        id: 'couple',
+        role: 'The couple',
+        name: 'Marta and Rui',
+        quote: '“How much did we spend at the supermarket?” “No idea. You?”',
+        moment:
+          'Rui logs the shop at the till. Marta sorts it into a category later, on the sofa. Next morning they both open the same number.',
+        featureTitle: 'One number you both trust',
+        featureBody:
+          'Two salaries, one rent, one daily Safe to Spend that already counts bills and savings. One of you logs, the other categorizes, and nobody has to ask.',
+        plus: false,
+      },
+      {
+        id: 'spreadsheet',
+        role: 'The spreadsheet person',
+        name: 'Tiago',
+        quote: '“I have tracked every expense by hand for years. On purpose. I just want the sheet in my pocket.”',
+        moment: 'He types the coffee in on the bus. By the time he sits down at his desk, the sums are already done.',
+        featureTitle: 'Your sheet, with the maths done',
+        featureBody:
+          'No bank sync, no formulas to babysit. You type each expense, Otterbond adds it up and tells you what you can spend today. Share it with whoever needs to see it.',
+        plus: false,
+      },
+      {
+        id: 'payday',
+        role: 'The until-payday person',
+        name: 'Beatriz',
+        quote: '“I get paid on the 25th and I am tight by the 15th. Can I have dinner out tonight or not?”',
+        moment:
+          'Friday, 7pm. She opens the app, sees there is room today, and books the table. Rent still lands on the 1st.',
+        featureTitle: 'The daily number, counted to payday',
+        featureBody:
+          'One figure for today, after bills and savings, counted down to your payday. If it is green, go. The full timeline marks the lowest point before it happens.',
+        plus: true,
+      },
+      {
+        id: 'saver',
+        role: 'The saver with a date',
+        name: 'Sofia',
+        quote: '“I do not want someday. I want a month and a year.”',
+        moment: 'She drags the slider by two euros a day and watches her date move a month closer.',
+        featureTitle: 'A fund with a date, and a what-if slider',
+        featureBody:
+          'Set a target date and a monthly amount. Otterbond shows when you will get there and what a few euros more a day would change. Trip, car, emergency fund or house deposit.',
+        plus: true,
+      },
+      {
+        id: 'freelancer',
+        role: 'The freelancer on recibos verdes',
+        name: 'Nuno',
+        quote: '“The invoice says 1,000. How much of it is actually mine?”',
+        moment:
+          'Invoice paid. He runs the recibos verdes calculator, moves the tax share into a fund, and his daily number is already net of it.',
+        featureTitle: 'Know what is yours, then set the rest aside',
+        featureBody:
+          'IVA, IRS and Segurança Social take a share of every invoice. The free calculator shows how much, a savings fund with a monthly deposit holds it, and your daily number already subtracts it. A slow month shows up as a smaller number, not a surprise.',
+        plus: false,
+      },
+      {
+        id: 'privacy',
+        role: 'The privacy person',
+        name: 'Helena',
+        quote: '“I would never give an app my bank login. I will type it in myself.”',
+        moment: "She types today's lunch in ten seconds and closes the app. Nothing asked her to connect an account.",
+        featureTitle: 'You log it, nothing connects',
+        featureBody:
+          'No bank sync, no account linking, no nagging. Sign in with a one-time code by email. No ads, no data-selling.',
+        plus: false,
+      },
+      {
+        id: 'expat',
+        role: 'The expat in Portugal',
+        name: 'Daniel',
+        quote: '“Fourteen salaries? Subsídios? Nobody told me.”',
+        moment:
+          'He runs the net salary calculator before signing, then opens Otterbond on payday to see what is really his to spend.',
+        featureTitle: 'Calculators first, then the app',
+        featureBody:
+          'Free Portugal calculators explain net salary, IRS and the holiday and Christmas subsidies. Then track in any of 10 currencies, so a foreign salary and a euro rent make sense side by side.',
+        plus: false,
+      },
+      {
+        id: 'closer',
+        role: 'The month-closer',
+        name: 'Carolina',
+        quote: '“Closing the month feels like closing a book.”',
+        moment:
+          'On the last day she locks the month. Six cards later she knows what came in, where it went and what she kept.',
+        featureTitle: 'Lock the month, get your wrap',
+        featureBody:
+          'Locking closes the month and starts you clean. The wrap is free; the full month report and history are in Plus.',
+        plus: false,
+      },
+    ],
+
+    'whoPage.title': "Who Otterbond is for: couples, freelancers, savers and more",
+    'whoPage.description':
+      'Eight ways people use Otterbond: couples, spreadsheet people, freelancers on recibos verdes, savers with a date, and more. You log it, the app tells you what to spend today.',
+    'whoPage.heading': "Who it's for",
+
+    'toolsStrip.lead': 'Free tools:',
+    'toolsStrip.items': ['net salary', 'recibos verdes', 'IRS', 'pension', 'FIRE'],
+    'toolsStrip.more': 'and more',
+
+    'cta.heading': 'One app, one number, both of you.',
+    'cta.web': 'Open the web app',
+    'cta.waitlist': 'Get notified for iOS and Android',
 
     'trustStrip.text': 'No ads. No data-selling. No bank-sync creepiness.',
 
@@ -180,16 +314,28 @@ export const ui = {
     ],
 
     'faq.heading': 'Frequently asked questions',
+    'faqPage.title': 'Otterbond FAQ: pricing, privacy, bank connection and more',
+    'faqPage.description':
+      'Answers to the questions people ask before they start: what Safe to Spend is, why there is no bank connection, what is free and what is in Plus, and what happens to your data.',
+    'faqPage.body':
+      'What it costs, what it connects to and what happens to your data: the questions people ask before they start.',
+    'faq.more': 'See every answer',
     'faq.items': [
       {
         question: 'Who is Otterbond for?',
         answer:
-          'Couples and people who live together who want to plan and track money as a team, not just split bills after the fact. It also works well for a group budgeting a shared trip.',
+          'Couples and people who live together who want to plan and track money as a team. It also fits solo budgeters: freelancers on recibos verdes, people counting the days to payday, savers with a date, and anyone who would rather type an expense than connect a bank.',
+        link: { label: 'See who it is for', hash: '/who-its-for' },
       },
       {
         question: 'What is Safe to Spend?',
         answer:
           "It's the one number Otterbond shows you every morning: what you can spend today without touching your bills or your savings. It updates automatically as you log expenses and payday gets closer.",
+      },
+      {
+        question: 'Why is there no bank connection?',
+        answer:
+          "Because you don't need to hand anyone your bank login to know what you can spend. You log expenses yourself, which takes seconds, and Otterbond does the sums. There are no bank credentials to leak, no sync to break, and nothing nagging you to connect an account.",
       },
       {
         question: 'Is Otterbond free?',
@@ -268,6 +414,10 @@ export const ui = {
     'cookieConsent.reject': 'Reject',
 
     'footer.tagline': 'A shared, multi-currency budget and savings tracker.',
+    'footer.productHeading': 'Otterbond',
+    'footer.whoFor': "Who it's for",
+    'footer.pricing': 'Pricing',
+    'footer.faq': 'FAQ',
     'footer.legalHeading': 'Legal',
     'footer.privacy': 'Privacy Policy',
     'footer.terms': 'Terms of Service',
@@ -315,6 +465,140 @@ export const ui = {
     'hero.mobileAlt':
       'Ecrã principal da Otterbond no telemóvel em modo escuro, a mostrar o valor Podes Gastar de hoje, o saldo na conta e os dias que faltam até ao ordenado',
     'hero.scrollHint': 'Vê a app em ação',
+    'hero.waitlistCta': 'iOS e Android: entra na lista',
+    'hero.trustLine': 'Sem ligação ao banco, de propósito. Tu apontas, a app faz as contas.',
+    'hero.chips': ['Contas e poupanças cobertas', 'Partilhado com o teu parceiro'],
+
+    'nav.whoFor': 'Para quem',
+
+    'worlds.heading': 'Tu registas. A Otterbond faz as contas.',
+    'worlds.body':
+      'Escreve a despesa. Todas as manhãs a app diz-te o que podes gastar hoje, até ao ordenado, com as contas e as poupanças já cobertas.',
+    'worlds.opens': 'Abre a app',
+    'worlds.answer': 'O que responde',
+    'worlds.plusBadge': 'Plus',
+    'worlds.seeAll': 'Ver os oito',
+    'worlds.portugal': 'Feita primeiro para Portugal, onde o ordenado cai no dia 25 e as regras fiscais são as nossas.',
+    'worlds.exampleNote':
+      'As personas são ilustrativas, não clientes reais. Os ecrãs são os layouts reais da app com números de amostra, repetidos como demonstração (a app em si não anima assim).',
+    'worlds.chips': {
+      couple: ['O Rui registou as compras', 'A Marta categorizou'],
+      spreadsheet: ['Café adicionado', 'Contas feitas'],
+      payday: ['Contas cobertas', 'Ponto mais baixo marcado'],
+      saver: ['Chegas 22 meses antes', 'Cerca de 6 € a menos por dia'],
+      freelancer: ['IRS e Segurança Social', 'Líquido num relance'],
+      privacy: ['Nenhum banco ligado', 'Entrada com código'],
+      expat: ['14 pagamentos', 'Líquido à vista'],
+      closer: ['Mês fechado', 'Resumo pronto'],
+    },
+    'worlds.items': [
+      {
+        id: 'couple',
+        role: 'O casal',
+        name: 'Marta e Rui',
+        quote: '“Quanto gastámos no supermercado?” “Nem ideia. E tu?”',
+        moment:
+          'O Rui regista as compras na caixa. A Marta categoriza mais tarde, no sofá. Na manhã seguinte, os dois abrem o mesmo número.',
+        featureTitle: 'Um número em que os dois confiam',
+        featureBody:
+          'Dois ordenados, uma renda, um Podes Gastar diário que já conta com as contas e as poupanças. Um regista, o outro categoriza, e ninguém precisa de perguntar.',
+        plus: false,
+      },
+      {
+        id: 'spreadsheet',
+        role: 'Quem vive no Excel',
+        name: 'Tiago',
+        quote: '“Registo cada despesa à mão há anos. De propósito. Só quero a folha de cálculo no bolso.”',
+        moment: 'Escreve o café no autocarro. Quando se senta à secretária, as contas já estão feitas.',
+        featureTitle: 'A tua folha, com as contas feitas',
+        featureBody:
+          'Sem sincronização bancária, sem fórmulas para vigiar. Escreves cada despesa, a Otterbond soma tudo e diz-te o que podes gastar hoje. Partilha com quem precisar de ver.',
+        plus: false,
+      },
+      {
+        id: 'payday',
+        role: 'Quem conta os dias até ao ordenado',
+        name: 'Beatriz',
+        quote: '“Recebo no dia 25 e no dia 15 já estou apertada. Posso jantar fora hoje ou não?”',
+        moment:
+          'Sexta-feira, 19h. Abre a app, vê que hoje há margem e reserva a mesa. A renda continua a sair no dia 1.',
+        featureTitle: 'O número diário, contado até ao ordenado',
+        featureBody:
+          'Um valor para hoje, depois das contas e das poupanças, contado até ao dia do ordenado. Se está verde, avança. A linha do tempo completa marca o ponto mais baixo antes de acontecer.',
+        plus: true,
+      },
+      {
+        id: 'saver',
+        role: 'Quem poupa para uma data',
+        name: 'Sofia',
+        quote: '“Não quero um dia. Quero um mês e um ano.”',
+        moment: 'Arrasta o cursor dois euros por dia e vê a data aproximar-se um mês.',
+        featureTitle: 'Um fundo com data, e um cursor de simulação',
+        featureBody:
+          'Define uma data e um valor mensal. A Otterbond mostra quando lá chegas e o que mudariam uns euros a mais por dia. Viagem, carro, fundo de emergência ou entrada para casa.',
+        plus: true,
+      },
+      {
+        id: 'freelancer',
+        role: 'O freelancer a recibos verdes',
+        name: 'Nuno',
+        quote: '“O recibo diz 1.000. Quanto disto é realmente meu?”',
+        moment:
+          'Recibo pago. Corre o simulador de recibos verdes, passa a parte dos impostos para um fundo, e o número diário já a desconta.',
+        featureTitle: 'Sabe o que é teu e põe o resto de lado',
+        featureBody:
+          'O IVA, o IRS e a Segurança Social ficam com uma parte de cada recibo. O simulador gratuito mostra quanto, um fundo de poupança com depósito mensal guarda-o, e o teu número diário já o desconta. Um mês fraco aparece como um número mais baixo, não como uma surpresa.',
+        plus: false,
+      },
+      {
+        id: 'privacy',
+        role: 'Quem não dá o login do banco',
+        name: 'Helena',
+        quote: '“Nunca daria o login do meu banco a uma app. Escrevo eu.”',
+        moment: 'Escreve o almoço de hoje em dez segundos e fecha a app. Nada lhe pediu para ligar uma conta.',
+        featureTitle: 'Tu registas, nada se liga',
+        featureBody:
+          'Sem sincronização bancária, sem ligar contas, sem insistências. Entras com um código único por email. Sem anúncios, sem venda de dados.',
+        plus: false,
+      },
+      {
+        id: 'expat',
+        role: 'O estrangeiro em Portugal',
+        name: 'Daniel',
+        quote: '“Catorze ordenados? Subsídios? Ninguém me explicou.”',
+        moment:
+          'Corre a calculadora de salário líquido antes de assinar, e abre a Otterbond no dia do ordenado para ver o que é mesmo dele para gastar.',
+        featureTitle: 'Primeiro as calculadoras, depois a app',
+        featureBody:
+          'As calculadoras gratuitas explicam o salário líquido, o IRS e os subsídios de férias e Natal. Depois acompanha em qualquer das 10 moedas, para um ordenado estrangeiro e uma renda em euros fazerem sentido lado a lado.',
+        plus: false,
+      },
+      {
+        id: 'closer',
+        role: 'Quem fecha o mês',
+        name: 'Carolina',
+        quote: '“Fechar o mês sabe a fechar um livro.”',
+        moment:
+          'No último dia, fecha o mês. Seis cartões depois, sabe o que entrou, para onde foi e o que ficou.',
+        featureTitle: 'Fecha o mês, recebe o teu resumo',
+        featureBody:
+          'Fechar o mês arruma-o e deixa-te começar do zero. O resumo é grátis; o relatório completo e o histórico estão no Plus.',
+        plus: false,
+      },
+    ],
+
+    'whoPage.title': 'Para quem é a Otterbond: casais, freelancers, poupadores e mais',
+    'whoPage.description':
+      'Oito formas de usar a Otterbond: casais, quem vive no Excel, freelancers a recibos verdes, poupadores com data, e mais. Tu registas, a app diz-te o que gastar hoje.',
+    'whoPage.heading': 'Para quem é',
+
+    'toolsStrip.lead': 'Ferramentas gratuitas:',
+    'toolsStrip.items': ['salário líquido', 'recibos verdes', 'IRS', 'reforma', 'FIRE'],
+    'toolsStrip.more': 'e mais',
+
+    'cta.heading': 'Uma app, um número, os dois.',
+    'cta.web': 'Abrir a aplicação web',
+    'cta.waitlist': 'Avisa-me do iOS e do Android',
 
     'trustStrip.text': 'Sem anúncios. Sem venda de dados. Sem sincronização bancária invasiva.',
 
@@ -459,16 +743,28 @@ export const ui = {
     ],
 
     'faq.heading': 'Perguntas frequentes',
+    'faqPage.title': 'Perguntas frequentes sobre a Otterbond: preços, privacidade, ligação ao banco e mais',
+    'faqPage.description':
+      'Respostas às perguntas que as pessoas fazem antes de começar: o que é o Podes Gastar, porque não há ligação ao banco, o que é grátis e o que tem o Plus, e o que acontece aos teus dados.',
+    'faqPage.body':
+      'Quanto custa, a que se liga e o que acontece aos teus dados: as perguntas que as pessoas fazem antes de começar.',
+    'faq.more': 'Ver todas as respostas',
     'faq.items': [
       {
         question: 'Para quem é a Otterbond?',
         answer:
-          'Para casais e pessoas que vivem juntas e querem planear e acompanhar o dinheiro em equipa, não apenas dividir contas depois de gastar. Também funciona bem para um grupo a orçamentar uma viagem em conjunto.',
+          'Para casais e pessoas que vivem juntas e querem planear e acompanhar o dinheiro em equipa. Também serve quem orça sozinho: freelancers a recibos verdes, quem conta os dias até ao ordenado, quem poupa para uma data, e quem prefere escrever uma despesa a ligar um banco.',
+        link: { label: 'Ver para quem é', hash: '/pt-pt/para-quem' },
       },
       {
         question: 'O que é o Podes Gastar?',
         answer:
           'É o único número que a Otterbond te mostra todas as manhãs: o que podes gastar hoje sem tocar nas tuas contas ou nas tuas poupanças. Atualiza-se automaticamente à medida que registas despesas e o ordenado se aproxima.',
+      },
+      {
+        question: 'Porque não há ligação ao banco?',
+        answer:
+          'Porque não precisas de dar o login do banco a ninguém para saber o que podes gastar. Registas as despesas tu, o que demora segundos, e a Otterbond faz as contas. Não há credenciais bancárias para vazar, nem sincronização para falhar, nem nada a insistir para ligares uma conta.',
       },
       {
         question: 'A Otterbond é gratuita?',
@@ -547,6 +843,10 @@ export const ui = {
     'cookieConsent.reject': 'Rejeitar',
 
     'footer.tagline': 'Um controlo de orçamento e poupanças partilhado e multi-moeda.',
+    'footer.productHeading': 'Otterbond',
+    'footer.whoFor': 'Para quem',
+    'footer.pricing': 'Preços',
+    'footer.faq': 'FAQ',
     'footer.legalHeading': 'Legal',
     'footer.privacy': 'Política de Privacidade',
     'footer.terms': 'Termos de Serviço',

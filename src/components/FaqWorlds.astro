@@ -1,0 +1,439 @@
+---
+// The dedicated /faq experience: same idea as PersonaWorlds (copy scrolls on the left, a sticky stage on
+// the right swaps a live app screen and an illustrated set), but each panel is one question and its
+// answer. All text is server-rendered plain HTML (indexable) and reads fine with JS off; the questions
+// and answers come from `faq.items` in ui.ts, the same array the homepage accordion and the FAQPage
+// JSON-LD use.
+import Icon from './Icon.astro';
+import PersonaScreen from './PersonaScreen.astro';
+import LiveScreen from './LiveScreen.astro';
+import PersonaScene from './PersonaScene.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+// One entry per question, same order as `faq.items`: icon, wall colour, the app screen and the set.
+const look = [
+  { icon: 'users-three', bg: '--color-mint', screen: 'home', scene: 'couple' },
+  { icon: 'check-circle', bg: '--color-cat-peach-bg', screen: 'payday', scene: 'payday' },
+  { icon: 'shield-check', bg: '--color-cat-pink-bg', screen: 'privacy', scene: 'privacy' },
+  { icon: 'coins', bg: '--color-cat-blue-bg', screen: 'spreadsheet', scene: 'spreadsheet' },
+  { icon: 'sliders-horizontal', bg: '--color-cat-purple-bg', screen: 'saver', scene: 'saver' },
+  { icon: 'users-three', bg: '--color-mint', screen: 'couple', scene: 'couple' },
+  { icon: 'globe', bg: '--color-cat-blue-bg', screen: 'expat', scene: 'expat' },
+  { icon: 'lock-simple', bg: '--color-cat-peach-bg', screen: 'closer', scene: 'closer' },
+  { icon: 'shield-check', bg: '--color-cat-teal-bg', screen: 'freelancer', scene: 'freelancer' },
+  { icon: 'device-mobile', bg: '--color-cat-pink-bg', screen: 'home', scene: 'privacy' },
+] as const;
+
+const items = t('faq.items').map((item, i) => ({
+  ...item,
+  ...look[i % look.length],
+  words: item.question.split(' '),
+}));
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items.map((q) => ({
+    '@type': 'Question',
+    name: q.question,
+    acceptedAnswer: { '@type': 'Answer', text: q.answer },
+  })),
+};
+---
+
+<section data-faq class="faq-worlds relative bg-[var(--color-bg)] pt-16 pb-16 sm:pt-24 sm:pb-24">
+  <script is:inline>
+    document.currentScript.parentElement.classList.add('faq-js');
+  </script>
+
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="faq-grid">
+      <div class="faq-panels">
+        <div class="faq-intro max-w-[38ch]" data-reveal>
+          <h1 class="text-4xl leading-[1.1] font-medium text-[var(--color-ink)] sm:text-5xl">{t('faq.heading')}</h1>
+          <p class="mt-5 max-w-[46ch] text-lg leading-relaxed text-[var(--color-ink-soft)]">{t('faqPage.body')}</p>
+        </div>
+
+        {
+          items.map((q, i) => (
+            <article
+              id={`q${i + 1}`}
+              data-faq-panel
+              class:list={['faq-panel', { 'is-active': i === 0 }]}
+              style={`--w: var(${q.bg});`}
+            >
+              <div class="inline-stage" data-inline-stage>
+                <PersonaScene kind={q.scene} uid="i" />
+                <div class="inline-phone">
+                  <PersonaScreen>
+                    <LiveScreen kind={q.screen} />
+                  </PersonaScreen>
+                </div>
+              </div>
+
+              <div class="copy">
+                <span class="q-ico"><Icon name={q.icon} class="h-5 w-5" /></span>
+                <h2 class="q-title mt-5 text-3xl leading-[1.15] font-medium text-[var(--color-ink)] sm:text-4xl">
+                  {q.words.map((word, w) => (
+                    <span class="w" style={`--i:${w}`}>{word} </span>
+                  ))}
+                </h2>
+                <p class="q-answer mt-5 max-w-[46ch] text-lg leading-relaxed text-[var(--color-ink-soft)]">{q.answer}</p>
+                {'link' in q && q.link && (
+                  <a
+                    href={q.link.hash}
+                    class="q-link mt-5 inline-flex items-center gap-2 rounded-full border border-[var(--color-mint)] px-5 py-2.5 text-[15px] font-medium text-[var(--color-mint)] transition-transform active:scale-[0.98]"
+                  >
+                    {q.link.label}
+                    <Icon name="arrow-right" class="h-4 w-4" />
+                  </a>
+                )}
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="faq-stage">
+        <div class="stage-card" aria-hidden="true">
+          {
+            items.map((q, i) => (
+              <div
+                data-faq-item
+                class:list={['stage-layer', { 'is-active': i === 0 }]}
+                style={`background: var(${q.bg});`}
+              >
+                <PersonaScene kind={q.scene} uid="s" />
+              </div>
+            ))
+          }
+          {
+            items.map((q, i) => (
+              <div data-faq-item data-stage-screen class:list={['stage-screen', { 'is-active': i === 0 }]}>
+                <div class="tilt">
+                  <PersonaScreen>
+                    <LiveScreen kind={q.screen} />
+                  </PersonaScreen>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+        <nav class="rail" aria-label={t('faq.heading')}>
+          {
+            items.map((q, i) => (
+              <a href={`#q${i + 1}`} data-rail aria-label={q.question} class:list={['rail-item', { 'is-active': i === 0 }]} />
+            ))
+          }
+        </nav>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+<script>
+  import { countUp } from '../lib/countUp';
+  import { attachTilt } from '../lib/tilt';
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-faq]').forEach((root) => {
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-faq-panel]'));
+    const items = Array.from(root.querySelectorAll<HTMLElement>('[data-faq-item]'));
+    const screens = Array.from(root.querySelectorAll<HTMLElement>('[data-stage-screen]'));
+    const rails = Array.from(root.querySelectorAll<HTMLElement>('[data-rail]'));
+    const inlineStages = Array.from(root.querySelectorAll<HTMLElement>('[data-inline-stage]'));
+    const stage = root.querySelector<HTMLElement>('.faq-stage');
+    const card = root.querySelector<HTMLElement>('.stage-card');
+    if (!panels.length || !('IntersectionObserver' in window)) return;
+
+    let current = 0;
+    let stageVisible = false;
+
+    const setLive = (index: number | null) => {
+      screens.forEach((screen, i) => screen.classList.toggle('is-live', i === index));
+      if (index !== null && !reduce) countUp(screens[index]);
+    };
+    const activate = (index: number) => {
+      if (index === current) return;
+      current = index;
+      panels.forEach((panel, i) => panel.classList.toggle('is-active', i === index));
+      items.forEach((item, i) => item.classList.toggle('is-active', i % panels.length === index));
+      rails.forEach((rail, i) => rail.classList.toggle('is-active', i === index));
+      if (stageVisible) setLive(index);
+    };
+
+    const panelObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) activate(panels.indexOf(entry.target as HTMLElement));
+        }
+      },
+      { rootMargin: '-50% 0px -50% 0px' },
+    );
+    panels.forEach((panel) => panelObserver.observe(panel));
+
+    if (stage) {
+      new IntersectionObserver(
+        ([entry]) => {
+          stageVisible = entry.isIntersecting;
+          setLive(stageVisible ? current : null);
+        },
+        { threshold: 0.35 },
+      ).observe(stage);
+    }
+
+    const inlineObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const el = entry.target as HTMLElement;
+          el.classList.toggle('is-live', entry.isIntersecting);
+          if (entry.isIntersecting && !reduce) countUp(el);
+        }
+      },
+      { threshold: 0.4 },
+    );
+    inlineStages.forEach((el) => inlineObserver.observe(el));
+
+    if (card) attachTilt(card);
+  });
+</script>
+
+<style>
+  .faq-panel {
+    position: relative;
+    isolation: isolate;
+    padding-block: 2.5rem;
+  }
+  .faq-intro {
+    padding-bottom: 2rem;
+  }
+  .inline-stage {
+    position: relative;
+    overflow: hidden;
+    height: 520px;
+    margin-bottom: 2rem;
+    border-radius: var(--radius-stage);
+    background: var(--w);
+  }
+  .inline-phone {
+    position: relative;
+    z-index: 1;
+    width: 170px;
+    margin: 36px 0 0 14px;
+  }
+  .q-ico {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--w);
+    color: var(--color-on-surface);
+  }
+  .q-link {
+    text-decoration: none;
+  }
+  .faq-stage {
+    display: none;
+  }
+  .w {
+    display: inline-block;
+    white-space: pre;
+  }
+
+  /* JS off on desktop: copy left, its own set + screen right */
+  @media (min-width: 1024px) {
+    .faq-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+      align-items: center;
+      column-gap: 4rem;
+    }
+    .inline-stage {
+      order: 2;
+      margin-bottom: 0;
+      height: 560px;
+    }
+    .inline-phone {
+      width: 230px;
+      margin: 40px 0 0 24px;
+    }
+  }
+
+  /* Desktop with JS: sticky stage, one question in focus at a time */
+  @media (min-width: 1024px) {
+    .faq-js .faq-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+      column-gap: 4rem;
+    }
+    .faq-js .faq-panel {
+      display: flex;
+      align-items: center;
+      min-height: 80dvh;
+      padding-block: 3rem;
+    }
+    .faq-js .inline-stage {
+      display: none;
+    }
+    .faq-js .copy {
+      opacity: 0.28;
+      transform: translateX(-10px);
+      transition:
+        opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .faq-js .faq-panel.is-active .copy {
+      opacity: 1;
+      transform: none;
+    }
+    .faq-js .faq-panel::before {
+      content: '';
+      position: absolute;
+      inset: -6% -24% -6% -30%;
+      z-index: -1;
+      background: radial-gradient(closest-side, color-mix(in srgb, var(--w) 20%, transparent), transparent);
+      opacity: 0;
+      transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+    .faq-js .faq-panel.is-active::before {
+      opacity: 1;
+    }
+    .faq-js .faq-stage {
+      display: block;
+      position: sticky;
+      top: 5rem;
+      align-self: start;
+      height: calc(100dvh - 7rem);
+      max-height: 820px;
+    }
+  }
+  @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+    .faq-js .faq-panel.is-active .w {
+      animation: word-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: calc(var(--i) * 45ms + 0.1s);
+    }
+    .faq-js .faq-panel.is-active .q-ico {
+      animation: pill-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+    .faq-js .faq-panel.is-active .q-answer {
+      animation: beat-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+    }
+    .faq-js .faq-panel.is-active .q-link {
+      animation: beat-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.75s both;
+    }
+  }
+  @keyframes word-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.55em);
+    }
+  }
+  @keyframes pill-in {
+    from {
+      opacity: 0;
+      transform: scale(0.6) rotate(-20deg);
+    }
+  }
+  @keyframes beat-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+
+  /* Stage (same look as the features stage) */
+  .stage-card {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 40px;
+    isolation: isolate;
+    --rx: 0deg;
+    --ry: 0deg;
+  }
+  .stage-layer {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .stage-layer.is-active {
+    opacity: 1;
+  }
+  .stage-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 6%;
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+  .stage-screen.is-active {
+    opacity: 1;
+    transform: none;
+  }
+  .tilt {
+    height: 74%;
+    aspect-ratio: 1170 / 2532;
+    transform: perspective(1100px) rotateX(var(--rx)) rotateY(var(--ry));
+    transition: transform 0.25s ease-out;
+  }
+  .tilt :global(.screen-phone) {
+    width: 100%;
+    height: 100%;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .stage-screen.is-active .tilt {
+      animation: faq-bob 7s ease-in-out infinite;
+    }
+  }
+  @keyframes faq-bob {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 -10px;
+    }
+  }
+  .rail {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    z-index: 4;
+    display: flex;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: rgb(26 26 26 / 0.14);
+    transform: translateX(-50%);
+  }
+  .rail-item {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: rgb(26 26 26 / 0.35);
+    transition:
+      width 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 0.4s;
+  }
+  .rail-item.is-active {
+    width: 34px;
+    background: rgb(26 26 26 / 0.8);
+  }
+</style>

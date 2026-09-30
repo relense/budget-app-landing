@@ -2,6 +2,7 @@
 // English counterpart of /ferramentas/index.astro -- see that file's own comment for the shared
 // rationale. Standalone, English-only page (its PT equivalent lives at the unrelated
 // /ferramentas), same `lang`/`noAlternate` reasoning as every other page in this directory.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -155,14 +156,16 @@ const groups = [
       same numbers Otterbond uses internally.
     </p>
 
+    <ToolBanner scene="hub" tone="--color-mint" />
+
     {
       groups.map((group) => (
         <section class="mt-12">
-          <h2 class="text-xl font-medium text-[var(--color-ink)]">{group.heading}</h2>
+          <h2 class="text-xl font-medium text-[var(--color-ink)]" data-reveal>{group.heading}</h2>
           <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
-            {group.tools.map((tool) => (
-              <a href={tool.href} class="block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6">
-                <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]">
+            {group.tools.map((tool, i) => (
+              <a href={tool.href} class="tool-card spot block rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-6" data-reveal style={`transition-delay:${(i % 2) * 70}ms`}>
+                <div class="tool-ico flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-mint)] text-[var(--color-mint-deep)]" data-ico={tool.icon}>
                   <Icon name={tool.icon} class="h-5 w-5" />
                 </div>
                 <h3 class="mt-4 text-lg font-medium text-[var(--color-ink)]">{tool.title}</h3>

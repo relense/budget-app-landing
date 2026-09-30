@@ -50,7 +50,57 @@ npm run preview   # serve the production build locally
 
 ## Structure
 
-- `src/components/` — one section per file, assembled in `src/pages/index.astro`
+- `src/components/` — one section per file, assembled in `src/pages/index.astro`. The homepage order
+  is `Hero` → `PersonaWorlds` (first 5 personas, `id="features"`) → `HowItWorks` → `Pricing` →
+  `FreeToolsStrip` → `Faq` → `ClosingCta` (`id="get-the-app"`) → `Waitlist`. `TrustStrip`,
+  `GetTheApp`, `Problem`, `FeatureGrid`, `ScreenshotGallery`, `FreeTools` and `Community` are no
+  longer rendered on the homepage but the files are kept.
+- `src/components/PersonaWorlds.astro` — scrolling persona section. Copy lives in `ui.ts`
+  (`worlds.items`, `worlds.chips`, `screens.*`, both locales); pastel/icon per persona live in the
+  component. Desktop: a sticky stage cross-fades colour + a live phone as each panel crosses the
+  viewport middle (IntersectionObserver), floating cards and the phone tilt follow the pointer
+  (`src/lib/tilt.ts`), quotes reveal word by word, a progress rail links the personas. Below `lg`
+  or with JS off each panel carries its own inline stage (each phone shows its final frame). Also
+  rendered in full (8) on `/who-its-for` and `/pt-pt/para-quem` (Portuguese slug on purpose; pair
+  mapped in `getAlternatePath`). Persona names, quotes and all screen numbers are illustrative
+  (the page says so), written by Claude, not real customers.
+- `src/components/LiveScreen.astro` — the phone screens are **code-drawn replicas of the real mobile
+  app's screens** (Home, Overview, Safe to Spend, Fund details, both tax calculators, the Add Expense
+  keypad, the Month Wrap story), not screenshots and not stylised interpretations. Source of truth is
+  `../budget-app-mobile` (theme/colors.ts `darkColors`, typography.ts, the screen/component files, and
+  the en / pt-PT i18n resources): same layout in the app's 390pt units (`--u` = 1pt), same colours,
+  Fredoka Regular only (nav labels Light), the app's own strings in both languages. **Do not add UI the
+  app doesn't have**; when the app changes, update the mock from the app's code, not from memory.
+  Icons are the app's own MaterialCommunityIcons, subset into `src/assets/fonts/mdi-subset.woff2` +
+  `src/styles/mdi.css` (regenerate with `pyftsubset` from the app's `MaterialCommunityIcons.ttf` when a
+  mock needs a new glyph). Numbers are sample data (some come from the app's own screenshots or the
+  calculators' real output). The app itself barely animates, so each animation replays a user action
+  (typing on the keypad, tapping a bill group, dragging the what-if slider, tapping through the wrap) or
+  the data change it causes; CSS keyframes, only under an `.is-live` ancestor (without it a screen
+  shows its final frame: the JS-off / reduced-motion state). `src/lib/countUp.ts` counts
+  `[data-count-to]` numbers up. The root is `inert` + `aria-hidden` (decorative). The wrap story is
+  tap-navigated in the app; here it auto-advances with a tap indicator, and the page says so.
+- `src/components/PersonaScene.astro` — the flat, faceless vector "set" behind the phone in each persona's
+  stage card (a bus, a wall calendar, a jar filling with coins, a desk, a café, a Lisbon tram, a night
+  window). Drawn in code on a 560x780 canvas; colours are white/ink overlays on the persona's own pastel
+  so each set inherits its palette; the phone sits left and the person right. Ambient motion (steam,
+  scrolling skyline, coins, crossed-off days) runs only on the active persona and honours reduced
+  motion. `uid` keeps SVG ids unique because each scene renders twice (desktop stage + mobile card).
+- **Home page scroll sequence.** `PersonaWorlds` with `withHero` makes the hero the first panel of the same
+  sticky stage (`<Hero slot="hero" />` supplies only the copy; the hero set is `HeroScene.astro`), so the
+  card morphs into the first persona exactly like persona to persona, with no second card. Panels carry
+  `data-stage` (stage index); the intro heading is its own observed panel mapped to persona 0.
+- `src/components/FaqWorlds.astro` — `/faq` and `/pt-pt/faq`: the same sticky-stage treatment, one panel per
+  question in `faq.items` (plain server-rendered text, plus a FAQPage JSON-LD block), each paired with a
+  live app screen and an illustrated set. `HowItWorks.astro` has four looping mini-demos;
+  `CtaScene.astro` puts waving figures in the closing card (figure rig shared via `src/lib/figures.ts`).
+- `src/components/ToolBanner.astro` — the illustrated header under the intro on every tool page (all 18
+  calculators in EN and PT, plus both hubs): a themed flat set with a person doing something (payslip,
+  tax stamp, growing plant, house, car...). `scene` / `variant` / `tone` are set per page. The figure
+  and prop animations live in `src/styles/figures.css` (shared by every illustrated set). It plays
+  while on screen and the person cheers when `lib/liveNumbers.ts` dispatches `tool:result` (a
+  calculator's numbers changed). A new calculator page just needs a `<ToolBanner ... />` after its intro.
+- Tool hub cards (`/tools`, `/ferramentas`): each icon circle takes the tone of its calculator's banner and a small looping motion keyed by icon name (`data-ico`), all in `global.css` ("Tool hub cards"). Add a new tool's icon there too.
 - `src/components/Icon.astro` — inline SVGs, path data copied verbatim from
   `@phosphor-icons/core`'s regular set (never hand-drawn; add new icons the same way)
 - `src/layouts/BaseLayout.astro` — `<head>`, SEO/OG meta, the reveal-on-scroll script

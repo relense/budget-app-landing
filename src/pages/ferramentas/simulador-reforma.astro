@@ -7,6 +7,7 @@
 // data (EU Ageing Report editions, the retirement-age formula) isn't annually re-versioned the
 // same way official tax tables are, so a "2026" in the title would misleadingly imply a freshness
 // this data doesn't have. See src/lib/calculators/pensionCalculator.ts for the data sources.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -62,6 +63,8 @@ const faqJsonLd = {
       poupar por mês para fechar essa diferença, com base nas projeções oficiais da União
       Europeia.
     </p>
+
+    <ToolBanner scene="garden" variant="rocker" tone="--color-cat-purple-bg" />
     <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
       Esta é uma projeção a partir de dados públicos, não uma previsão pessoal nem aconselhamento
       financeiro.

@@ -5,6 +5,7 @@
 // page's URL doesn't carry the `/pt-pt/` prefix `getLangFromUrl` looks for, and there's no true
 // bilingual counterpart at a mirrored path (the English version lives at the unrelated
 // /tools/compound-interest, not /pt-pt/ferramentas/juros-compostos).
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -64,6 +65,8 @@ const faqJsonLd = {
       Insere o capital inicial, o que consegues poupar por mês e a taxa de juro esperada. O
       resultado atualiza-se automaticamente, sem criares conta.
     </p>
+
+    <ToolBanner scene="garden" variant="grow" tone="--color-mint" />
 
     <form
       id="calc-form"

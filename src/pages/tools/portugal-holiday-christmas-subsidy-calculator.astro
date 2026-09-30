@@ -3,6 +3,7 @@
 // own comment for the shared "front door, not a feature of the app" rationale and the
 // `lang`/`noAlternate` reasoning. Reuses salaryCalculator.ts's `calculateSalary` directly, same as
 // the PT page -- see that page's own comment for why.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -63,6 +64,8 @@ const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Se
       See exactly what lands in your account each month -- paid as a lump sum in June and
       November, or spread by duodécimos across all 12 months.
     </p>
+
+    <ToolBanner scene="desk" variant="suitcase" tone="--color-cat-peach-bg" />
 
     <form
       id="calc-form"

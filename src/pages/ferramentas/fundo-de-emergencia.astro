@@ -8,6 +8,7 @@
 //
 // This is the most direct bridge of the 3 new tools: the output maps one-to-one onto the app's
 // own Emergency Fund goal type (target amount, monthly target, target date).
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -67,6 +68,8 @@ const softwareApplicationJsonLd = {
       tens guardado, e sabe o valor alvo, quanto falta, e em quantos meses lá chegas ao teu
       ritmo.
     </p>
+
+    <ToolBanner scene="garden" variant="umbrella" tone="--color-cat-blue-bg" />
 
     <form
       id="calc-form"
