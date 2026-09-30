@@ -6,6 +6,7 @@
 // Deliberately stays a generic amortisation calculator, not advice on whether to amortise --
 // see src/lib/calculators/mortgagePrepayment.ts's own comment for the fee-cap sourcing (2026's
 // figures, after the variable-rate fee exemption expired 2025-12-31).
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -64,6 +65,8 @@ const softwareApplicationJsonLd = {
       Introduz o que falta pagar do teu crédito e quanto queres amortizar, e vê quanto poupas em
       juros -- e em quantos meses acabas mais cedo, ou quanto desce a prestação.
     </p>
+
+    <ToolBanner scene="home" variant="keys" tone="--color-mint" />
     <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
       Calculadora genérica de amortização, não é aconselhamento sobre se deves ou não amortizar.
     </p>

@@ -4,6 +4,7 @@
 // rationale and the `lang`/`noAlternate` reasoning. Framed as a *Portugal* calculator since the
 // fee caps are Portugal-specific (Banco de Portugal), targeting English-speaking homeowners in
 // Portugal, same as portugal-net-salary-calculator.astro's own framing.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -62,6 +63,8 @@ const softwareApplicationJsonLd = {
       Enter what's left on your mortgage and how much you want to prepay, and see how much you
       save in interest -- and how many months sooner you finish, or how much the instalment drops.
     </p>
+
+    <ToolBanner scene="home" variant="keys" tone="--color-mint" />
     <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
       A generic prepayment calculator, not advice on whether you should prepay or not.
     </p>

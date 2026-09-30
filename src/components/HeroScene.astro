@@ -1,0 +1,88 @@
+---
+// The hero's set: a bright kitchen in the morning, a person waving you in. Same flat, faceless style
+// as PersonaScene (and the same person rig, so the wave and the breathing come from the shared CSS
+// loops). 520x580 canvas; the phone sits on the left, the person on the right.
+const K = {
+  ink: '#1A1A1A',
+  skin: '#C98E62',
+  hair: '#2B2320',
+  top: '#A24F63',
+  char: '#3A3A3A',
+  green: '#234D2E',
+  peach: '#B97A4C',
+  yellow: '#F5E27A',
+  paper: '#F2F2F2',
+};
+const dark = (a: number) => `rgba(26,26,26,${a})`;
+interface Props {
+  uid?: string;
+}
+const { uid = 's' } = Astro.props;
+const light = (a: number) => `rgba(255,255,255,${a})`;
+---
+
+<svg class="psc hero-psc" viewBox="-20 -100 560 780" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <rect x="-20" y="474" width="560" height="220" fill={dark(0.13)} />
+  <rect x="-20" y="466" width="560" height="12" rx="4" fill={dark(0.1)} />
+
+  {/* window: the sun comes up over the city */}
+  <clipPath id={`heroWin-${uid}`}><rect x="318" y="40" width="170" height="190" rx="12" /></clipPath>
+  <rect x="308" y="30" width="190" height="210" rx="16" fill={light(0.6)} />
+  <g clip-path={`url(#heroWin-${uid})`}>
+    <rect x="318" y="40" width="170" height="190" fill={light(0.85)} />
+    <circle class="sunrise" cx="402" cy="196" r="34" fill={K.yellow} />
+    <g fill={dark(0.12)}>
+      <rect x="326" y="170" width="34" height="60" /><rect x="364" y="150" width="30" height="80" /><rect x="398" y="176" width="40" height="54" /><rect x="442" y="158" width="46" height="72" />
+    </g>
+  </g>
+  <path d="M403 40V230M318 135H488" stroke={light(0.85)} stroke-width="7" />
+
+  {/* shelf with plant and a clock */}
+  <rect x="330" y="290" width="150" height="9" rx="4" fill={dark(0.25)} />
+  <g class="sway"><path d="M356 290q-14-28-2-46M356 290q6-32 24-38M356 290q-2-36 6-52" fill="none" stroke={K.green} stroke-width="7" stroke-linecap="round" /></g>
+  <rect x="338" y="274" width="36" height="17" rx="4" fill={K.peach} />
+
+  {/* the person, waving */}
+  <g
+    set:html={`<g transform="translate(408 350) scale(1.06)"><g class="pp pose-wave act-nod" style="--ph:0s">
+      <path class="p-torso" d="M-46 12 Q-46 -6 -28 -8 L28 -8 Q46 -6 46 12 L44 100 Q44 110 34 110 L-34 110 Q-44 110 -44 100Z" fill="${K.top}"/>
+      <rect x="-8" y="-30" width="16" height="26" rx="6" fill="${K.skin}"/><rect x="-8" y="-30" width="16" height="10" rx="4" fill="rgba(26,26,26,0.16)"/>
+      <g class="p-head" style="transform-origin:0px -26px"><circle cx="0" cy="-52" r="27" fill="${K.skin}"/>
+        <g fill="${K.hair}"><circle cx="-20" cy="-70" r="14"/><circle cx="0" cy="-80" r="15"/><circle cx="20" cy="-70" r="14"/><circle cx="-27" cy="-54" r="10"/><circle cx="27" cy="-54" r="10"/></g></g>
+      <path d="M-40 6 Q-58 56 -30 88" fill="none" stroke="${K.top}" stroke-width="19" stroke-linecap="round"/><circle cx="-26" cy="92" r="9" fill="${K.skin}"/>
+      <g class="pa pa-r" style="transform-origin:40px 6px"><path d="M40 6 Q70 10 66 -34" fill="none" stroke="${K.top}" stroke-width="19" stroke-linecap="round"/><circle cx="66" cy="-42" r="9" fill="${K.skin}"/></g>
+    </g></g>`}
+  />
+
+  {/* counter, mug, toast */}
+  <rect x="290" y="440" width="260" height="260" rx="0" fill={dark(0.28)} />
+  <rect x="284" y="432" width="270" height="16" rx="8" fill={dark(0.42)} />
+  <rect x="330" y="404" width="28" height="30" rx="7" fill={K.paper} /><path d="M358 412q12 2 0 16" fill="none" stroke={K.paper} stroke-width="5" />
+  <g class="steam"><path d="M344 396q-8-12 0-22t0-20" fill="none" stroke={light(0.75)} stroke-width="4" stroke-linecap="round" /></g>
+  <ellipse cx="450" cy="428" rx="34" ry="8" fill={dark(0.18)} /><circle cx="440" cy="420" r="13" fill={light(0.9)} /><circle cx="462" cy="422" r="11" fill={K.yellow} />
+</svg>
+
+<style is:global>
+  .hero-psc {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .stage-layer.is-active .sunrise,
+    .inline-stage.is-live .sunrise {
+      animation: psc-sunrise 9s ease-in-out infinite;
+    }
+  }
+  @keyframes psc-sunrise {
+    0%,
+    100% {
+      transform: translateY(36px);
+    }
+    50% {
+      transform: translateY(-40px);
+    }
+  }
+</style>

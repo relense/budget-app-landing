@@ -3,6 +3,7 @@
 // own comment for the shared "front door, not a feature of the app" rationale and the
 // `lang`/`noAlternate` reasoning. See unemploymentBenefit.ts's own comment for the full sourcing,
 // including the "-10% after 180 days" correction (repealed in 2018, not modeled).
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -61,6 +62,8 @@ const softwareApplicationJsonLd = {
       Enter your average salary, age, and contribution history, and see an estimate of how much
       you could receive per month, and for how many days.
     </p>
+
+    <ToolBanner scene="desk" variant="board" tone="--color-mint" />
 
     <form
       id="calc-form"
@@ -257,8 +260,7 @@ const softwareApplicationJsonLd = {
         You know the number. Now see how your month looks.
       </h2>
       <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-        Otterbond shows you how much you can spend per day with this income, no surprises
-        halfway through the month.
+        Log this benefit as your income, and Otterbond shows how much you can spend per day until your next payday.
       </p>
       <a
         id="bridge-cta"

@@ -5,6 +5,7 @@
 // `rateTier` select values stay the Portuguese literals ('normal'/'intermedia'/'reduzida') since
 // those are the VatRateTier type's own values in the shared calculator module -- only the visible
 // labels are translated.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -63,6 +64,8 @@ const softwareApplicationJsonLd = {
       Add or extract VAT from an amount, with 2026's rates for mainland Portugal, Açores and
       Madeira.
     </p>
+
+    <ToolBanner scene="desk" variant="percent" tone="--color-mint" />
 
     <form
       id="calc-form"
@@ -223,7 +226,7 @@ const softwareApplicationJsonLd = {
         You know the VAT numbers. Now organise the rest.
       </h2>
       <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-        Otterbond helps self-employed workers separate what's for taxes from what's for spending.
+        Self-employed? Create a savings fund for taxes in Otterbond, and your daily spending number leaves that money out.
       </p>
       <a
         id="bridge-cta"

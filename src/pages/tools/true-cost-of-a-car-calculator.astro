@@ -3,6 +3,7 @@
 // comment for the shared "front door, not a feature of the app" rationale and the
 // `lang`/`noAlternate` reasoning. See src/lib/calculators/trueCarCost.ts's own comment for why
 // IUC is a direct input rather than derived from its own bracket tables.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -61,6 +62,8 @@ const softwareApplicationJsonLd = {
       Purchase price, insurance, fuel, IUC, maintenance and financing, all added up into a single
       monthly number -- including depreciation, the cost nobody sees on a bill.
     </p>
+
+    <ToolBanner scene="car" variant="" tone="--color-cat-blue-bg" />
 
     <form
       id="calc-form"

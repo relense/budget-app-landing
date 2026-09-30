@@ -1,0 +1,22 @@
+---
+// Portuguese counterpart of /who-its-for. The slug is Portuguese on purpose; getAlternatePath maps the pair.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NavBar from '../../components/NavBar.astro';
+import PersonaWorlds from '../../components/PersonaWorlds.astro';
+import ClosingCta from '../../components/ClosingCta.astro';
+import Waitlist from '../../components/Waitlist.astro';
+import Footer from '../../components/Footer.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+---
+
+<BaseLayout title={t('whoPage.title')} description={t('whoPage.description')}>
+  <NavBar />
+  <main>
+    <PersonaWorlds headingLevel="h1" />
+    <ClosingCta />
+    <Waitlist />
+  </main>
+  <Footer />
+</BaseLayout>

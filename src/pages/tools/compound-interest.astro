@@ -2,6 +2,7 @@
 // English counterpart of /ferramentas/juros-compostos.astro -- see that file's own comment for
 // the shared rationale. Deliberately NOT at a /pt-pt/-mirrored path (its Portuguese equivalent
 // lives at the unrelated /ferramentas/juros-compostos), so BaseLayout gets `noAlternate` too.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -61,6 +62,8 @@ const faqJsonLd = {
       Enter your starting balance, what you can save each month, and the interest rate you
       expect. The result updates automatically, no account needed.
     </p>
+
+    <ToolBanner scene="garden" variant="grow" tone="--color-mint" />
 
     <form
       id="calc-form"
@@ -235,8 +238,7 @@ const faqJsonLd = {
         You know what your savings could be worth. Do you know what you can spend today?
       </h2>
       <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-        Otterbond tells you, every morning, what's safe to spend today, after it's already set
-        aside what you need for your bills and your savings funds.
+        Open Otterbond and it shows what's safe to spend today, after the bills still due and the savings you've planned for this cycle.
       </p>
       <a
         href="/#get-the-app"

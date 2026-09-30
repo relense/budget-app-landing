@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import './mdi.css';
+@import './figures.css';
 
 /* Self-hosted (not Google Fonts, per this repo's own performance/SEO rules): a variable-weight
    (300-700), width-pinned, Latin-plus-currency-symbols subset built from the same source Google
@@ -70,6 +72,8 @@
   --color-cat-teal-icon: #327e71;
 
   --radius-card: 20px;
+  /* Large pastel stages (hero, persona worlds): the card radius scaled up, one rule for the page. */
+  --radius-stage: 32px;
   --radius-pill: 999px;
 
   --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -148,3 +152,284 @@ body {
   color: var(--color-ink);
   font-weight: 500;
 }
+
+/* Floating info cards that orbit a phone (hero, persona worlds). Position is set by the parent;
+   --w is the parent's pastel, --px/--py are set by lib/tilt.ts for pointer parallax. */
+.chip {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 62%;
+  padding: 8px 13px 8px 8px;
+  border-radius: 18px;
+  background: rgb(255 255 255 / 0.95);
+  color: var(--color-on-surface);
+  font-size: 12.5px;
+  line-height: 1.2;
+  font-weight: 500;
+  box-shadow: 0 16px 34px -12px rgb(0 0 0 / 0.4);
+  translate: calc(var(--px, 0) * -22px) calc(var(--py, 0) * -16px);
+}
+.chip .ci {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--w, var(--color-mint));
+  color: var(--color-on-surface);
+}
+.chip .ci svg {
+  width: 15px;
+  height: 15px;
+}
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes chip-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+/* Pointer spotlight (lib/spotlight.ts): a soft light that follows the cursor over a card. */
+.spot {
+  position: relative;
+  isolation: isolate;
+}
+.spot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 0%), rgb(207 243 218 / 0.13), transparent 62%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.spot:hover::before {
+  opacity: 1;
+}
+.spot.spot-light::before {
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 0%), rgb(255 255 255 / 0.55), transparent 62%);
+}
+
+/* Tool cards (hub pages) */
+.tool-card {
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.3s ease;
+}
+.tool-card:hover {
+  transform: translateY(-5px);
+  background-color: #444;
+}
+.tool-card:active {
+  transform: translateY(-2px) scale(0.99);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tool-card:hover .tool-ico {
+    animation: ico-wiggle 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes ico-wiggle {
+    0% {
+      transform: rotate(0) scale(1);
+    }
+    30% {
+      transform: rotate(-14deg) scale(1.14);
+    }
+    60% {
+      transform: rotate(8deg) scale(1.08);
+    }
+    100% {
+      transform: rotate(0) scale(1);
+    }
+  }
+
+  /* Tool pages: title, form and results arrive in sequence instead of all at once. */
+  main > h1,
+  main > p:first-of-type {
+    animation: page-rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  main > p:first-of-type {
+    animation-delay: 0.08s;
+  }
+  main > form {
+    animation: page-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+  }
+  main > section#results {
+    animation: page-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
+  }
+  @keyframes page-rise {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+  }
+
+  /* Result card: a light sweep each time the numbers change (lib/liveNumbers.ts). */
+  #results {
+    position: relative;
+    overflow: hidden;
+  }
+  #results::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.55) 50%, transparent 65%);
+    transform: translateX(-130%);
+    pointer-events: none;
+  }
+  #results.is-sheen::after {
+    animation: result-sheen 0.9s cubic-bezier(0.45, 0, 0.2, 1);
+  }
+  @keyframes result-sheen {
+    to {
+      transform: translateX(130%);
+    }
+  }
+
+  /* FAQ answers ease open */
+  details[open] > p,
+  details[open] > a {
+    animation: faq-open 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes faq-open {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+}
+
+/* Inputs get a mint focus glow instead of the browser default. */
+main input:focus-visible,
+main select:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(207 243 218 / 0.5);
+}
+main input,
+main select {
+  transition: box-shadow 0.25s ease;
+}
+
+/* Tool hub cards: each icon gets the tone of its calculator's banner and a small motion that says what it is. */
+.tool-ico[data-ico='piggy-bank'] { background-color: var(--color-mint); color: var(--color-mint-deep); }
+.tool-ico[data-ico='house-line'] { background-color: var(--color-mint); color: var(--color-mint-deep); }
+.tool-ico[data-ico='percent'] { background-color: var(--color-mint); color: var(--color-mint-deep); }
+.tool-ico[data-ico='umbrella'] { background-color: var(--color-mint); color: var(--color-mint-deep); }
+.tool-ico[data-ico='fire'] { background-color: var(--color-cat-peach-bg); color: var(--color-cat-peach-icon); }
+.tool-ico[data-ico='stamp'] { background-color: var(--color-cat-peach-bg); color: var(--color-cat-peach-icon); }
+.tool-ico[data-ico='calendar-blank'] { background-color: var(--color-cat-peach-bg); color: var(--color-cat-peach-icon); }
+.tool-ico[data-ico='hourglass'] { background-color: var(--color-cat-purple-bg); color: var(--color-cat-purple-icon); }
+.tool-ico[data-ico='receipt'] { background-color: var(--color-cat-purple-bg); color: var(--color-cat-purple-icon); }
+.tool-ico[data-ico='moon-stars'] { background-color: var(--color-cat-purple-bg); color: var(--color-cat-purple-icon); }
+.tool-ico[data-ico='shield-check'] { background-color: var(--color-cat-blue-bg); color: var(--color-cat-blue-icon); }
+.tool-ico[data-ico='car-simple'] { background-color: var(--color-cat-blue-bg); color: var(--color-cat-blue-icon); }
+.tool-ico[data-ico='check-circle'] { background-color: var(--color-cat-blue-bg); color: var(--color-cat-blue-icon); }
+.tool-ico[data-ico='chart-pie'] { background-color: var(--color-cat-teal-bg); color: var(--color-cat-teal-icon); }
+.tool-ico[data-ico='coins'] { background-color: var(--color-cat-teal-bg); color: var(--color-cat-teal-icon); }
+.tool-ico[data-ico='trend-up'] { background-color: var(--color-cat-pink-bg); color: var(--color-cat-pink-icon); }
+.tool-ico[data-ico='heart'] { background-color: var(--color-cat-pink-bg); color: var(--color-cat-pink-icon); }
+.tool-ico[data-ico='first-aid'] { background-color: var(--color-cat-pink-bg); color: var(--color-cat-pink-icon); }
+
+.tool-ico {
+  position: relative;
+  width: 52px;
+  height: 52px;
+}
+.tool-ico svg {
+  width: 26px;
+  height: 26px;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tool-card.is-visible .tool-ico svg {
+    animation-duration: 3.2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+  }
+  .tool-card.is-visible .tool-ico[data-ico='piggy-bank'] svg { animation-name: ico-bounce; }
+  .tool-card.is-visible .tool-ico[data-ico='coins'] svg { animation-name: ico-flip; animation-duration: 4s; }
+  .tool-card.is-visible .tool-ico[data-ico='fire'] svg { animation-name: ico-flicker; animation-duration: 1s; animation-direction: alternate; }
+  .tool-card.is-visible .tool-ico[data-ico='hourglass'] svg { animation-name: ico-turn; animation-duration: 4s; }
+  .tool-card.is-visible .tool-ico[data-ico='shield-check'] svg { animation-name: ico-pulse; }
+  .tool-card.is-visible .tool-ico[data-ico='chart-pie'] svg { animation-name: ico-spin; animation-duration: 9s; animation-timing-function: linear; }
+  .tool-card.is-visible .tool-ico[data-ico='trend-up'] svg { animation-name: ico-rise; animation-duration: 2.4s; }
+  .tool-card.is-visible .tool-ico[data-ico='car-simple'] svg { animation-name: ico-drive; animation-duration: 1.4s; animation-direction: alternate; }
+  .tool-card.is-visible .tool-ico[data-ico='house-line'] svg { animation-name: ico-hop; animation-duration: 2.4s; }
+  .tool-card.is-visible .tool-ico[data-ico='stamp'] svg { animation-name: ico-press; animation-duration: 2.6s; }
+  .tool-card.is-visible .tool-ico[data-ico='heart'] svg { animation-name: ico-beat; animation-duration: 1.5s; }
+  .tool-card.is-visible .tool-ico[data-ico='check-circle'] svg { animation-name: ico-pop; }
+  .tool-card.is-visible .tool-ico[data-ico='percent'] svg { animation-name: ico-turn-full; animation-duration: 4.5s; }
+  .tool-card.is-visible .tool-ico[data-ico='receipt'] svg { animation-name: ico-print; animation-duration: 2.6s; }
+  .tool-card.is-visible .tool-ico[data-ico='umbrella'] svg { animation-name: ico-sway; animation-duration: 2.6s; transform-origin: 50% 100%; }
+  .tool-card.is-visible .tool-ico[data-ico='moon-stars'] svg { animation-name: ico-twinkle; animation-duration: 3.4s; }
+  .tool-card.is-visible .tool-ico[data-ico='first-aid'] svg { animation-name: ico-pulse; animation-duration: 1.3s; }
+  .tool-card.is-visible .tool-ico[data-ico='calendar-blank'] svg { animation-name: ico-page; animation-duration: 4s; }
+
+  /* a coin that drops into the piggy bank */
+  .tool-ico[data-ico='piggy-bank']::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -4px;
+    width: 8px;
+    height: 8px;
+    margin-left: -3px;
+    border-radius: 50%;
+    background: #f5e27a;
+    box-shadow: 0 0 0 1.5px rgb(26 26 26 / 0.25);
+    opacity: 0;
+  }
+  .tool-card.is-visible .tool-ico[data-ico='piggy-bank']::after { animation: ico-coin 3.2s ease-in infinite; }
+  /* a ring that pings off the shield */
+  .tool-ico[data-ico='shield-check']::after,
+  .tool-ico[data-ico='first-aid']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    opacity: 0;
+  }
+  .tool-card.is-visible .tool-ico[data-ico='shield-check']::after,
+  .tool-card.is-visible .tool-ico[data-ico='first-aid']::after { animation: ico-ring 3.2s ease-out infinite; }
+}
+@keyframes ico-bounce { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-2.5px) rotate(-5deg); } }
+@keyframes ico-flip { 0%, 60%, 100% { transform: rotateY(0); } 80% { transform: rotateY(180deg); } }
+@keyframes ico-flicker { from { transform: scale(1) rotate(-3deg); } to { transform: scale(1.1, 0.94) rotate(3deg); } }
+@keyframes ico-turn { 0%, 40% { transform: rotate(0); } 60%, 100% { transform: rotate(180deg); } }
+@keyframes ico-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.16); } }
+@keyframes ico-spin { to { transform: rotate(360deg); } }
+@keyframes ico-rise { 0%, 100% { transform: translate(-2px, 2px); } 50% { transform: translate(2px, -2px); } }
+@keyframes ico-drive { from { transform: translateX(-3px); } to { transform: translateX(3px); } }
+@keyframes ico-hop { 0%, 60%, 100% { transform: translateY(0); } 72% { transform: translateY(-3px); } 84% { transform: translateY(0); } }
+@keyframes ico-press { 0%, 60%, 100% { transform: translateY(-3px); } 72% { transform: translateY(2.5px); } }
+@keyframes ico-beat { 0%, 60%, 100% { transform: scale(1); } 15% { transform: scale(1.22); } 30% { transform: scale(1); } 45% { transform: scale(1.14); } }
+@keyframes ico-pop { 0%, 60%, 100% { transform: scale(1); } 75% { transform: scale(1.22); } 88% { transform: scale(0.94); } }
+@keyframes ico-turn-full { 0%, 50% { transform: rotate(0); } 80%, 100% { transform: rotate(360deg); } }
+@keyframes ico-print { 0%, 100% { transform: translateY(2px); } 50% { transform: translateY(-2.5px); } }
+@keyframes ico-sway { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
+@keyframes ico-twinkle { 0%, 100% { transform: rotate(-8deg) scale(1); opacity: 1; } 50% { transform: rotate(8deg) scale(1.1); opacity: 0.75; } }
+@keyframes ico-page { 0%, 50%, 100% { transform: perspective(40px) rotateX(0); } 70% { transform: perspective(40px) rotateX(180deg); } }
+@keyframes ico-coin { 0% { transform: translateY(-6px); opacity: 0; } 15% { opacity: 1; } 55% { transform: translateY(12px); opacity: 1; } 62%, 100% { transform: translateY(14px); opacity: 0; } }
+@keyframes ico-ring { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.7); opacity: 0; } }
