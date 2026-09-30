@@ -1,0 +1,23 @@
+---
+// Standalone FAQ page (indexable on its own). PT counterpart: /pt-pt/faq. Same questions as the
+// homepage accordion (`faq.items`), presented like the features section.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NavBar from '../components/NavBar.astro';
+import FaqWorlds from '../components/FaqWorlds.astro';
+import ClosingCta from '../components/ClosingCta.astro';
+import Waitlist from '../components/Waitlist.astro';
+import Footer from '../components/Footer.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+---
+
+<BaseLayout title={t('faqPage.title')} description={t('faqPage.description')}>
+  <NavBar />
+  <main>
+    <FaqWorlds />
+    <ClosingCta />
+    <Waitlist />
+  </main>
+  <Footer />
+</BaseLayout>

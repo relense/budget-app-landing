@@ -5,6 +5,7 @@
 // Not Portugal-specific in any way -- this is a generic couples'-budgeting tool, useful anywhere.
 //
 // Year-less title/H1: the three split methods aren't annually-versioned data.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -63,6 +64,8 @@ const softwareApplicationJsonLd = {
       Compare three ways to split rent, bills, and groceries: 50/50, proportional to what each of
       you earns, or with the same amount left over for both of you at the end of the month.
     </p>
+
+    <ToolBanner scene="couple" variant="split" tone="--color-cat-pink-bg" />
 
     <form
       id="calc-form"

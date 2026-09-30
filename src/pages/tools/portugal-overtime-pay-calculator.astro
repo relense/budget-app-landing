@@ -3,6 +3,7 @@
 // own comment for the shared "front door, not a feature of the app" rationale and the
 // `lang`/`noAlternate` reasoning. See overtimePay.ts's own comment for the full Código do
 // Trabalho sourcing.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -61,6 +62,8 @@ const softwareApplicationJsonLd = {
       Enter your base salary and the extra hours you worked, and see what they're worth -- with
       the legal supplements for a working day, a rest day or holiday, and night work.
     </p>
+
+    <ToolBanner scene="desk" variant="clock" tone="--color-cat-purple-bg" />
 
     <form
       id="calc-form"

@@ -4,6 +4,7 @@
 // `lang`/`noAlternate` reasoning. See sickLeaveBenefit.ts's own comment for the full sourcing.
 // Employees (TCO) only -- self-employed workers have a different 10-day waiting period, not
 // modeled.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -62,6 +63,8 @@ const softwareApplicationJsonLd = {
       Enter your average salary and days of leave, and see how much you'll receive in total and
       per day, after the waiting period.
     </p>
+
+    <ToolBanner scene="rest" variant="" tone="--color-cat-pink-bg" />
 
     <form
       id="calc-form"
@@ -210,8 +213,7 @@ const softwareApplicationJsonLd = {
         You know the number. Now see how your month looks.
       </h2>
       <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-        Otterbond shows you how much you can spend per day with a temporarily lower income, no
-        surprises.
+        Log your lower income as it arrives, and Otterbond shows how much you can spend per day until your next payday.
       </p>
       <a
         id="bridge-cta"

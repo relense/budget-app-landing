@@ -1,0 +1,308 @@
+---
+// Flat, faceless vector "sets" that sit behind the phone in each persona's stage card: one small
+// scene per use case with the person doing the thing (on the bus, at the desk, at a café...).
+// Drawn in code on a 560x780 canvas. Colours are overlays (white / ink at low alpha) on top of the
+// persona's own pastel wall, so every set inherits its palette from the card. The phone covers the
+// left ~half, so the people and props live on the right.
+import { getLangFromUrl } from '../i18n/utils';
+import { K, dark, light, person } from '../lib/figures';
+
+interface Props {
+  kind: 'couple' | 'spreadsheet' | 'payday' | 'saver' | 'freelancer' | 'privacy' | 'expat' | 'closer';
+  /** Keeps SVG ids unique when the same scene is on the page twice (stage + inline card). */
+  uid?: string;
+}
+const { kind, uid = 's' } = Astro.props;
+const en = getLangFromUrl(Astro.url) === 'en';
+
+const monthAbbr = en ? 'OCT' : 'OUT';
+const buildings = [
+  [0, 90, 46], [52, 130, 38], [96, 76, 54], [156, 112, 40], [202, 150, 44], [252, 84, 50], [308, 120, 42], [356, 98, 56],
+];
+---
+
+<svg class="psc" viewBox="0 0 560 780" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <rect x="0" y="690" width="560" height="90" fill={dark(0.13)} />
+  <rect x="0" y="682" width="560" height="10" fill={dark(0.08)} />
+
+  {
+    kind === 'couple' && (
+      <g>
+        {/* window with a city */}
+        <rect x="318" y="66" width="208" height="236" rx="16" fill={light(0.6)} />
+        <rect x="330" y="78" width="184" height="212" rx="9" fill={light(0.8)} />
+        <g fill={dark(0.1)}>
+          <rect x="336" y="200" width="34" height="90" /><rect x="374" y="170" width="30" height="120" /><rect x="408" y="212" width="40" height="78" /><rect x="452" y="184" width="56" height="106" />
+        </g>
+        <path d="M422 78V290M330 184H514" stroke={light(0.85)} stroke-width="7" />
+        {/* hanging lamp */}
+        <path d="M262 0V96" stroke={dark(0.35)} stroke-width="3" />
+        <ellipse class="glow" cx="262" cy="150" rx="96" ry="54" fill="rgba(255,236,190,0.32)" />
+        <path d="M226 132Q262 80 298 132Z" fill={K.peach} />
+        {/* frames */}
+        <rect x="316" y="330" width="62" height="78" rx="6" fill={light(0.55)} /><rect x="326" y="340" width="42" height="58" rx="3" fill={dark(0.12)} />
+        <rect x="392" y="340" width="90" height="56" rx="6" fill={light(0.55)} /><rect x="402" y="350" width="70" height="36" rx="3" fill={dark(0.12)} />
+        {/* sofa back + people */}
+        <rect x="292" y="468" width="262" height="190" rx="42" fill={dark(0.2)} />
+        <g set:html={person({ x: 376, y: 488, skin: K.skinB, hair: K.hairDark, style: 'short', top: K.blue, arms: 'phone', scale: 0.92, legs: false, act: 'turn-r', phase: 0 })} />
+        <g set:html={person({ x: 476, y: 492, skin: K.skinA, hair: K.hairAuburn, style: 'long', top: K.pink, arms: 'mug', scale: 0.9, legs: false, act: 'turn-l', phase: 1.5 })} />
+        <g class="steam"><path d="M512 470q-8-14 0-24t0-22" fill="none" stroke={light(0.7)} stroke-width="4" stroke-linecap="round" /></g>
+        {/* sofa front */}
+        <rect x="286" y="590" width="274" height="76" rx="28" fill={dark(0.3)} />
+        <rect x="272" y="520" width="44" height="146" rx="22" fill={dark(0.36)} />
+        <rect x="532" y="520" width="44" height="146" rx="22" fill={dark(0.36)} />
+        <rect x="300" y="664" width="10" height="26" rx="4" fill={dark(0.4)} /><rect x="520" y="664" width="10" height="26" rx="4" fill={dark(0.4)} />
+        {/* rug, groceries, plant */}
+        <ellipse cx="420" cy="730" rx="190" ry="24" fill={light(0.4)} />
+        <path d="M316 690 L326 632 L376 632 L386 690Z" fill={light(0.8)} />
+        <g class="sway"><path d="M340 634 q-4-30 6-44 M354 634 q0-34 12-46" fill="none" stroke={K.green} stroke-width="7" stroke-linecap="round" /></g>
+        <rect x="392" y="662" width="64" height="12" rx="6" fill={K.peach} transform="rotate(-12 392 662)" />
+        <path d="M510 690h32l-6-42h-20z" fill={K.peach} />
+        <g class="sway"><path d="M526 650q-22-30-12-62M526 650q18-26 22-58M526 650q2-34-4-70" fill="none" stroke={K.green} stroke-width="8" stroke-linecap="round" /></g>
+      </g>
+    )
+  }
+
+  {
+    kind === 'spreadsheet' && (
+      <g>
+        {/* bus window with a scrolling skyline */}
+        <clipPath id={`busWin-${uid}`}><rect x="304" y="120" width="244" height="240" rx="18" /></clipPath>
+        <rect x="304" y="120" width="244" height="240" rx="18" fill={light(0.75)} />
+        <g clip-path={`url(#busWin-${uid})`}>
+          <g class="skyline">
+            {[0, 1, 2].map((rep) => (
+              <g transform={`translate(${rep * 400 + 300} 0)`} fill={dark(0.16)}>
+                {buildings.map(([bx, bh, bw]) => (
+                  <rect x={bx} y={360 - bh} width={bw} height={bh} rx="3" />
+                ))}
+              </g>
+            ))}
+          </g>
+          <rect x="304" y="120" width="244" height="240" fill={light(0.12)} />
+        </g>
+        <rect x="304" y="120" width="244" height="240" rx="18" fill="none" stroke={dark(0.3)} stroke-width="8" />
+        {/* ceiling strap + pole */}
+        <path d="M340 0V72" stroke={dark(0.3)} stroke-width="4" />
+        <g class="sway-slow"><path d="M340 72q-22 4-22 26t22 26 22-22-22-30" fill="none" stroke={dark(0.45)} stroke-width="6" /></g>
+        <rect x="546" y="0" width="12" height="700" rx="6" fill={dark(0.34)} />
+        <rect x="548" y="0" width="4" height="700" rx="2" fill={light(0.5)} />
+        {/* seat + person with phone and a coffee */}
+        <g class="bump">
+          <rect x="300" y="452" width="236" height="214" rx="34" fill={dark(0.32)} />
+          <g set:html={person({ x: 418, y: 470, skin: K.skinC, hair: K.hairBlack, style: 'short', top: K.teal, arms: 'mug', scale: 0.96, legs: false, act: 'nod', phase: 0.8 })} />
+          <rect x="292" y="598" width="252" height="70" rx="26" fill={dark(0.42)} />
+        </g>
+        <rect x="0" y="640" width="560" height="6" fill={dark(0.08)} />
+        <ellipse cx="418" cy="738" rx="170" ry="16" fill={dark(0.1)} />
+        {/* stop button */}
+        <rect x="520" y="380" width="22" height="40" rx="8" fill={dark(0.28)} /><circle class="blink" cx="531" cy="392" r="5" fill={K.mint} />
+      </g>
+    )
+  }
+
+  {
+    kind === 'payday' && (
+      <g>
+        {/* wall calendar */}
+        <rect x="318" y="58" width="220" height="262" rx="14" fill={light(0.92)} />
+        <path d="M318 72a14 14 0 0 1 14-14h192a14 14 0 0 1 14 14v34H318Z" fill={K.peach} />
+        <text x="428" y="94" text-anchor="middle" font-size="22" fill="#fff" letter-spacing="3">{monthAbbr}</text>
+        <g font-size="15" fill={dark(0.6)} text-anchor="middle">
+          {Array.from({ length: 31 }, (_, i) => {
+            const col = (i + 3) % 7;
+            const row = Math.floor((i + 3) / 7);
+            const cx = 340 + col * 30;
+            const cy = 134 + row * 36;
+            return <text x={cx} y={cy + 5}>{i + 1}</text>;
+          })}
+        </g>
+        {/* days crossed off, up to the 24th */}
+        <g stroke={dark(0.5)} stroke-width="3" stroke-linecap="round">
+          {Array.from({ length: 24 }, (_, i) => {
+            const col = (i + 3) % 7;
+            const row = Math.floor((i + 3) / 7);
+            const cx = 340 + col * 30;
+            const cy = 134 + row * 36;
+            return <path class="cross" style={`--i:${i}`} d={`M${cx - 8} ${cy - 8}L${cx + 8} ${cy + 8}M${cx + 8} ${cy - 8}L${cx - 8} ${cy + 8}`} />;
+          })}
+        </g>
+        <circle cx="520" cy="242" r="15" fill={K.mint} stroke={K.green} stroke-width="4" />
+        <text x="520" y="247" text-anchor="middle" font-size="15" fill={K.green}>25</text>
+        <circle class="payday" cx="520" cy="242" r="15" fill="none" stroke={K.green} stroke-width="4" />
+        <circle class="payday" cx="520" cy="242" r="15" fill="none" stroke={K.green} stroke-width="4" style="animation-delay:.8s" />
+        {/* floor lamp */}
+        <path d="M318 320V670" stroke={dark(0.35)} stroke-width="5" /><ellipse cx="318" cy="672" rx="28" ry="8" fill={dark(0.3)} />
+        {/* armchair + person */}
+        <rect x="372" y="480" width="170" height="180" rx="38" fill={dark(0.26)} />
+        <g set:html={person({ x: 458, y: 484, skin: K.skinA, hair: K.hairBrown, style: 'bun', top: K.purple, arms: 'phone', scale: 0.92, legs: false, act: 'raise', phase: 0.6 })} />
+        <rect x="360" y="596" width="194" height="70" rx="26" fill={dark(0.36)} />
+        <rect x="352" y="530" width="34" height="136" rx="17" fill={dark(0.42)} />
+        <rect x="528" y="530" width="34" height="136" rx="17" fill={dark(0.42)} />
+        {/* side table + plant */}
+        <rect x="486" y="626" width="70" height="8" rx="4" fill={K.peach} /><rect x="518" y="634" width="6" height="56" fill={dark(0.4)} />
+        <ellipse cx="450" cy="730" rx="160" ry="20" fill={light(0.35)} />
+      </g>
+    )
+  }
+
+  {
+    kind === 'saver' && (
+      <g>
+        {/* shelf with a little house and a plant */}
+        <rect x="316" y="196" width="220" height="10" rx="5" fill={dark(0.3)} />
+        <path d="M352 196V150l30-26 30 26v46Z" fill={light(0.85)} /><path d="M344 154l38-34 38 34" fill="none" stroke={K.pink} stroke-width="7" stroke-linejoin="round" stroke-linecap="round" />
+        <rect x="372" y="166" width="20" height="30" rx="3" fill={dark(0.22)} />
+        <g class="sway"><path d="M480 196q-14-30-2-50M480 196q6-34 24-40M480 196q-2-40 6-56" fill="none" stroke={K.green} stroke-width="7" stroke-linecap="round" /></g>
+        <rect x="462" y="180" width="38" height="18" rx="4" fill={K.peach} />
+        {/* wall calendar note with the target date */}
+        <rect x="330" y="260" width="72" height="72" rx="8" fill={light(0.9)} /><rect x="330" y="260" width="72" height="20" rx="8" fill={K.pink} />
+        <circle cx="366" cy="308" r="16" fill="none" stroke={K.pink} stroke-width="4" />
+        {/* table */}
+        <rect x="296" y="548" width="262" height="18" rx="9" fill={dark(0.36)} />
+        <rect x="316" y="566" width="14" height="124" fill={dark(0.3)} /><rect x="524" y="566" width="14" height="124" fill={dark(0.3)} />
+        {/* person behind the table dropping a coin in the jar */}
+        <g class="hop"><g set:html={person({ x: 440, y: 400, skin: K.skinB, hair: K.hairDark, style: 'curly', top: K.blue, arms: 'coin', scale: 0.98, legs: false, act: 'nod' })} /></g>
+        <rect x="380" y="500" width="120" height="50" rx="10" fill={dark(0.05)} />
+        {/* jar */}
+        <path d="M486 430h60v22q0 6 0 12v72q0 14-14 14h-32q-14 0-14-14v-72q0-6 0-12z" transform="translate(-24 -6)" fill={light(0.45)} stroke={light(0.9)} stroke-width="4" />
+        <g clip-path={`url(#jarClip-${uid})`}><rect class="jarfill" x="460" y="494" width="64" height="60" fill={K.yellow} /></g>
+        <clipPath id={`jarClip-${uid}`}><path d="M486 430h60v22q0 6 0 12v72q0 14-14 14h-32q-14 0-14-14v-72q0-6 0-12z" transform="translate(-24 -6)" /></clipPath>
+        <rect x="458" y="418" width="68" height="12" rx="6" fill={dark(0.35)} />
+        <circle class="coin" cx="492" cy="360" r="11" fill={K.yellow} stroke={dark(0.3)} stroke-width="2" />
+        <circle class="coin" cx="492" cy="360" r="11" fill={K.yellow} stroke={dark(0.3)} stroke-width="2" style="animation-delay:1.6s" />
+        <g class="sparkle"><path d="M492 408l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill={K.yellow} /></g>
+        <g class="sparkle" style="animation-delay:1.6s"><path d="M492 408l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill={K.yellow} /></g>
+        <ellipse cx="440" cy="730" rx="160" ry="20" fill={light(0.35)} />
+      </g>
+    )
+  }
+
+  {
+    kind === 'freelancer' && (
+      <g>
+        {/* shelf + clock */}
+        <rect x="316" y="170" width="150" height="10" rx="5" fill={dark(0.3)} />
+        {[0, 1, 2, 3, 4].map((i) => (
+          <rect x={324 + i * 22} y={130 + (i % 2) * 8} width="16" height={40 - (i % 2) * 8} rx="3" fill={i % 2 ? K.blue : K.pink} opacity="0.75" />
+        ))}
+        <circle cx="500" cy="150" r="36" fill={light(0.85)} /><path d="M500 150V126M500 150l16 10" stroke={dark(0.6)} stroke-width="4" stroke-linecap="round" />
+        {/* invoices floating up */}
+        <g>
+          {[0, 1, 2].map((i) => (
+            <g class="paper" style={`--i:${i}`}>
+              <rect x={368 + i * 60} y="380" width="34" height="44" rx="4" fill={i === 1 ? K.mint : light(0.95)} transform={`rotate(${-12 + i * 12} ${385 + i * 60} 402)`} />
+              <path d={`M${374 + i * 60} 392h22M${374 + i * 60} 402h16`} stroke={dark(0.3)} stroke-width="3" stroke-linecap="round" transform={`rotate(${-12 + i * 12} ${385 + i * 60} 402)`} />
+            </g>
+          ))}
+        </g>
+        {/* person at the desk */}
+        <g set:html={person({ x: 440, y: 468, skin: K.skinA, hair: K.hairBlack, style: 'short', top: K.char, arms: 'laptop', scale: 0.98, legs: false, act: 'nod', phase: 0.4 })} />
+        {/* desk + laptop lid + lamp + mug + paper stack */}
+        <rect x="290" y="580" width="270" height="20" rx="10" fill={dark(0.4)} />
+        <rect x="300" y="600" width="12" height="90" fill={dark(0.32)} /><rect x="538" y="600" width="12" height="90" fill={dark(0.32)} />
+        <rect x="392" y="518" width="118" height="66" rx="8" fill="#2E3B3A" /><circle cx="451" cy="551" r="7" fill={light(0.5)} />
+        <path d="M318 580V520l30-40" fill="none" stroke={dark(0.5)} stroke-width="6" stroke-linecap="round" /><path d="M334 476l40 8-20 22z" fill={dark(0.55)} />
+        <ellipse class="glow" cx="360" cy="560" rx="60" ry="40" fill="rgba(255,236,190,0.28)" />
+        <rect x="518" y="552" width="26" height="28" rx="6" fill={K.paper} /><path d="M544 560q10 2 0 14" fill="none" stroke={K.paper} stroke-width="5" />
+        <rect x="316" y="566" width="46" height="14" rx="3" fill={K.mint} /><rect x="320" y="556" width="46" height="12" rx="3" fill={light(0.9)} />
+        <ellipse cx="430" cy="738" rx="170" ry="16" fill={dark(0.1)} />
+      </g>
+    )
+  }
+
+  {
+    kind === 'privacy' && (
+      <g>
+        {/* window with curtains, a bank outside with the link cut */}
+        <rect x="316" y="70" width="216" height="250" rx="16" fill={light(0.6)} />
+        <rect x="328" y="82" width="192" height="226" rx="8" fill={light(0.8)} />
+        <g fill={dark(0.12)}>
+          <path d="M360 300V214l64-36 64 36v86z" /><rect x="376" y="226" width="10" height="66" /><rect x="404" y="226" width="10" height="66" /><rect x="432" y="226" width="10" height="66" /><rect x="460" y="226" width="10" height="66" />
+        </g>
+        <g stroke={dark(0.4)} stroke-width="5" stroke-linecap="round" fill="none"><path d="M376 150l-24 8M472 150l24 8" /><circle cx="424" cy="150" r="14" /></g>
+        <path d="M404 170L444 130" stroke={K.ink} stroke-width="5" stroke-linecap="round" opacity="0.6" />
+        <g class="sway-slow" style="transform-origin:316px 70px"><path d="M316 60q30 90 14 270H316Z" fill={dark(0.22)} /></g>
+        <g class="sway-slow" style="transform-origin:532px 70px;animation-delay:1s"><path d="M532 60q-30 90-14 270h14Z" fill={dark(0.22)} /></g>
+        <rect x="308" y="56" width="232" height="8" rx="4" fill={dark(0.4)} />
+        {/* cafe table + person */}
+        <g set:html={person({ x: 434, y: 470, skin: K.skinB, hair: K.hairDark, style: 'curly', top: K.pink, arms: 'cover', scale: 0.96, legs: false, act: 'around' })} />
+        <ellipse cx="434" cy="590" rx="118" ry="16" fill={dark(0.4)} />
+        <rect x="428" y="600" width="12" height="80" fill={dark(0.4)} /><ellipse cx="434" cy="684" rx="58" ry="9" fill={dark(0.4)} />
+        <rect x="336" y="562" width="30" height="30" rx="7" fill={K.paper} /><path d="M366 570q12 2 0 16" fill="none" stroke={K.paper} stroke-width="5" />
+        <g class="steam"><path d="M350 552q-8-12 0-22t0-20" fill="none" stroke={light(0.75)} stroke-width="4" stroke-linecap="round" /></g>
+        <rect x="482" y="574" width="44" height="18" rx="4" fill={light(0.9)} />
+        <ellipse cx="434" cy="738" rx="170" ry="16" fill={dark(0.1)} />
+      </g>
+    )
+  }
+
+  {
+    kind === 'expat' && (
+      <g>
+        {/* sun, tram, tiled wall */}
+        <circle class="sun" cx="500" cy="110" r="44" fill={K.yellow} />
+        <g fill={dark(0.12)}>
+          <path d="M300 300V220h60v80zM372 300V190h70v110zM454 300V232h90v68z" />
+        </g>
+        <g fill={K.peach} opacity="0.7"><path d="M296 222l34-24 34 24zM368 192l39-26 39 26zM450 234l49-22 49 22z" /></g>
+        <g class="tram">
+          <rect x="300" y="330" width="200" height="94" rx="20" fill={K.yellow} />
+          <rect x="316" y="346" width="42" height="34" rx="6" fill={light(0.85)} /><rect x="366" y="346" width="42" height="34" rx="6" fill={light(0.85)} /><rect x="416" y="346" width="42" height="34" rx="6" fill={light(0.85)} />
+          <rect x="300" y="396" width="200" height="8" fill={dark(0.18)} />
+          <circle cx="336" cy="428" r="12" fill={dark(0.5)} /><circle cx="464" cy="428" r="12" fill={dark(0.5)} />
+          <path d="M400 330V300M370 300h60" stroke={dark(0.5)} stroke-width="4" stroke-linecap="round" />
+        </g>
+        <rect x="0" y="446" width="560" height="10" fill={dark(0.16)} />
+        <g stroke={dark(0.1)} stroke-width="2" fill="none">
+          <path d="M280 456V690M350 456V690M420 456V690M490 456V690M280 520H560M280 590H560M280 660H560" />
+        </g>
+        <g fill={K.blue} opacity="0.28">
+          {[0, 1, 2, 3].map((c) => [0, 1, 2].map((r) => <circle cx={315 + c * 70} cy={488 + r * 70} r="18" />))}
+        </g>
+        {/* street lamp */}
+        <path d="M312 690V440" stroke={dark(0.4)} stroke-width="6" /><circle cx="312" cy="436" r="12" fill={K.yellow} />
+        {/* person with suitcase */}
+        <g class="walk"><g set:html={person({ x: 448, y: 450, skin: K.skinC, hair: K.hairBlack, style: 'cap', top: K.teal, bottom: K.blue, arms: 'phone', scale: 0.86, stand: true, act: 'raise', phase: 0.3 })} /></g>
+        <g class="suit">
+          <rect x="360" y="616" width="52" height="70" rx="9" fill={K.peach} /><rect x="374" y="604" width="24" height="14" rx="4" fill="none" stroke={dark(0.5)} stroke-width="4" />
+          <path d="M372 622v58M400 622v58" stroke={dark(0.2)} stroke-width="4" />
+          <circle cx="372" cy="690" r="5" fill={dark(0.6)} /><circle cx="400" cy="690" r="5" fill={dark(0.6)} />
+        </g>
+        <ellipse cx="440" cy="738" rx="160" ry="14" fill={dark(0.1)} />
+      </g>
+    )
+  }
+
+  {
+    kind === 'closer' && (
+      <g>
+        <rect x="0" y="0" width="560" height="690" fill={dark(0.1)} />
+        {/* night window: moon + stars */}
+        <rect x="318" y="66" width="208" height="236" rx="16" fill={dark(0.35)} />
+        <rect x="330" y="78" width="184" height="212" rx="9" fill="#2A2740" />
+        <circle cx="462" cy="130" r="26" fill={K.paper} /><circle cx="474" cy="122" r="24" fill="#2A2740" />
+        <g fill={K.paper}>
+          <circle class="tw" cx="360" cy="112" r="2.6" /><circle class="tw" cx="396" cy="168" r="2" style="animation-delay:.6s" /><circle class="tw" cx="430" cy="100" r="2.4" style="animation-delay:1.2s" /><circle class="tw" cx="372" cy="236" r="2.2" style="animation-delay:1.8s" /><circle class="tw" cx="478" cy="220" r="2.6" style="animation-delay:.3s" />
+        </g>
+        <path d="M422 78V290M330 184H514" stroke={dark(0.5)} stroke-width="7" />
+        {/* desk + big month page with a padlock */}
+        <rect x="290" y="586" width="270" height="18" rx="9" fill={dark(0.45)} />
+        <rect x="300" y="604" width="12" height="86" fill={dark(0.34)} /><rect x="538" y="604" width="12" height="86" fill={dark(0.34)} />
+        <rect x="330" y="470" width="104" height="116" rx="8" fill={light(0.92)} /><rect x="330" y="470" width="104" height="26" rx="8" fill={K.peach} />
+        <text x="382" y="490" text-anchor="middle" font-size="15" fill="#fff" letter-spacing="2">{en ? 'AUG' : 'AGO'}</text>
+        <g class="lock" style="transform-origin:382px 548px">
+          <path class="shackle" d="M368 540v-14a14 14 0 0 1 28 0v14" fill="none" stroke={K.char} stroke-width="6" stroke-linecap="round" />
+          <rect x="358" y="538" width="48" height="36" rx="8" fill={K.char} /><circle cx="382" cy="554" r="5" fill={K.yellow} />
+        </g>
+        {/* person leaning back with a mug */}
+        <g set:html={person({ x: 480, y: 470, skin: K.skinA, hair: K.hairAuburn, style: 'long', top: K.purple, arms: 'mug', scale: 0.98, legs: false, act: 'nod', phase: 1 })} />
+        <g class="steam"><path d="M508 448q-8-14 0-24t0-22" fill="none" stroke={light(0.7)} stroke-width="4" stroke-linecap="round" /></g>
+        {/* desk lamp */}
+        <path d="M520 586V520l-28-34" fill="none" stroke={dark(0.55)} stroke-width="6" stroke-linecap="round" /><path d="M470 488l40-6-8 24z" fill={dark(0.6)} />
+        <ellipse class="glow" cx="470" cy="560" rx="90" ry="50" fill="rgba(255,226,160,0.3)" />
+        <ellipse cx="430" cy="738" rx="170" ry="16" fill={dark(0.12)} />
+      </g>
+    )
+  }
+</svg>

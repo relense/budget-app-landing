@@ -7,6 +7,7 @@
 // URL has no `/pt-pt/` prefix and no true bilingual counterpart at a mirrored path. There IS now an
 // English counterpart for the same underlying tax rules, framed for expats rather than a literal
 // translation of "recibos verdes": /tools/portugal-freelancer-tax-calculator.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -62,6 +63,8 @@ const faqJsonLd = {
       indica o teu rendimento e vê uma estimativa do IRS retido, da Segurança Social e do valor
       líquido, com as regras de 2026 (regime simplificado, Categoria B).
     </p>
+
+    <ToolBanner scene="desk" variant="invoices" tone="--color-cat-teal-bg" />
 
     <form
       id="calc-form"
@@ -350,8 +353,7 @@ const faqJsonLd = {
         Já sabes quanto fica líquido. Sabes quanto podes gastar por dia até ao próximo pagamento?
       </h2>
       <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-        O Otterbond faz essa conta todas as manhãs, e guarda automaticamente o que precisas para o
-        IRS e a Segurança Social.
+        O Otterbond mostra quanto podes gastar por dia até ao teu próximo pagamento. Acrescenta o que deves de IRS e Segurança Social como um fundo de poupança mensal, e o número diário desconta-o.
       </p>
       <a
         href="/pt-pt/#get-the-app"

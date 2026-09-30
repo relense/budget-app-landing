@@ -1,0 +1,2722 @@
+---
+// Code-drawn replicas of real Otterbond mobile screens (dark theme). Every layout, colour, icon,
+// size and string here comes from the app's own code (budget-app-mobile: src/theme/colors.ts,
+// typography.ts, the screen and component files, and the en / pt-PT i18n resources); sizes are the
+// app's 390pt design, scaled with one unit (`--u` = 1pt). Fredoka Regular only, exactly as the app.
+//
+// What is NOT real: the numbers (sample data; a few come from the app's own screenshots), and the
+// motion. The app itself barely animates, so every animation here replays something a person does
+// (typing on the keypad, tapping a bill group, dragging the what-if slider, tapping through the
+// wrap) or a data change that follows from it. Nothing here adds UI the app doesn't have.
+//
+// Animation contract: with no `.is-live` ancestor a screen shows its final frame (that is also the
+// JS-off and reduced-motion state). `.is-live`, set by the parent, starts the replay.
+import { getLangFromUrl } from '../i18n/utils';
+
+interface Props {
+  kind:
+    | 'home'
+    | 'couple'
+    | 'spreadsheet'
+    | 'payday'
+    | 'saver'
+    | 'freelancer'
+    | 'privacy'
+    | 'expat'
+    | 'closer';
+}
+
+const { kind } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const en = lang === 'en';
+const locale = en ? 'en-IE' : 'pt-PT';
+const fmt = (n: number, d = 2) =>
+  new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: d,
+    maximumFractionDigits: d,
+  }).format(n);
+const signed = (n: number) => (n > 0 ? '+' : '') + fmt(n);
+const fill = (s: string, v: Record<string, string | number>) =>
+  s.replace(/\{\{(\w+)\}\}/g, (_, k) => String(v[k] ?? ''));
+
+// Strings: the app's own en and pt-PT wording (resources in budget-app-mobile/src/i18n/resources).
+const T = en
+  ? {
+      nav: ['Home', 'Overview', 'Add Expense', 'Tools', 'Profile'],
+      personal: 'Personal',
+      workspace: 'Casa',
+      seeAll: 'See all',
+      unpaid: 'Unpaid',
+      paid: 'Paid',
+      greeting: 'Good morning',
+      total: 'Total Balance',
+      perDay: '{{amount}}/day for the rest of the month',
+      inAccount: '{{amount}}/day in the account · {{days}}',
+      days: '{{count}} days to payday',
+      confirmed: 'Balance confirmed today',
+      recent: 'Recent Activity',
+      upcoming: 'Upcoming Bills',
+      month: 'September 2026',
+      tabs: ['Categories', 'Expenses', 'Recurrent', 'Income'],
+      hint: 'Tap to see {{others}}',
+      othersExp: 'Categories, Recurrent, and Income',
+      othersCat: 'Expenses, Recurrent, and Income',
+      avail: 'Available Budgeted',
+      newExpense: 'New expense',
+      newCat: 'New budget category',
+      catTitle: 'Categorize expenses',
+      catSub: '1 uncategorized',
+      spent: '{{amount}} spent',
+      budget: '{{amount}} budget',
+      d29: 'September 29, 2026',
+      d28: 'September 28, 2026',
+      d15: 'September 15, 2026',
+      d13: 'September 13, 2026',
+      d12: 'September 12, 2026',
+      d1: 'September 1, 2026',
+      sts: 'Safe to Spend',
+      suffix: 'for the rest of the month',
+      timeline: 'Timeline',
+      today: 'Today',
+      bills: (n: number) => `${n} ${n === 1 ? 'bill' : 'bills'}`,
+      quiet: (n: number) => `${n} quiet ${n === 1 ? 'day' : 'days'}`,
+      lowest: 'lowest point: {{amount}}',
+      before: 'Before payday',
+      payday: 'Payday',
+      resets: 'balance resets',
+      kept: '{{amount}} kept aside',
+      pace: 'Pace',
+      oct10: 'Oct 10',
+      oct25: 'Oct 25',
+      phone: 'Phone plan',
+      vacation: 'Vacation',
+      fundName: 'Emergency fund',
+      inProgress: 'In Progress',
+      current: 'Current',
+      target: 'Target',
+      remaining: 'Remaining',
+      proj: '{{amount}} by {{month}} at {{rate}}/month',
+      projMonth: 'April 2032',
+      mo: '{{amount}}/mo',
+      less: '{{amount}} less to spend per day',
+      earlier: 'get there {{count}} months earlier',
+      setMonthly: 'Set {{amount}}/month',
+      cycle: '{{month}} deposit: {{amount}} by day {{day}}',
+      cycleMonth: 'October',
+      deposit: 'Deposit',
+      newMovement: 'New movement',
+      taxTitle: 'Independent Worker Tax Calculator Portugal',
+      salTitle: 'Employee Salary Calculator Portugal',
+      taxDisclaimer:
+        'For estimation purposes only, not tax or financial advice. Always confirm with a certified accountant (contabilista certificado).',
+      salDisclaimer:
+        "For estimation purposes only, not tax or financial advice. Always confirm with your employer's payroll or a certified accountant (contabilista certificado).",
+      grossIncome: 'Gross income',
+      frequency: 'Frequency',
+      freq: ['Per year', 'Per month', 'Per day'],
+      taxYear: 'Tax year',
+      showResults: 'Show results',
+      advanced: 'Advanced options',
+      estimated: 'Estimated results',
+      ss: 'Social Security',
+      irs: 'IRS (income tax)',
+      net: 'Net income',
+      enterGross: 'Enter your gross income to see an estimate.',
+      eg30000: 'e.g. 30000',
+      know: 'What do you know?',
+      knowOpts: ['Gross → Net', 'Net → Gross'],
+      grossMonthly: 'Gross monthly salary',
+      region: 'Region',
+      regions: ['Mainland', 'Azores', 'Madeira'],
+      filing: 'Filing status',
+      filings: ['Single', 'Married (both earning)', 'Married (sole earner)'],
+      dependents: 'Number of dependents',
+      disability: 'I have a certified disability of 60% or more',
+      regular: 'A regular month',
+      grossSalary: 'Gross salary',
+      ssYou: 'Social Security (you)',
+      irsWithheld: 'IRS withheld',
+      netTake: 'Net (take-home)',
+      enterAmount: 'Enter an amount to see an estimate.',
+      select: 'Select a category',
+      expenseAmount: 'Expense amount',
+      addDesc: 'Add description...',
+      catName: 'Eating Out',
+      wrapReview: 'Your month in review',
+      wrapMonth: 'August 2026',
+      cashChange: 'Cash change this month',
+      vsLast: '{{delta}} vs. last month',
+      incomeSpent: 'Income & spent',
+      incomeLbl: 'Income',
+      spentLbl: 'Spent',
+      whereWent: 'Where it went',
+      topCat: 'Top category',
+      ofSpending: '{{percent}} of spending',
+      biggest: 'Biggest purchase',
+      billsLbl: 'Bills',
+      paidOf: '{{paid}} of {{total}} paid',
+      allPaid: 'Every bill is paid.',
+      savings: 'Savings',
+      toFund: '{{amount}} to {{fund}}',
+      ofIncome: '{{percent}} of income',
+      lookAt: 'One thing to look at',
+      allGood: 'Every category on budget, every bill paid.',
+      done: 'Done',
+      fixedBills: 'Fixed Bills',
+      shopping: 'Shopping',
+      health: 'Health',
+      rent: 'Rent',
+      d9: 'August 9, 2026',
+      pharmacy: 'Pharmacy',
+      lunch: 'Lunch',
+      supermarket: 'Supermarket',
+      coffeeCat: 'Eating Out',
+      gasCat: 'Gas/Transport',
+      billsCat: 'Bills',
+      healthCat: 'Health',
+    }
+  : {
+      nav: ['Início', 'Visão Geral', 'Adicionar despesa', 'Ferramentas', 'Perfil'],
+      personal: 'Pessoal',
+      workspace: 'Casa',
+      seeAll: 'Ver tudo',
+      unpaid: 'Por pagar',
+      paid: 'Pago',
+      greeting: 'Bom dia',
+      total: 'Saldo Total',
+      perDay: '{{amount}}/dia no resto do mês',
+      inAccount: '{{amount}}/dia na conta · {{days}}',
+      days: '{{count}} dias até ao pagamento',
+      confirmed: 'Saldo confirmado hoje',
+      recent: 'Atividade Recente',
+      upcoming: 'Próximas Contas',
+      month: 'Setembro de 2026',
+      tabs: ['Categorias', 'Despesas', 'Recorrentes', 'Rendimentos'],
+      hint: 'Toque para ver {{others}}',
+      othersExp: 'Categorias, Recorrentes e Rendimentos',
+      othersCat: 'Despesas, Recorrentes e Rendimentos',
+      avail: 'Orçamento Disponível',
+      newExpense: 'Nova despesa',
+      newCat: 'Nova categoria de orçamento',
+      catTitle: 'Categorizar despesas',
+      catSub: '1 não categorizada',
+      spent: '{{amount}} gasto',
+      budget: '{{amount}} orçamento',
+      d29: '29 de Setembro de 2026',
+      d28: '28 de Setembro de 2026',
+      d15: '15 de Setembro de 2026',
+      d13: '13 de Setembro de 2026',
+      d12: '12 de Setembro de 2026',
+      d1: '1 de Setembro de 2026',
+      sts: 'Disponível para Gastar',
+      suffix: 'no resto do mês',
+      timeline: 'Linha do tempo',
+      today: 'Hoje',
+      bills: (n: number) => `${n} ${n === 1 ? 'conta' : 'contas'}`,
+      quiet: (n: number) => `${n} ${n === 1 ? 'dia tranquilo' : 'dias tranquilos'}`,
+      lowest: 'ponto mais baixo: {{amount}}',
+      before: 'Antes do pagamento',
+      payday: 'Dia de pagamento',
+      resets: 'o saldo reinicia',
+      kept: '{{amount}} reservados',
+      pace: 'Ritmo',
+      oct10: '10 out.',
+      oct25: '25 out.',
+      phone: 'Telemóvel',
+      vacation: 'Férias',
+      fundName: 'Fundo de emergência',
+      inProgress: 'Em Progresso',
+      current: 'Atual',
+      target: 'Objetivo',
+      remaining: 'Restante',
+      proj: '{{amount}} em {{month}}, a {{rate}}/mês',
+      projMonth: 'Abril de 2032',
+      mo: '{{amount}}/mês',
+      less: 'menos {{amount}}/dia para gastar',
+      earlier: 'chegas {{count}} meses antes',
+      setMonthly: 'Definir {{amount}}/mês',
+      cycle: 'Depósito de {{month}}: {{amount}} até dia {{day}}',
+      cycleMonth: 'Outubro',
+      deposit: 'Depositar',
+      newMovement: 'Novo movimento',
+      taxTitle: 'Calculadora de Impostos para Trabalhador Independente Portugal',
+      salTitle: 'Calculadora de Salário para Trabalhador por Conta de Outrem Portugal',
+      taxDisclaimer:
+        'Apenas para fins de estimativa, não é aconselhamento fiscal ou financeiro. Confirma sempre com um contabilista certificado.',
+      salDisclaimer:
+        'Apenas para fins de estimativa, não é aconselhamento fiscal ou financeiro. Confirma sempre com o processamento salarial da tua entidade patronal ou com um contabilista certificado.',
+      grossIncome: 'Rendimento bruto',
+      frequency: 'Frequência',
+      freq: ['Por ano', 'Por mês', 'Por dia'],
+      taxYear: 'Ano fiscal',
+      showResults: 'Mostrar resultados',
+      advanced: 'Opções avançadas',
+      estimated: 'Resultados estimados',
+      ss: 'Segurança Social',
+      irs: 'IRS',
+      net: 'Rendimento líquido',
+      enterGross: 'Insere o teu rendimento bruto para veres uma estimativa.',
+      eg30000: 'ex.: 30000',
+      know: 'O que sabes?',
+      knowOpts: ['Bruto → Líquido', 'Líquido → Bruto'],
+      grossMonthly: 'Salário bruto mensal',
+      region: 'Região',
+      regions: ['Continente', 'Açores', 'Madeira'],
+      filing: 'Situação familiar',
+      filings: ['Não casado(a)', 'Casado(a), dois titulares', 'Casado(a), único titular'],
+      dependents: 'Número de dependentes',
+      disability: 'Tenho um grau de incapacidade permanente igual ou superior a 60%',
+      regular: 'Um mês normal',
+      grossSalary: 'Salário bruto',
+      ssYou: 'Segurança Social (tu)',
+      irsWithheld: 'IRS retido',
+      netTake: 'Líquido (a receber)',
+      enterAmount: 'Insere um valor para veres uma estimativa.',
+      select: 'Selecionar uma categoria',
+      expenseAmount: 'Valor da despesa',
+      addDesc: 'Adicionar descrição...',
+      catName: 'Restaurantes',
+      wrapReview: 'O teu resumo do mês',
+      wrapMonth: 'Agosto de 2026',
+      cashChange: 'Variação de caixa deste mês',
+      vsLast: '{{delta}} face ao mês passado',
+      incomeSpent: 'Rendimento e gasto',
+      incomeLbl: 'Rendimento',
+      spentLbl: 'Gasto',
+      whereWent: 'Para onde foi',
+      topCat: 'Principal categoria',
+      ofSpending: '{{percent}} dos gastos',
+      biggest: 'Maior compra',
+      billsLbl: 'Contas',
+      paidOf: '{{paid}} de {{total}} pagas',
+      allPaid: 'Todas as contas estão pagas.',
+      savings: 'Poupanças',
+      toFund: '{{amount}} para {{fund}}',
+      ofIncome: '{{percent}} do rendimento',
+      lookAt: 'Uma coisa a observar',
+      allGood: 'Todas as categorias dentro do orçamento, todas as contas pagas.',
+      done: 'Concluído',
+      fixedBills: 'Contas Fixas',
+      shopping: 'Compras',
+      health: 'Saúde',
+      rent: 'Renda',
+      d9: '9 de Agosto de 2026',
+      pharmacy: 'Farmácia',
+      lunch: 'Almoço',
+      supermarket: 'Supermercado',
+      coffeeCat: 'Restaurantes',
+      gasCat: 'Combustível/Transporte',
+      billsCat: 'Contas',
+      healthCat: 'Saúde',
+    };
+
+const hintOthers = (s: string) => fill(T.hint, { others: s });
+const nav = (active: number) => T.nav.map((label, i) => ({ label, active: i === active }));
+const navIcons = ['home', 'credit-card-outline', 'plus-box-outline', 'toolbox-outline', 'account-circle'];
+
+// Bills that make up "5 bills" on the timeline's first day (sums to 303.92).
+const todayBills = [
+  { name: 'Arche Training', amount: 260 },
+  { name: 'Ultracc', amount: 8.94 },
+  { name: 'Apple', amount: 2.99 },
+  { name: 'Netflix', amount: 13.99 },
+  { name: T.phone, amount: 18 },
+];
+---
+
+<div class:list={['ls', `ls-${kind}`]} aria-hidden="true" inert>
+  <div class="ls-body">
+    {
+      kind !== 'closer' && kind !== 'privacy' && (
+        <div class="sb">
+          <span>9:41</span>
+          <span class="sbr">
+            <i class="mdi mdi-signal-cellular-3" />
+            <i class="mdi mdi-wifi" />
+            <i class="mdi mdi-battery" />
+          </span>
+        </div>
+      )
+    }
+
+    {/* ---------------------------------------------------------------- HOME */}
+    {
+      kind === 'home' && (
+        <>
+          <div class="hd">
+            <span class="greet">{T.greeting}</span>
+          </div>
+          <div class="sw">
+            <span>{T.personal}</span>
+            <i class="mdi mdi-account-switch" />
+          </div>
+          <div class="bell">
+            <i class="mdi mdi-bell-outline" />
+            <span class="bd">1</span>
+          </div>
+
+          <div class="balwrap">
+            <div class="balrow ls-in" style="--d:.05s">
+              <span class="ib"><i class="mdi mdi-eye-outline" /></span>
+              <span class="amt" data-count-to="21984.42" data-decimals="2" data-locale={locale} data-currency="EUR">{fmt(21984.42)}</span>
+              <span class="ib"><i class="mdi mdi-pencil-outline" /></span>
+            </div>
+            <p class="lbl">{T.total}</p>
+            <div class="sts ls-in" style="--d:.2s">
+              <p class="hl">
+                <span set:html={fill(T.perDay, { amount: `<span data-count-to="104.77" data-decimals="2" data-locale="${locale}" data-currency="EUR">${fmt(104.77)}</span>` })} />
+              </p>
+              <p class="sec">{fill(T.inAccount, { amount: fmt(1001.85), days: fill(T.days, { count: 20 }) })}</p>
+              <p class="stale">{T.confirmed}</p>
+            </div>
+          </div>
+
+          <div class="scr">
+            <div class="sh"><span>{T.recent}</span><small>{T.seeAll}</small></div>
+            <div class="r ls-in" style="--d:.45s">
+              <span class="ci" style="background:#C8F3E3"><i class="mdi mdi-file-document" /></span>
+              <span class="rt"><b>Claude</b><small>{T.d15}</small></span>
+              <span class="ra"><b>{fmt(18.37)}</b></span>
+            </div>
+            <div class="r ls-in" style="--d:.55s">
+              <span class="ci" style="background:#F3E8C8"><i class="mdi mdi-gas-station" /></span>
+              <span class="rt"><b>Decathlon</b><small>{T.d13}</small></span>
+              <span class="ra"><b>{fmt(34.59)}</b></span>
+            </div>
+            <div class="r ls-in" style="--d:.65s">
+              <span class="ci" style="background:#F3D9C8"><i class="mdi mdi-silverware-fork-knife" /></span>
+              <span class="rt"><b>Aliexpress</b><small>{T.d12}</small></span>
+              <span class="ra"><b>{fmt(69.36)}</b></span>
+            </div>
+            <div class="sh"><span>{T.upcoming}</span><small>{T.seeAll}</small></div>
+            <div class="r ls-in" style="--d:.8s">
+              <span class="ci" style="background:#C8F3E3">
+                <i class="mdi mdi-file-document hb-glyph" />
+                <i class="mdi mdi-check hb-check" />
+              </span>
+              <span class="rt"><b>Ultracc</b><small>{T.d1}</small></span>
+              <span class="ra">
+                <b>{fmt(8.94)}</b>
+                <small class="hb-stat"><span class="hb-u">{T.unpaid}</span><span class="hb-p">{T.paid}</span></small>
+              </span>
+            </div>
+            <div class="r ls-in" style="--d:.9s">
+              <span class="ci" style="background:#C8F3E3"><i class="mdi mdi-file-document" /></span>
+              <span class="rt"><b>Arche Training</b><small>{T.d1}</small></span>
+              <span class="ra"><b>{fmt(260)}</b><small>{T.unpaid}</small></span>
+            </div>
+            <div class="r ls-in" style="--d:1s">
+              <span class="ci" style="background:#C8F3E3"><i class="mdi mdi-file-document" /></span>
+              <span class="rt"><b>Apple</b><small>{T.d1}</small></span>
+              <span class="ra"><b>{fmt(2.99)}</b><small>{T.unpaid}</small></span>
+            </div>
+          </div>
+        </>
+      )
+    }
+
+    {/* ------------------------------------------- OVERVIEW: couple + spreadsheet */}
+    {
+      (kind === 'couple' || kind === 'spreadsheet') && (
+        <>
+          <div class="hd">
+            <span class="month">{T.month} <i class="mdi mdi-chevron-down" /></span>
+          </div>
+          <div class="sw">
+            <span>{T.workspace}</span>
+            <i class="mdi mdi-account-multiple" />
+          </div>
+          <div class="bell">
+            <i class="mdi mdi-bell-outline" />
+            {kind === 'couple' && <span class="bd cp-badge">1</span>}
+          </div>
+
+          <div class="balwrap tight">
+            <div class="balrow">
+              <span class="ib"><i class="mdi mdi-eye-outline" /></span>
+              {kind === 'couple' ? (
+                <span class="amt">{fmt(5946.73)}</span>
+              ) : (
+                <span class="amt swapbox">
+                  <span class="ss-a">{fmt(412.6)}</span>
+                  <span class="ss-b">{fmt(411.3)}</span>
+                </span>
+              )}
+              <span class="ib"><i class="mdi mdi-pencil-outline" /></span>
+            </div>
+            <p class="lbl">{kind === 'couple' ? T.total : T.avail} <i class="mdi mdi-chevron-down sm" /></p>
+          </div>
+
+          <div class="seg">
+            {T.tabs.map((tab, i) => (
+              <span class:list={['sg', { on: (kind === 'couple' ? 1 : 0) === i }]}>{tab}</span>
+            ))}
+          </div>
+          <p class="hint">{hintOthers(kind === 'couple' ? T.othersExp : T.othersCat)}</p>
+
+          <div class="scr pt12">
+            {kind === 'couple' && (
+              <>
+                <div class="cp-banner">
+                  <div class="cp-banner-in">
+                    <div class="banner">
+                      <span class="bic"><i class="mdi mdi-tag-outline" /></span>
+                      <span class="bt"><b>{T.catTitle}</b><small>{T.catSub}</small></span>
+                      <i class="mdi mdi-chevron-right" />
+                    </div>
+                  </div>
+                </div>
+                <div class="add">
+                  <span class="ci add-c"><i class="mdi mdi-plus" /></span>
+                  <span class="addl">{T.newExpense}</span>
+                </div>
+                <div class="cp-row">
+                  <div class="cp-row-in">
+                    <div class="r">
+                      <span class="ci cpc">
+                        <span class="cpc-un"><i class="mdi mdi-help-circle-outline" /></span>
+                        <span class="cpc-ok"><i class="mdi mdi-cart" /></span>
+                      </span>
+                      <span class="rt"><b>{T.supermarket}</b><small>{T.d29}</small></span>
+                      <span class="ra"><b>{fmt(24.5)}</b></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="r">
+                  <span class="ci" style="background:#F3C8C8"><i class="mdi mdi-heart" /></span>
+                  <span class="rt"><b>{T.pharmacy}</b><small>{T.d28}</small></span>
+                  <span class="ra"><b>{fmt(12.9)}</b></span>
+                </div>
+                <div class="r">
+                  <span class="ci" style="background:#F3D9C8"><i class="mdi mdi-silverware-fork-knife" /></span>
+                  <span class="rt"><b>{T.lunch}</b><small>{T.d28}</small></span>
+                  <span class="ra"><b>{fmt(9.8)}</b></span>
+                </div>
+                <div class="r">
+                  <span class="ci" style="background:#F3E8C8"><i class="mdi mdi-gas-station" /></span>
+                  <span class="rt"><b>Galp</b><small>{T.d28}</small></span>
+                  <span class="ra"><b>{fmt(35)}</b></span>
+                </div>
+              </>
+            )}
+            {kind === 'spreadsheet' && (
+              <>
+                <div class="add">
+                  <span class="ci add-c"><i class="mdi mdi-plus" /></span>
+                  <span class="addl">{T.newCat}</span>
+                </div>
+                {[
+                  { n: T.billsCat, i: 'file-document', c: '#C8F3E3', s: 176, b: 950 },
+                  { n: T.coffeeCat, i: 'silverware-fork-knife', c: '#F3D9C8', s: 25.4, o: 24.1, b: 150 },
+                  { n: T.gasCat, i: 'gas-station', c: '#F3E8C8', s: 0, b: 80 },
+                  { n: T.healthCat, i: 'heart', c: '#F3C8C8', s: 0, b: 60 },
+                ].map((row) => (
+                  <div class="r">
+                    <span class="ci" style={`background:${row.c}`}><i class={`mdi mdi-${row.i}`} /></span>
+                    <span class="rt"><b>{row.n}</b></span>
+                    <span class="ra">
+                      {row.o ? (
+                        <b class="swapbox right">
+                          <span class="ss-a">{fill(T.spent, { amount: fmt(row.o) })}</span>
+                          <span class="ss-b">{fill(T.spent, { amount: fmt(row.s) })}</span>
+                        </b>
+                      ) : (
+                        <b>{fill(T.spent, { amount: fmt(row.s) })}</b>
+                      )}
+                      <small>{fill(T.budget, { amount: fmt(row.b) })}</small>
+                    </span>
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        </>
+      )
+    }
+
+    {/* ---------------------------------------------------- SAFE TO SPEND (payday) */}
+    {
+      kind === 'payday' && (
+        <>
+          <div class="nh">
+            <i class="mdi mdi-chevron-left back" />
+            <span class="ntitle">{T.sts}</span>
+          </div>
+          <div class="scr sts-pad">
+            <p class="h26 ls-in" style="--d:.05s">{fill('{{amount}}/' + (en ? 'day' : 'dia'), { amount: fmt(104.77) })}</p>
+            <p class="s14 ls-in" style="--d:.1s">{T.suffix}</p>
+            <p class="s14 mb20 ls-in" style="--d:.15s">{fill(T.inAccount, { amount: fmt(1001.85), days: fill(T.days, { count: 23 }) })}</p>
+
+            <p class="big ls-in" style="--d:.25s">{T.timeline}</p>
+            <div class="tcard">
+              <div class="tl ls-in" style="--d:.35s">
+                <span class="rl"><i class="ln" /><i class="dt" /><i class="ln" /></span>
+                <div class="tc">
+                  <div class="dh"><span>{T.today}</span></div>
+                  <div class="grp">
+                    <span class="gc"><i class="mdi mdi-chevron-down g-down" /><i class="mdi mdi-chevron-up g-up" /></span>
+                    <span class="gl">{T.bills(5)}</span>
+                    <span class="ga">- {fmt(303.92)}</span>
+                  </div>
+                  <div class="gx"><div class="gx-in">
+                    {todayBills.map((b) => (
+                      <div class="br"><span class="bc"><i class="mdi mdi-file-document-outline" /></span><span class="bn">{b.name}</span><span class="ba">- {fmt(b.amount)}</span></div>
+                    ))}
+                  </div></div>
+                  <p class="bal">{fmt(21680.5)}</p>
+                </div>
+              </div>
+              <div class="tl quiet ls-in" style="--d:.45s">
+                <span class="rl"><i class="ln" /><i class="dt mute" /><i class="ln" /></span>
+                <div class="tc"><p class="qd">{T.quiet(7)}</p></div>
+              </div>
+              <div class="tl ls-in" style="--d:.55s">
+                <span class="rl"><i class="ln" /><i class="dt" /><i class="ln" /></span>
+                <div class="tc">
+                  <div class="dh"><span>{T.oct10}</span></div>
+                  <div class="grp">
+                    <span class="gc"><i class="mdi mdi-chevron-down" /></span>
+                    <span class="gl">{T.bills(14)}</span>
+                    <span class="ga">- {fmt(1490.47)}</span>
+                  </div>
+                  <p class="bal">{fmt(20087.19)}</p>
+                </div>
+              </div>
+              <div class="tl quiet ls-in" style="--d:.65s">
+                <span class="rl"><i class="ln" /><i class="dt low" /><i class="ln" /></span>
+                <div class="tc">
+                  <p class="qd">{T.quiet(13)}</p>
+                  <p class="lp">{fill(T.lowest, { amount: fmt(20037.19) })}</p>
+                </div>
+              </div>
+              <div class="tl ls-in" style="--d:.75s">
+                <span class="rl"><i class="ln" /><i class="dt" /><i class="ln" /></span>
+                <div class="tc">
+                  <div class="grp dep">
+                    <span class="gc big"><i class="mdi mdi-help-circle-outline" /></span>
+                    <span class="gl">{T.vacation}<small>{T.before}</small></span>
+                    <span class="ga">- {fmt(102.84)}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="tl ls-in" style="--d:.85s">
+                <span class="rl"><i class="ln" /><i class="dt" /><i class="ln" /></span>
+                <div class="tc">
+                  <div class="dh sp"><span>{T.oct25} · {T.payday}</span><span>{T.resets}</span></div>
+                </div>
+              </div>
+            </div>
+            <p class="kept ls-in" style="--d:.95s"><i class="mdi mdi-shield-outline" /> {fill(T.kept, { amount: fmt(50) })}</p>
+            <p class="big ls-in" style="--d:1s">{T.pace}</p>
+          </div>
+        </>
+      )
+    }
+
+    {/* --------------------------------------------------------- FUND DETAILS (saver) */}
+    {
+      kind === 'saver' && (
+        <>
+          <div class="nh">
+            <i class="mdi mdi-chevron-left back" />
+          </div>
+          <div class="fh">
+            <p class="fname ls-in" style="--d:.05s">{T.fundName} <i class="mdi mdi-pencil-outline sm" /></p>
+            <p class="fstat ls-in" style="--d:.1s">{T.inProgress}</p>
+            <div class="stats ls-in" style="--d:.2s">
+              <span><b>{fmt(5022)}</b><small>{T.current}</small></span>
+              <span><b>{fmt(25000)}</b><small>{T.target}</small></span>
+              <span><b>{fmt(19978)}</b><small>{T.remaining}</small></span>
+            </div>
+            <div class="pbar ls-in" style="--d:.3s"><i class="pfill" /></div>
+            <p class="proj ls-in" style="--d:.4s">{fill(T.proj, { amount: '€25K', month: T.projMonth, rate: fmt(300) })}</p>
+          </div>
+
+          <div class="fcol">
+          <div class="wi ls-in" style="--d:.5s">
+            <div class="wi-read swapbox left">
+              <span class="wi-a">{fill(T.mo, { amount: fmt(300) })}</span>
+              <span class="wi-b">{fill(T.mo, { amount: fmt(450) })}</span>
+            </div>
+            <div class="slider">
+              <i class="smin" /><i class="smax" /><i class="thumb" />
+            </div>
+            <div class="wi-x"><div class="wi-x-in">
+              <p class="tradeoff">{fill(T.less, { amount: fmt(6) })} · {fill(T.earlier, { count: 22 })}</p>
+              <span class="commit">{fill(T.setMonthly, { amount: fmt(450) })}</span>
+            </div></div>
+          </div>
+
+          <div class="cyc ls-in" style="--d:.7s">
+            <span class="cyt">{fill(T.cycle, { month: T.cycleMonth, amount: fmt(300), day: 5 })}</span>
+            <span class="pillb">{T.deposit}</span>
+          </div>
+          <div class="add pad24 ls-in" style="--d:.8s">
+            <span class="ci add-c"><i class="mdi mdi-plus" /></span>
+            <span class="addl">{T.newMovement}</span>
+          </div>
+          </div>
+        </>
+      )
+    }
+
+    {/* ---------------------------------------- CALCULATORS: freelancer + expat */}
+    {
+      (kind === 'freelancer' || kind === 'expat') && (
+        <>
+          <div class="nh">
+            <i class="mdi mdi-chevron-left back" />
+            <span class="ntitle sm">{kind === 'freelancer' ? T.taxTitle : T.salTitle}</span>
+          </div>
+          <div class={`scr calc ${kind === 'expat' ? 'scrolls' : ''}`}>
+            <div class="scroller">
+              <p class="disc">{kind === 'freelancer' ? T.taxDisclaimer : T.salDisclaimer}</p>
+
+              {kind === 'freelancer' ? (
+                <>
+                  <p class="fl">{T.grossIncome}</p>
+                  <div class="inp"><span class="eur">€</span><span class="ph">{T.eg30000}</span>
+                    <span class="typed">{['2', '0', '0', '0'].map((c, i) => <em class={`c c${i}`}>{c}</em>)}</span>
+                  </div>
+                  <p class="fl">{T.frequency}</p>
+                  <div class="seg2 s3"><i class="pill p-move" />{T.freq.map((o, i) => <span class:list={{ on: i === 1 }}>{o}</span>)}</div>
+                  <p class="fl">{T.taxYear}</p>
+                  <div class="seg2 s4"><i class="pill" />{['2026', '2025', '2024', '2023'].map((o, i) => <span class:list={{ on: i === 0 }}>{o}</span>)}</div>
+                  <p class="fl">{T.showResults}</p>
+                  <div class="seg2 s3"><i class="pill k1" />{T.freq.map((o, i) => <span class:list={{ on: i === 1 }}>{o}</span>)}</div>
+                  <div class="adv"><span>{T.advanced}</span><i class="mdi mdi-chevron-down" /></div>
+
+                  <div class="res">
+                    <p class="rtl">{T.estimated}</p>
+                    <p class="empty">{T.enterGross}</p>
+                    <div class="grid2 rshow">
+                      <span><b>{fmt(2000)}</b><small>{T.grossIncome}</small></span>
+                      <span><b>{fmt(300)}</b><small>{T.ss}</small></span>
+                      <span><b>{fmt(238)}</b><small>{T.irs}</small></span>
+                      <span><b>{fmt(1462)}</b><small>{T.net}</small></span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p class="fl">{T.know}</p>
+                  <div class="seg2 s2"><i class="pill" />{T.knowOpts.map((o, i) => <span class:list={{ on: i === 0 }}>{o}</span>)}</div>
+                  <p class="fl">{T.grossMonthly}</p>
+                  <div class="inp"><span class="eur">€</span><span class="ph">{en ? 'e.g. 1500' : 'ex.: 1500'}</span>
+                    <span class="typed">{['1', '5', '0', '0'].map((c, i) => <em class={`c c${i}`}>{c}</em>)}</span>
+                  </div>
+                  <p class="fl">{T.region}</p>
+                  <div class="seg2 s3"><i class="pill" />{T.regions.map((o, i) => <span class:list={{ on: i === 0 }}>{o}</span>)}</div>
+                  <p class="fl">{T.filing}</p>
+                  <div class="seg2 s3 tall"><i class="pill" />{T.filings.map((o, i) => <span class:list={{ on: i === 0 }}>{o}</span>)}</div>
+                  <p class="fl">{T.dependents}</p>
+                  <div class="inp"><span class="val">0</span></div>
+                  <div class="tog"><span>{T.disability}</span><i class="sw2" /></div>
+                  <div class="adv"><span>{T.advanced}</span><i class="mdi mdi-chevron-down" /></div>
+
+                  <div class="res">
+                    <p class="rtl">{T.regular}</p>
+                    <p class="empty">{T.enterAmount}</p>
+                    <div class="grid2 rshow">
+                      <span><b>{fmt(1500)}</b><small>{T.grossSalary}</small></span>
+                      <span><b>{fmt(165)}</b><small>{T.ssYou}</small></span>
+                      <span><b>{fmt(168)}</b><small>{T.irsWithheld}</small></span>
+                      <span><b>{fmt(1167)}</b><small>{T.netTake}</small></span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </>
+      )
+    }
+
+    {/* ---------------------------------------------------- ADD EXPENSE keypad (privacy) */}
+    {
+      kind === 'privacy' && (
+        <>
+          <div class="modalbg">
+            <div class="sb dark">
+              <span>9:41</span>
+              <span class="sbr">
+                <i class="mdi mdi-signal-cellular-3" />
+                <i class="mdi mdi-wifi" />
+                <i class="mdi mdi-battery" />
+              </span>
+            </div>
+          </div>
+          <div class="sheet">
+            <span class="grab" />
+            <div class="pillwrap">
+              <div class="cpill un"><i class="mdi mdi-help-circle-outline" /><span>{T.select}</span><i class="mdi mdi-chevron-down" /></div>
+              <div class="cpill ch"><i class="mdi mdi-silverware-fork-knife" /><span>{T.catName}</span><i class="mdi mdi-chevron-down" /></div>
+            </div>
+            <p class="ealbl">{T.expenseAmount}</p>
+            <p class="eamt">
+              <span class="ecur">€</span>
+              <span class="zero">0</span>
+              {['1', '2', '.', '5', '0'].map((c, i) => <span class={`dg d${i}`}>{c}</span>)}
+            </p>
+            <p class="edesc">{T.addDesc}</p>
+            <div class="pad">
+              <div class="dcols">
+                {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((k) => <span class="key">{k}</span>)}
+                <span class="key cur">€</span><span class="key">0</span><span class="key">.</span>
+              </div>
+              <div class="acol">
+                <span class="key del"><i class="mdi mdi-backspace-outline" /></span>
+                <span class="key cal"><i class="mdi mdi-calendar-outline" /></span>
+                <span class="key ok"><i class="mdi mdi-check" /></span>
+              </div>
+            </div>
+          </div>
+          <span class="tap" />
+        </>
+      )
+    }
+
+    {/* ------------------------------------------------------------ WRAP story (closer) */}
+    {
+      kind === 'closer' && (
+        <>
+          {(() => {
+            const slides = [
+              { bg: '#CFF3DA' }, { bg: '#D8E7F7' }, { bg: '#F6DECB' }, { bg: '#F7D6DE' }, { bg: '#D6F1EC' }, { bg: '#E7DAF5' },
+            ];
+            return slides.map((s, i) => (
+              <div class={`wc wc${i}`} style={`background:${s.bg}`}>
+                <div class="wsb"><span>9:41</span><span class="sbr"><i class="mdi mdi-signal-cellular-3" /><i class="mdi mdi-wifi" /><i class="mdi mdi-battery" /></span></div>
+                <div class="wh">
+                  <div class="wsegs">{[0, 1, 2, 3, 4, 5].map((j) => <i class:list={{ on: j <= i }} />)}</div>
+                  <i class="mdi mdi-close" />
+                </div>
+                <div class="wb">
+                  {i === 0 && (
+                    <>
+                      <p class="eb">{T.wrapReview}</p>
+                      <p class="wh22">{T.wrapMonth}</p>
+                      <p class="wbig">{fmt(2155.8)}</p>
+                      <p class="wcap">{T.cashChange}</p>
+                      <p class="wcap red">{fill(T.vsLast, { delta: `-${fmt(54.09)}` })}</p>
+                    </>
+                  )}
+                  {i === 1 && (
+                    <>
+                      <p class="eb">{T.incomeSpent}</p>
+                      <div class="wgrid">
+                        <span><b>{fmt(5244.79)}</b><small>{T.incomeLbl}</small><em>{fill(T.vsLast, { delta: signed(2.48) })}</em></span>
+                        <span><b>{fmt(2862.99)}</b><small>{T.spentLbl}</small><em>{fill(T.vsLast, { delta: signed(69.92) })}</em></span>
+                      </div>
+                    </>
+                  )}
+                  {i === 2 && (
+                    <>
+                      <p class="eb">{T.whereWent}</p>
+                      <div class="wtop">
+                        <em>{T.topCat}</em>
+                        <p class="wh22">{T.fixedBills}</p>
+                        <p class="wcap">{fmt(1490.47)} · {fill(T.ofSpending, { percent: '52%' })}</p>
+                      </div>
+                      <div class="wbars">
+                        {[[T.fixedBills, 1490.47, 100], [T.shopping, 752.05, 50], [T.health, 161.49, 11]].map(([n, v, w]) => (
+                          <div class="wbr"><span>{n}</span><i class="tr"><i class="fl" style={`width:${w}%`} /></i><em>{fmt(v as number)}</em></div>
+                        ))}
+                      </div>
+                      <div class="wbig2">
+                        <em>{T.biggest}</em>
+                        <p class="wh17">{T.rent}</p>
+                        <p class="wcap">{fmt(796)} · {T.d9}</p>
+                      </div>
+                    </>
+                  )}
+                  {i === 3 && (
+                    <>
+                      <p class="eb">{T.billsLbl}</p>
+                      <p class="wh22">{fill(T.paidOf, { paid: 14, total: 14 })}</p>
+                      <p class="wcap">{T.allPaid}</p>
+                    </>
+                  )}
+                  {i === 4 && (
+                    <>
+                      <p class="eb">{T.savings}</p>
+                      <p class="wh22">{fill(T.toFund, { amount: signed(200), fund: T.fundName })}</p>
+                      <p class="wcap">{fill(T.ofIncome, { percent: '4%' })}</p>
+                    </>
+                  )}
+                  {i === 5 && (
+                    <>
+                      <p class="eb">{T.lookAt}</p>
+                      <p class="wh22">{T.allGood}</p>
+                    </>
+                  )}
+                </div>
+                {i === 5 && <div class="wact"><span class="wbtn">{T.done}</span></div>}
+                <p class="wft">{T.wrapMonth} · OtterBond</p>
+              </div>
+            ));
+          })()}
+          <span class="tap wtap" />
+        </>
+      )
+    }
+
+    {
+      ['home', 'payday', 'freelancer', 'expat'].includes(kind) && (
+        <div class="nav">
+          {nav(kind === 'home' ? 0 : 3).map((n, i) => (
+            <span class:list={['ni', { on: n.active }]}>
+              <i class={`mdi mdi-${navIcons[i]}`} />
+              <small>{n.label}</small>
+            </span>
+          ))}
+        </div>
+      )
+    }
+    {
+      ['couple', 'spreadsheet'].includes(kind) && (
+        <div class="nav">
+          {nav(1).map((n, i) => (
+            <span class:list={['ni', { on: n.active }]}>
+              <i class={`mdi mdi-${navIcons[i]}`} />
+              <small>{n.label}</small>
+            </span>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<style is:global>
+/* All lengths use `Nu` = N points of the app's 390pt design (rewritten to calc(N * var(--u)) at build). */
+.ls {
+  position: absolute;
+  inset: 0;
+  container-type: inline-size;
+  background: #1e1e1e;
+  color: #f2f2f2;
+  overflow: hidden;
+  font-size: 16px;
+}
+.ls-body {
+  --u: calc(100cqw / 390);
+  position: absolute;
+  inset: 0;
+  font-family: 'Fredoka', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: calc(16 * var(--u));
+  line-height: 1.25;
+}
+.ls * {
+  margin: 0;
+  box-sizing: border-box;
+  font-weight: 400;
+}
+.ls em {
+  font-style: normal;
+}
+.ls i {
+  font-style: normal;
+}
+.ls .mdi {
+  line-height: 1;
+}
+
+/* Status bar */
+.ls .sb,
+.ls .wsb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(48 * var(--u));
+  padding: calc(16 * var(--u)) calc(30 * var(--u)) 0 calc(40 * var(--u));
+  display: flex;
+  justify-content: space-between;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: 600;
+  font-size: calc(16 * var(--u));
+  z-index: 3;
+}
+.ls .sb *,
+.ls .wsb * {
+  font-weight: 600;
+}
+.sbr {
+  display: flex;
+  gap: calc(5 * var(--u));
+  font-size: calc(17 * var(--u));
+}
+.wsb {
+  color: #fff;
+}
+.sb.dark {
+  color: #fff;
+}
+
+/* Header pieces */
+.hd {
+  position: absolute;
+  top: calc(64 * var(--u));
+  left: calc(24 * var(--u));
+  right: calc(24 * var(--u));
+  height: calc(32 * var(--u));
+  display: flex;
+  align-items: center;
+}
+.greet,
+.month {
+  font-size: calc(20 * var(--u));
+}
+.month .mdi {
+  font-size: calc(20 * var(--u));
+  vertical-align: calc(-3 * var(--u));
+}
+.sw {
+  position: absolute;
+  top: calc(64 * var(--u));
+  right: calc(64 * var(--u));
+  height: calc(32 * var(--u));
+  display: flex;
+  align-items: center;
+  gap: calc(6 * var(--u));
+  font-size: calc(13 * var(--u));
+}
+.sw .mdi {
+  font-size: calc(22 * var(--u));
+}
+.bell {
+  position: absolute;
+  top: calc(64 * var(--u));
+  right: calc(24 * var(--u));
+  width: calc(32 * var(--u));
+  height: calc(32 * var(--u));
+  display: grid;
+  place-items: center;
+}
+.bell .mdi {
+  font-size: calc(22 * var(--u));
+}
+.bd {
+  position: absolute;
+  top: calc(-2 * var(--u));
+  right: calc(-4 * var(--u));
+  min-width: calc(18 * var(--u));
+  height: calc(18 * var(--u));
+  padding: 0 calc(4 * var(--u));
+  border-radius: calc(9 * var(--u));
+  background: #ffccdb;
+  color: #1a1a1a;
+  font-size: calc(11 * var(--u));
+  display: grid;
+  place-items: center;
+}
+.balwrap {
+  position: absolute;
+  top: calc(112 * var(--u));
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+.balrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: calc(4 * var(--u));
+  height: calc(38 * var(--u));
+}
+.ib {
+  width: calc(32 * var(--u));
+  height: calc(32 * var(--u));
+  display: grid;
+  place-items: center;
+  color: #b5b5b5;
+}
+.ib .mdi {
+  font-size: calc(18 * var(--u));
+}
+.amt {
+  font-size: calc(32 * var(--u));
+  line-height: calc(38 * var(--u));
+  font-variant-numeric: tabular-nums;
+}
+.lbl {
+  margin-top: calc(2 * var(--u));
+  font-size: calc(13 * var(--u));
+  color: #b5b5b5;
+}
+.lbl .sm {
+  font-size: calc(16 * var(--u));
+  vertical-align: calc(-3 * var(--u));
+}
+.sts {
+  margin-top: calc(14 * var(--u));
+}
+.hl {
+  font-size: calc(19 * var(--u));
+}
+.sec {
+  margin-top: calc(2 * var(--u));
+  font-size: calc(13 * var(--u));
+  color: #b5b5b5;
+}
+.stale {
+  margin-top: calc(6 * var(--u));
+  font-size: calc(12 * var(--u));
+  color: #b5b5b5;
+}
+
+/* Lists */
+.scr {
+  position: absolute;
+  top: calc(245 * var(--u));
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: calc(8 * var(--u)) calc(24 * var(--u)) 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.scr.pt12 {
+  top: calc(251 * var(--u));
+  padding-top: calc(12 * var(--u));
+}
+.sh {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: calc(12 * var(--u)) 0 calc(4 * var(--u));
+}
+.sh span {
+  font-size: calc(18 * var(--u));
+}
+.sh small {
+  font-size: calc(13 * var(--u));
+  color: #b5b5b5;
+}
+.r {
+  display: flex;
+  align-items: center;
+  padding: calc(12 * var(--u)) 0;
+}
+.ci {
+  position: relative;
+  flex: none;
+  width: calc(48 * var(--u));
+  height: calc(48 * var(--u));
+  margin-right: calc(12 * var(--u));
+  border-radius: calc(24 * var(--u));
+  display: grid;
+  place-items: center;
+  color: #1a1a1a;
+}
+.ci .mdi {
+  font-size: calc(22 * var(--u));
+}
+.rt {
+  flex: 1;
+  min-width: 0;
+}
+.rt b {
+  display: block;
+  font-size: calc(16 * var(--u));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rt small {
+  display: block;
+  margin-top: calc(2 * var(--u));
+  font-size: calc(12 * var(--u));
+  color: #b5b5b5;
+}
+.ra {
+  text-align: right;
+}
+.ra b {
+  display: block;
+  font-size: calc(16 * var(--u));
+  font-variant-numeric: tabular-nums;
+}
+.ra small {
+  display: block;
+  margin-top: calc(2 * var(--u));
+  font-size: calc(12 * var(--u));
+  color: #b5b5b5;
+}
+.add {
+  display: flex;
+  align-items: center;
+  padding: calc(12 * var(--u)) 0;
+}
+.add.pad24 {
+  padding: calc(12 * var(--u)) calc(24 * var(--u));
+}
+.add-c {
+  background: #cff3da;
+  color: #234d2e;
+}
+.add-c .mdi {
+  font-size: calc(26 * var(--u));
+}
+.addl {
+  font-size: calc(16 * var(--u));
+}
+.swapbox {
+  display: inline-grid;
+}
+.swapbox > * {
+  grid-area: 1 / 1;
+}
+.swapbox.right {
+  justify-items: end;
+}
+.swapbox.left {
+  justify-items: start;
+}
+
+/* Bottom nav */
+.nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(94 * var(--u));
+  padding-top: calc(12 * var(--u));
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid #333;
+  background: #1e1e1e;
+  z-index: 2;
+}
+.ni {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(2 * var(--u));
+  width: calc(78 * var(--u));
+  color: #f2f2f2;
+}
+.ni .mdi {
+  font-size: calc(26 * var(--u));
+}
+.ls .ni small {
+  font-size: calc(10 * var(--u));
+  font-weight: 300;
+}
+.ni.on {
+  color: #2f80ed;
+}
+
+/* Overview */
+.seg {
+  position: absolute;
+  top: calc(188 * var(--u));
+  left: calc(24 * var(--u));
+  right: calc(24 * var(--u));
+  display: flex;
+  gap: calc(6 * var(--u));
+  padding: calc(4 * var(--u));
+  border-radius: calc(20 * var(--u));
+  background: #3a3a3a;
+}
+.sg {
+  flex: 1;
+  padding: calc(8 * var(--u)) calc(4 * var(--u));
+  border-radius: calc(16 * var(--u));
+  text-align: center;
+  font-size: calc(13 * var(--u));
+  color: #8c8c8c;
+  white-space: nowrap;
+}
+.sg.on {
+  flex: 1.6;
+  background: #2f80ed;
+  color: #fff;
+}
+.hint {
+  position: absolute;
+  top: calc(236 * var(--u));
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: calc(12 * var(--u));
+  color: #b5b5b5;
+}
+.banner {
+  display: flex;
+  align-items: center;
+  gap: calc(10 * var(--u));
+  padding: calc(12 * var(--u));
+  margin-bottom: calc(12 * var(--u));
+  border-radius: calc(16 * var(--u));
+  background: #fbeee6;
+}
+.bic {
+  flex: none;
+  width: calc(40 * var(--u));
+  height: calc(40 * var(--u));
+  border-radius: calc(20 * var(--u));
+  background: #d97b3f;
+  color: #fff;
+  display: grid;
+  place-items: center;
+}
+.bic .mdi {
+  font-size: calc(20 * var(--u));
+}
+.bt {
+  flex: 1;
+}
+.bt b {
+  display: block;
+  font-size: calc(15 * var(--u));
+  color: #1a1a1a;
+}
+.bt small {
+  display: block;
+  font-size: calc(12 * var(--u));
+  color: #9a5220;
+}
+.banner > .mdi {
+  font-size: calc(20 * var(--u));
+  color: #1a1a1a;
+}
+.cp-banner,
+.cp-row {
+  display: grid;
+}
+.cp-banner {
+  grid-template-rows: 0fr;
+}
+.cp-row {
+  grid-template-rows: 1fr;
+}
+.cp-banner-in,
+.cp-row-in {
+  overflow: hidden;
+  min-height: 0;
+}
+.cpc-un,
+.cpc-ok {
+  position: absolute;
+  inset: 0;
+  border-radius: calc(24 * var(--u));
+  display: grid;
+  place-items: center;
+}
+.cpc-un {
+  background: #e2e2e2;
+  color: #6e6e6e;
+  opacity: 0;
+}
+.cpc-ok {
+  background: #cef3c8;
+}
+.cp-badge {
+  opacity: 0;
+}
+
+/* Safe to Spend + fund details headers */
+.nh {
+  position: absolute;
+  top: calc(64 * var(--u));
+  left: calc(24 * var(--u));
+  right: calc(24 * var(--u));
+  height: calc(32 * var(--u));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.back {
+  position: absolute;
+  left: 0;
+  font-size: calc(28 * var(--u));
+}
+.ntitle {
+  font-size: calc(17 * var(--u));
+}
+.ntitle.sm {
+  padding: 0 calc(40 * var(--u));
+  font-size: calc(14.5 * var(--u));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.ls-expat .ntitle.sm,
+.ls-freelancer .ntitle.sm {
+  font-size: calc(13 * var(--u));
+}
+.sts-pad {
+  top: calc(108 * var(--u));
+  padding-top: 0;
+}
+.h26 {
+  font-size: calc(26 * var(--u));
+  line-height: calc(32 * var(--u));
+}
+.s14 {
+  margin-top: calc(4 * var(--u));
+  font-size: calc(14 * var(--u));
+  color: #b5b5b5;
+}
+.s14.mb20 {
+  margin-bottom: calc(20 * var(--u));
+}
+.big {
+  margin: calc(28 * var(--u)) 0 calc(12 * var(--u));
+  font-size: calc(19 * var(--u));
+}
+.tcard {
+  margin-top: calc(8 * var(--u));
+  padding: calc(16 * var(--u));
+  border-radius: calc(16 * var(--u));
+  background: #212124;
+}
+.tl {
+  display: flex;
+}
+.rl {
+  width: calc(16 * var(--u));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ln {
+  flex: 1;
+  width: calc(2 * var(--u));
+  background: #3a3a3a;
+}
+.dt {
+  flex: none;
+  width: calc(6 * var(--u));
+  height: calc(6 * var(--u));
+  border-radius: calc(3 * var(--u));
+  background: #b5b5b5;
+}
+.dt.mute {
+  background: #3a3a3a;
+}
+.dt.low {
+  width: calc(10 * var(--u));
+  height: calc(10 * var(--u));
+  border-radius: calc(5 * var(--u));
+  background: #f2f2f2;
+}
+.tc {
+  flex: 1;
+  min-width: 0;
+  padding: calc(6 * var(--u)) 0 calc(6 * var(--u)) calc(8 * var(--u));
+}
+.tl.quiet .tc {
+  padding: 0 0 0 calc(8 * var(--u));
+}
+.dh {
+  font-size: calc(12 * var(--u));
+  text-transform: uppercase;
+  letter-spacing: calc(0.5 * var(--u));
+  color: #b5b5b5;
+}
+.dh.sp {
+  display: flex;
+  justify-content: space-between;
+}
+.grp {
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  padding: calc(4 * var(--u)) 0;
+}
+.gc {
+  position: relative;
+  flex: none;
+  width: calc(20 * var(--u));
+  height: calc(20 * var(--u));
+  border-radius: calc(10 * var(--u));
+  background: #3a3a3a;
+  display: grid;
+  place-items: center;
+}
+.gc .mdi {
+  font-size: calc(14 * var(--u));
+  color: #f2f2f2;
+}
+.gc.big {
+  background: #f59e0b;
+}
+.gc.big .mdi {
+  color: #1a1a1a;
+}
+.g-up {
+  position: absolute;
+  opacity: 0;
+}
+.gl {
+  flex: 1;
+  font-size: calc(14 * var(--u));
+}
+.gl small {
+  display: block;
+  margin-top: calc(1 * var(--u));
+  font-size: calc(11 * var(--u));
+  color: #b5b5b5;
+}
+.ga {
+  font-size: calc(14 * var(--u));
+  font-variant-numeric: tabular-nums;
+}
+.bal {
+  margin-top: calc(2 * var(--u));
+  text-align: right;
+  font-size: calc(13 * var(--u));
+  color: #b5b5b5;
+}
+.qd {
+  padding-top: calc(10 * var(--u));
+  font-size: calc(13 * var(--u));
+  font-style: italic;
+  color: #b5b5b5;
+}
+.ls .qd {
+  font-style: italic;
+}
+.lp {
+  margin-top: calc(2 * var(--u));
+  padding-bottom: calc(6 * var(--u));
+  font-size: calc(12 * var(--u));
+  color: #b5b5b5;
+}
+.gx {
+  display: grid;
+  grid-template-rows: 0fr;
+}
+.gx-in {
+  overflow: hidden;
+  min-height: 0;
+}
+.br {
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  padding: calc(4 * var(--u)) 0 calc(4 * var(--u)) 0;
+}
+.bc {
+  flex: none;
+  width: calc(20 * var(--u));
+  height: calc(20 * var(--u));
+  border-radius: calc(10 * var(--u));
+  background: #3a3a3a;
+  display: grid;
+  place-items: center;
+}
+.bc .mdi {
+  font-size: calc(14 * var(--u));
+}
+.bn,
+.ba {
+  font-size: calc(14 * var(--u));
+}
+.bn {
+  flex: 1;
+}
+.kept {
+  display: flex;
+  align-items: center;
+  gap: calc(6 * var(--u));
+  padding: calc(12 * var(--u)) 0;
+  font-size: calc(13 * var(--u));
+  color: #b5b5b5;
+}
+.kept .mdi {
+  font-size: calc(16 * var(--u));
+}
+
+/* Fund details */
+.fh {
+  position: absolute;
+  top: calc(64 * var(--u));
+  left: calc(12 * var(--u));
+  right: calc(12 * var(--u));
+  text-align: center;
+}
+.fname {
+  height: calc(32 * var(--u));
+  line-height: calc(32 * var(--u));
+  font-size: calc(17 * var(--u));
+}
+.fname .sm {
+  margin-left: calc(4 * var(--u));
+  font-size: calc(14 * var(--u));
+  color: #b5b5b5;
+}
+.fstat {
+  margin-top: calc(2 * var(--u));
+  font-size: calc(12 * var(--u));
+  color: #b5b5b5;
+}
+.stats {
+  display: flex;
+  margin-top: calc(20 * var(--u));
+}
+.stats span {
+  flex: 1;
+}
+.stats b {
+  display: block;
+  font-size: calc(18 * var(--u));
+  font-variant-numeric: tabular-nums;
+}
+.stats small {
+  display: block;
+  margin-top: calc(2 * var(--u));
+  font-size: calc(12 * var(--u));
+  color: #b5b5b5;
+}
+.pbar {
+  height: calc(6 * var(--u));
+  margin: calc(16 * var(--u)) calc(12 * var(--u)) 0;
+  border-radius: calc(3 * var(--u));
+  background: #3a3a3a;
+  overflow: hidden;
+}
+.pfill {
+  display: block;
+  width: 20.09%;
+  height: 100%;
+  border-radius: calc(3 * var(--u));
+  background: #f2f2f2;
+  transform-origin: left;
+}
+.proj {
+  margin-top: calc(6 * var(--u));
+  font-size: calc(13 * var(--u));
+  color: #b5b5b5;
+}
+.fcol {
+  position: absolute;
+  top: calc(244 * var(--u));
+  left: calc(24 * var(--u));
+  right: calc(24 * var(--u));
+}
+.wi-read {
+  font-size: calc(18 * var(--u));
+  line-height: calc(22 * var(--u));
+  font-variant-numeric: tabular-nums;
+}
+.slider {
+  position: relative;
+  height: calc(40 * var(--u));
+  margin-top: calc(8 * var(--u));
+}
+.smax,
+.smin {
+  position: absolute;
+  top: calc(18 * var(--u));
+  height: calc(4 * var(--u));
+  border-radius: calc(2 * var(--u));
+}
+.smax {
+  left: 0;
+  right: 0;
+  background: #3a3a3c;
+}
+.smin {
+  left: 0;
+  width: 45%;
+  background: #0a84ff;
+  z-index: 1;
+}
+.thumb {
+  position: absolute;
+  top: calc(6 * var(--u));
+  left: 45%;
+  width: calc(28 * var(--u));
+  height: calc(28 * var(--u));
+  margin-left: calc(-14 * var(--u));
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 calc(2 * var(--u)) calc(4 * var(--u)) rgb(0 0 0 / 0.35);
+  z-index: 2;
+}
+.wi-x {
+  display: grid;
+  grid-template-rows: 1fr;
+}
+.wi-x-in {
+  overflow: hidden;
+  min-height: 0;
+}
+.tradeoff {
+  margin-top: calc(8 * var(--u));
+  font-size: calc(14 * var(--u));
+  color: #b5b5b5;
+}
+.commit {
+  display: inline-block;
+  margin-top: calc(8 * var(--u));
+  padding: calc(10 * var(--u)) calc(16 * var(--u));
+  border-radius: calc(20 * var(--u));
+  background: #f2f2f2;
+  color: #1e1e1e;
+  font-size: calc(14 * var(--u));
+}
+.cyc {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(12 * var(--u));
+  margin-top: calc(16 * var(--u));
+}
+.cyt {
+  flex: 1;
+  font-size: calc(14 * var(--u));
+}
+.pillb {
+  padding: calc(10 * var(--u)) calc(16 * var(--u));
+  border-radius: calc(20 * var(--u));
+  background: #f2f2f2;
+  color: #1e1e1e;
+  font-size: calc(14 * var(--u));
+}
+.fcol .add.pad24 {
+  padding: calc(12 * var(--u)) 0;
+  margin-top: calc(8 * var(--u));
+}
+
+/* Calculators */
+.scr.calc {
+  top: calc(108 * var(--u));
+  padding: 0 calc(24 * var(--u));
+}
+.scroller {
+  will-change: transform;
+}
+.scrolls .scroller {
+  transform: translateY(calc(-380 * var(--u)));
+}
+.disc {
+  margin-bottom: calc(16 * var(--u));
+  font-size: calc(12 * var(--u));
+  line-height: 1.3;
+  color: #b5b5b5;
+}
+.fl {
+  margin-bottom: calc(6 * var(--u));
+  font-size: calc(13 * var(--u));
+  color: #b5b5b5;
+}
+.inp {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  height: calc(47 * var(--u));
+  padding: 0 calc(16 * var(--u));
+  margin-bottom: calc(16 * var(--u));
+  border-radius: calc(16 * var(--u));
+  background: #d9e4fa;
+  color: #1a1a1a;
+  font-size: calc(16 * var(--u));
+}
+.eur {
+  color: #6e6e6e;
+}
+.ph {
+  color: #6e6e6e;
+  opacity: 0;
+}
+.typed {
+  position: absolute;
+  left: calc(40 * var(--u));
+  display: flex;
+}
+.typed .c {
+  display: inline-block;
+}
+.seg2 {
+  position: relative;
+  display: flex;
+  gap: calc(2 * var(--u));
+  padding: calc(2 * var(--u));
+  margin-bottom: calc(16 * var(--u));
+  border-radius: calc(20 * var(--u));
+  background: #3a3a3a;
+}
+.seg2 span {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  padding: calc(8 * var(--u)) calc(4 * var(--u));
+  border-radius: calc(18 * var(--u));
+  text-align: center;
+  font-size: calc(12 * var(--u));
+  color: #8c8c8c;
+}
+.seg2 span.on {
+  color: #f2f2f2;
+}
+.seg2 .pill {
+  position: absolute;
+  top: calc(2 * var(--u));
+  bottom: calc(2 * var(--u));
+  left: calc(2 * var(--u));
+  z-index: 0;
+  border-radius: calc(18 * var(--u));
+  background: #4d4d4d;
+}
+.s2 .pill {
+  width: calc((100% - calc(6 * var(--u))) / 2);
+}
+.s3 .pill {
+  width: calc((100% - calc(8 * var(--u))) / 3);
+}
+.s4 .pill {
+  width: calc((100% - calc(10 * var(--u))) / 4);
+}
+.k1 {
+  transform: translateX(calc(100% + calc(2 * var(--u))));
+}
+.p-move {
+  transform: translateX(calc(100% + calc(2 * var(--u))));
+}
+.adv {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: calc(8 * var(--u));
+  padding: calc(14 * var(--u)) calc(16 * var(--u));
+  border-radius: calc(16 * var(--u));
+  background: #3a3a3a;
+  font-size: calc(14 * var(--u));
+}
+.adv .mdi {
+  font-size: calc(20 * var(--u));
+}
+.tog {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(12 * var(--u));
+  margin-bottom: calc(16 * var(--u));
+  font-size: calc(14 * var(--u));
+}
+.sw2 {
+  position: relative;
+  flex: none;
+  width: calc(51 * var(--u));
+  height: calc(31 * var(--u));
+  border-radius: calc(16 * var(--u));
+  background: #f3c8c8;
+}
+.sw2::after {
+  content: '';
+  position: absolute;
+  top: calc(2 * var(--u));
+  left: calc(2 * var(--u));
+  width: calc(27 * var(--u));
+  height: calc(27 * var(--u));
+  border-radius: 50%;
+  background: #fff;
+}
+.val {
+  font-size: calc(16 * var(--u));
+}
+.res {
+  position: relative;
+  margin-top: calc(24 * var(--u));
+}
+.rtl {
+  margin-bottom: calc(8 * var(--u));
+  font-size: calc(14 * var(--u));
+  color: #b5b5b5;
+}
+.empty {
+  position: absolute;
+  left: 0;
+  top: calc(25 * var(--u));
+  font-size: calc(13 * var(--u));
+  color: #b5b5b5;
+  opacity: 0;
+}
+.grid2 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  row-gap: calc(12 * var(--u));
+}
+.grid2 span {
+  width: 48%;
+  text-align: center;
+}
+.grid2 b {
+  display: block;
+  font-size: calc(15 * var(--u));
+  font-variant-numeric: tabular-nums;
+}
+.grid2 small {
+  display: block;
+  margin-top: calc(4 * var(--u));
+  font-size: calc(12 * var(--u));
+  color: #b5b5b5;
+}
+
+/* Add expense keypad */
+.modalbg {
+  position: absolute;
+  inset: 0;
+  background: #0c0c0c;
+}
+.sheet {
+  position: absolute;
+  top: calc(47 * var(--u));
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: calc(26 * var(--u)) calc(26 * var(--u)) 0 0;
+  background: #1e1e1e;
+}
+.grab {
+  position: absolute;
+  top: calc(10 * var(--u));
+  left: 50%;
+  width: calc(36 * var(--u));
+  height: calc(5 * var(--u));
+  margin-left: calc(-18 * var(--u));
+  border-radius: calc(3 * var(--u));
+  background: #3a3a3a;
+}
+.pillwrap {
+  position: absolute;
+  top: calc(31 * var(--u));
+  left: calc(24 * var(--u));
+  right: calc(24 * var(--u));
+  height: calc(44 * var(--u));
+}
+.cpill {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(6 * var(--u));
+  border-radius: calc(12 * var(--u));
+  font-size: calc(16 * var(--u));
+}
+.cpill .mdi:first-child {
+  font-size: calc(20 * var(--u));
+}
+.cpill .mdi:last-child {
+  font-size: calc(18 * var(--u));
+}
+.cpill.un {
+  background: #e2e2e2;
+  color: #6e6e6e;
+  opacity: 0;
+}
+.cpill.ch {
+  background: #f3d9c8;
+  color: #1a1a1a;
+}
+.ealbl {
+  position: absolute;
+  top: calc(96 * var(--u));
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: calc(14 * var(--u));
+  color: #b5b5b5;
+}
+.eamt {
+  position: absolute;
+  top: calc(126 * var(--u));
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: calc(50 * var(--u));
+  line-height: calc(60 * var(--u));
+  white-space: nowrap;
+}
+.ecur {
+  margin-right: calc(2 * var(--u));
+  font-size: calc(26 * var(--u));
+  color: #b5b5b5;
+}
+.dg,
+.zero {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.dg {
+  max-width: calc(40 * var(--u));
+}
+.zero {
+  max-width: 0;
+  opacity: 0;
+}
+.edesc {
+  position: absolute;
+  top: calc(205 * var(--u));
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: calc(14 * var(--u));
+  color: #c6c6c6;
+}
+.pad {
+  position: absolute;
+  top: calc(234 * var(--u));
+  left: calc(24 * var(--u));
+  width: calc(342 * var(--u));
+  height: calc(512 * var(--u));
+  display: flex;
+  gap: calc(8 * var(--u));
+}
+.dcols {
+  flex: 3;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: calc(8 * var(--u));
+}
+.acol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: calc(8 * var(--u));
+}
+.acol .key {
+  flex: 1;
+}
+.acol .ok {
+  flex: 2;
+}
+.key {
+  display: grid;
+  place-items: center;
+  border-radius: calc(16 * var(--u));
+  background: #f0f0f0;
+  color: #1a1a1a;
+  font-size: calc(31 * var(--u));
+}
+.key.cur {
+  background: #f5e27a;
+}
+.key.del {
+  background: #f7c9cf;
+}
+.key.cal {
+  background: #cff3da;
+}
+.key.ok {
+  background: #4d4d4d;
+  color: #fff;
+}
+.key .mdi {
+  font-size: calc(31 * var(--u));
+}
+.tap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 6;
+  width: calc(36 * var(--u));
+  height: calc(36 * var(--u));
+  margin: calc(-18 * var(--u)) 0 0 calc(-18 * var(--u));
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.55);
+  box-shadow: 0 0 0 calc(2 * var(--u)) rgb(255 255 255 / 0.35);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Wrap story */
+.wc {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  color: #1a1a1a;
+}
+.wc2 {
+  opacity: 1;
+}
+.wh {
+  position: absolute;
+  top: calc(56 * var(--u));
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: calc(12 * var(--u));
+  padding: 0 calc(20 * var(--u));
+}
+.wsegs {
+  flex: 1;
+  display: flex;
+  gap: calc(6 * var(--u));
+}
+.wsegs i {
+  flex: 1;
+  height: calc(4 * var(--u));
+  border-radius: calc(2 * var(--u));
+  background: rgb(0 0 0 / 0.15);
+}
+.wsegs i.on {
+  background: #1a1a1a;
+}
+.wh .mdi {
+  padding: calc(4 * var(--u));
+  font-size: calc(18 * var(--u));
+  color: #1a1a1a;
+}
+.wb {
+  position: absolute;
+  top: calc(82 * var(--u));
+  left: 0;
+  right: 0;
+  padding: calc(72 * var(--u)) calc(32 * var(--u)) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(6 * var(--u));
+  text-align: center;
+}
+.eb {
+  font-size: calc(13 * var(--u));
+  opacity: 0.75;
+}
+.wh22 {
+  font-size: calc(22 * var(--u));
+}
+.wh17 {
+  font-size: calc(17 * var(--u));
+}
+.wbig {
+  margin-top: calc(8 * var(--u));
+  font-size: calc(32 * var(--u));
+}
+.wcap {
+  font-size: calc(14 * var(--u));
+  opacity: 0.75;
+}
+.wcap.red {
+  color: #f2705c;
+  opacity: 1;
+}
+.wgrid {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: calc(260 * var(--u));
+  margin-top: calc(8 * var(--u));
+}
+.wgrid span {
+  width: 50%;
+  margin-bottom: calc(16 * var(--u));
+}
+.wgrid b {
+  display: block;
+  margin-bottom: calc(2 * var(--u));
+  font-size: calc(18 * var(--u));
+}
+.wgrid small {
+  display: block;
+  font-size: calc(12 * var(--u));
+  opacity: 0.75;
+}
+.wgrid em,
+.wtop em,
+.wbig2 em {
+  display: block;
+  font-size: calc(11 * var(--u));
+  opacity: 0.75;
+}
+.wtop,
+.wbig2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(2 * var(--u));
+}
+.wbars {
+  width: 100%;
+  max-width: calc(260 * var(--u));
+  margin-top: calc(16 * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: calc(8 * var(--u));
+}
+.wbr {
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  font-size: calc(11 * var(--u));
+}
+.wbr span {
+  width: calc(72 * var(--u));
+  text-align: left;
+  opacity: 0.75;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.wbr .tr {
+  flex: 1;
+  height: calc(6 * var(--u));
+  border-radius: calc(3 * var(--u));
+  background: rgb(0 0 0 / 0.12);
+  overflow: hidden;
+}
+.wbr .fl {
+  display: block;
+  height: 100%;
+  border-radius: calc(3 * var(--u));
+  background: #1a1a1a;
+}
+.wbr em {
+  width: calc(64 * var(--u));
+  text-align: right;
+  opacity: 0.75;
+}
+.wbig2 {
+  margin-top: calc(20 * var(--u));
+}
+.wft {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(32 * var(--u));
+  text-align: center;
+  font-size: calc(11 * var(--u));
+  opacity: 0.6;
+}
+.wact {
+  position: absolute;
+  left: calc(24 * var(--u));
+  right: calc(24 * var(--u));
+  bottom: calc(64 * var(--u));
+}
+.wbtn {
+  display: grid;
+  place-items: center;
+  height: calc(52 * var(--u));
+  border-radius: calc(12 * var(--u));
+  background: #d97b3f;
+  color: #fff;
+  font-size: calc(16 * var(--u));
+}
+
+/* ============ Motion: replays of user actions. Only under .is-live. ============ */
+@keyframes ls-rise {
+  from {
+    opacity: 0;
+    transform: translateY(calc(16 * var(--u)));
+  }
+}
+@keyframes ls-scalex {
+  from {
+    transform: scaleX(0);
+  }
+}
+.is-live .ls-in {
+  animation: ls-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--d, 0s);
+}
+.is-live .pfill {
+  animation: ls-scalex 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+/* Home: a bill gets paid (glyph becomes a check, status flips) */
+@keyframes hb-a {
+  0%,
+  38% {
+    opacity: 1;
+  }
+  42%,
+  90% {
+    opacity: 0;
+  }
+  96%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes hb-b {
+  0%,
+  38% {
+    opacity: 0;
+  }
+  42%,
+  90% {
+    opacity: 1;
+  }
+  96%,
+  100% {
+    opacity: 0;
+  }
+}
+.hb-check {
+  position: absolute;
+  opacity: 0;
+}
+.hb-stat {
+  display: grid !important;
+  justify-items: end;
+}
+.hb-stat > * {
+  grid-area: 1 / 1;
+}
+.hb-p {
+  opacity: 0;
+}
+.is-live .hb-glyph,
+.is-live .hb-u {
+  animation: hb-a 10s ease infinite;
+}
+.is-live .hb-check,
+.is-live .hb-p {
+  animation: hb-b 10s ease infinite;
+}
+
+/* Couple: Rui's expense arrives uncategorized, then gets a category */
+@keyframes cp-banner {
+  0%,
+  8% {
+    grid-template-rows: 0fr;
+  }
+  14%,
+  50% {
+    grid-template-rows: 1fr;
+  }
+  58%,
+  100% {
+    grid-template-rows: 0fr;
+  }
+}
+@keyframes cp-row {
+  0%,
+  8% {
+    grid-template-rows: 0fr;
+  }
+  14%,
+  94% {
+    grid-template-rows: 1fr;
+  }
+  100% {
+    grid-template-rows: 0fr;
+  }
+}
+@keyframes cp-badge {
+  0%,
+  10% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  16%,
+  50% {
+    opacity: 1;
+    transform: none;
+  }
+  56%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+@keyframes cp-un {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  56%,
+  94% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes cp-ok {
+  0%,
+  50% {
+    opacity: 0;
+  }
+  56%,
+  94% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.is-live .cp-banner {
+  animation: cp-banner 10s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.is-live .cp-row {
+  animation: cp-row 10s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.is-live .cp-badge {
+  animation: cp-badge 10s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.is-live .cpc-un {
+  animation: cp-un 10s ease infinite;
+}
+.is-live .cpc-ok {
+  animation: cp-ok 10s ease infinite;
+}
+
+/* Spreadsheet: a coffee is logged, so the category and the budget left both update */
+@keyframes ss-a {
+  0%,
+  30% {
+    opacity: 1;
+  }
+  38%,
+  90% {
+    opacity: 0;
+  }
+  96%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes ss-b {
+  0%,
+  30% {
+    opacity: 0;
+  }
+  38%,
+  90% {
+    opacity: 1;
+  }
+  96%,
+  100% {
+    opacity: 0;
+  }
+}
+.ss-a {
+  opacity: 0;
+}
+.is-live .ss-a {
+  animation: ss-a 8s ease infinite;
+}
+.is-live .ss-b {
+  animation: ss-b 8s ease infinite;
+}
+
+/* Safe to Spend: tap "5 bills" to see them, tap again to close */
+@keyframes gx {
+  0%,
+  38% {
+    grid-template-rows: 0fr;
+  }
+  48%,
+  82% {
+    grid-template-rows: 1fr;
+  }
+  92%,
+  100% {
+    grid-template-rows: 0fr;
+  }
+}
+@keyframes gdown {
+  0%,
+  40% {
+    opacity: 1;
+  }
+  44%,
+  86% {
+    opacity: 0;
+  }
+  90%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes gup {
+  0%,
+  40% {
+    opacity: 0;
+  }
+  44%,
+  86% {
+    opacity: 1;
+  }
+  90%,
+  100% {
+    opacity: 0;
+  }
+}
+.is-live .gx {
+  animation: gx 11s cubic-bezier(0.16, 1, 0.3, 1) 1.2s infinite both;
+}
+.is-live .g-down {
+  animation: gdown 11s ease 1.2s infinite both;
+}
+.is-live .g-up {
+  animation: gup 11s ease 1.2s infinite both;
+}
+
+/* Fund details: drag the what-if slider, read the trade-off, set the new amount */
+@keyframes sl-thumb {
+  0%,
+  16% {
+    left: 30%;
+  }
+  36%,
+  86% {
+    left: 45%;
+  }
+  96%,
+  100% {
+    left: 30%;
+  }
+}
+@keyframes sl-min {
+  0%,
+  16% {
+    width: 30%;
+  }
+  36%,
+  86% {
+    width: 45%;
+  }
+  96%,
+  100% {
+    width: 30%;
+  }
+}
+@keyframes wi-a {
+  0%,
+  24% {
+    opacity: 1;
+  }
+  32%,
+  88% {
+    opacity: 0;
+  }
+  96%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes wi-b {
+  0%,
+  24% {
+    opacity: 0;
+  }
+  32%,
+  88% {
+    opacity: 1;
+  }
+  96%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes wi-x {
+  0%,
+  30% {
+    grid-template-rows: 0fr;
+  }
+  40%,
+  86% {
+    grid-template-rows: 1fr;
+  }
+  94%,
+  100% {
+    grid-template-rows: 0fr;
+  }
+}
+@keyframes commit {
+  0%,
+  72% {
+    transform: none;
+  }
+  76% {
+    transform: scale(0.93);
+  }
+  82%,
+  100% {
+    transform: none;
+  }
+}
+.wi-a {
+  opacity: 0;
+}
+.is-live .thumb {
+  animation: sl-thumb 11s cubic-bezier(0.65, 0, 0.35, 1) 1s infinite both;
+}
+.is-live .smin {
+  animation: sl-min 11s cubic-bezier(0.65, 0, 0.35, 1) 1s infinite both;
+}
+.is-live .wi-a {
+  animation: wi-a 11s ease 1s infinite both;
+}
+.is-live .wi-b {
+  animation: wi-b 11s ease 1s infinite both;
+}
+.is-live .wi-x {
+  animation: wi-x 11s cubic-bezier(0.16, 1, 0.3, 1) 1s infinite both;
+}
+.is-live .commit {
+  animation: commit 11s ease 1s infinite both;
+}
+
+/* Calculators: type the amount, watch the estimate appear (expat then scrolls to it) */
+@keyframes ph {
+  0%,
+  10% {
+    opacity: 1;
+  }
+  12%,
+  92% {
+    opacity: 0;
+  }
+  98%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes empty {
+  0%,
+  28% {
+    opacity: 1;
+  }
+  32%,
+  92% {
+    opacity: 0;
+  }
+  98%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes rshow {
+  0%,
+  30% {
+    opacity: 0;
+    transform: translateY(calc(6 * var(--u)));
+  }
+  38%,
+  92% {
+    opacity: 1;
+    transform: none;
+  }
+  98%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes pmove {
+  0%,
+  4% {
+    transform: translateX(0);
+  }
+  10%,
+  92% {
+    transform: translateX(calc(100% + calc(2 * var(--u))));
+  }
+  98%,
+  100% {
+    transform: translateX(0);
+  }
+}
+@keyframes scrolldown {
+  0%,
+  36% {
+    transform: translateY(0);
+  }
+  50%,
+  86% {
+    transform: translateY(calc(-380 * var(--u)));
+  }
+  96%,
+  100% {
+    transform: translateY(0);
+  }
+}
+.rshow {
+  opacity: 1;
+}
+.is-live .ph {
+  animation: ph 10s ease infinite;
+}
+.is-live .empty {
+  animation: empty 10s ease infinite;
+}
+.is-live .rshow {
+  animation: rshow 10s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.is-live .p-move {
+  animation: pmove 10s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.is-live .scrolls .scroller {
+  animation: scrolldown 12s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+.is-live .ls-expat .rshow,
+.is-live .ls-expat .empty,
+.is-live .ls-expat .ph,
+.is-live .ls-expat .typed .c {
+  animation-duration: 12s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ls *,
+  .ls *::before,
+  .ls *::after {
+    animation: none !important;
+  }
+}
+
+@keyframes tc0 { 0%,12% { max-width: 0; opacity: 0; } 14%,90% { max-width: calc(20 * var(--u)); opacity: 1; } 96%,100% { max-width: 0; opacity: 0; } }
+.is-live .typed .c0 { animation: tc0 10s ease infinite; }
+@keyframes tc1 { 0%,16% { max-width: 0; opacity: 0; } 18%,90% { max-width: calc(20 * var(--u)); opacity: 1; } 96%,100% { max-width: 0; opacity: 0; } }
+.is-live .typed .c1 { animation: tc1 10s ease infinite; }
+@keyframes tc2 { 0%,20% { max-width: 0; opacity: 0; } 22%,90% { max-width: calc(20 * var(--u)); opacity: 1; } 96%,100% { max-width: 0; opacity: 0; } }
+.is-live .typed .c2 { animation: tc2 10s ease infinite; }
+@keyframes tc3 { 0%,24% { max-width: 0; opacity: 0; } 26%,90% { max-width: calc(20 * var(--u)); opacity: 1; } 96%,100% { max-width: 0; opacity: 0; } }
+.is-live .typed .c3 { animation: tc3 10s ease infinite; }
+.typed .c { overflow: hidden; max-width: calc(20 * var(--u)); }
+@keyframes tapseq { 0% { opacity: 0; } 8.40% { transform: translate(calc(63.1 * var(--u)), calc(342.0 * var(--u))) scale(1.4); opacity: 0; } 9.00% { transform: translate(calc(63.1 * var(--u)), calc(342.0 * var(--u))) scale(1); opacity: 0.6; } 11.20% { transform: translate(calc(63.1 * var(--u)), calc(342.0 * var(--u))) scale(1.25); opacity: 0; } 14.40% { transform: translate(calc(149.2 * var(--u)), calc(342.0 * var(--u))) scale(1.4); opacity: 0; } 15.00% { transform: translate(calc(149.2 * var(--u)), calc(342.0 * var(--u))) scale(1); opacity: 0.6; } 17.20% { transform: translate(calc(149.2 * var(--u)), calc(342.0 * var(--u))) scale(1.25); opacity: 0; } 20.40% { transform: translate(calc(235.4 * var(--u)), calc(732.0 * var(--u))) scale(1.4); opacity: 0; } 21.00% { transform: translate(calc(235.4 * var(--u)), calc(732.0 * var(--u))) scale(1); opacity: 0.6; } 23.20% { transform: translate(calc(235.4 * var(--u)), calc(732.0 * var(--u))) scale(1.25); opacity: 0; } 26.40% { transform: translate(calc(149.2 * var(--u)), calc(472.0 * var(--u))) scale(1.4); opacity: 0; } 27.00% { transform: translate(calc(149.2 * var(--u)), calc(472.0 * var(--u))) scale(1); opacity: 0.6; } 29.20% { transform: translate(calc(149.2 * var(--u)), calc(472.0 * var(--u))) scale(1.25); opacity: 0; } 32.40% { transform: translate(calc(149.2 * var(--u)), calc(732.0 * var(--u))) scale(1.4); opacity: 0; } 33.00% { transform: translate(calc(149.2 * var(--u)), calc(732.0 * var(--u))) scale(1); opacity: 0.6; } 35.20% { transform: translate(calc(149.2 * var(--u)), calc(732.0 * var(--u))) scale(1.25); opacity: 0; } 45.40% { transform: translate(calc(195.0 * var(--u)), calc(100.0 * var(--u))) scale(1.4); opacity: 0; } 46.00% { transform: translate(calc(195.0 * var(--u)), calc(100.0 * var(--u))) scale(1); opacity: 0.6; } 48.20% { transform: translate(calc(195.0 * var(--u)), calc(100.0 * var(--u))) scale(1.25); opacity: 0; } 65.40% { transform: translate(calc(324.3 * var(--u)), calc(669.0 * var(--u))) scale(1.4); opacity: 0; } 66.00% { transform: translate(calc(324.3 * var(--u)), calc(669.0 * var(--u))) scale(1); opacity: 0.6; } 68.20% { transform: translate(calc(324.3 * var(--u)), calc(669.0 * var(--u))) scale(1.25); opacity: 0; } 100% { opacity: 0; } }
+.is-live .ls-privacy .tap { animation: tapseq 10s linear infinite; }
+@keyframes dg0 { 0%,9% { max-width: 0; opacity: 0; } 10.5%,76% { max-width: calc(40 * var(--u)); opacity: 1; } 79%,100% { max-width: 0; opacity: 0; } }
+.is-live .dg.d0 { animation: dg0 10s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; max-width: 0; }
+@keyframes dg1 { 0%,15% { max-width: 0; opacity: 0; } 16.5%,76% { max-width: calc(40 * var(--u)); opacity: 1; } 79%,100% { max-width: 0; opacity: 0; } }
+.is-live .dg.d1 { animation: dg1 10s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; max-width: 0; }
+@keyframes dg2 { 0%,21% { max-width: 0; opacity: 0; } 22.5%,76% { max-width: calc(40 * var(--u)); opacity: 1; } 79%,100% { max-width: 0; opacity: 0; } }
+.is-live .dg.d2 { animation: dg2 10s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; max-width: 0; }
+@keyframes dg3 { 0%,27% { max-width: 0; opacity: 0; } 28.5%,76% { max-width: calc(40 * var(--u)); opacity: 1; } 79%,100% { max-width: 0; opacity: 0; } }
+.is-live .dg.d3 { animation: dg3 10s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; max-width: 0; }
+@keyframes dg4 { 0%,33% { max-width: 0; opacity: 0; } 34.5%,76% { max-width: calc(40 * var(--u)); opacity: 1; } 79%,100% { max-width: 0; opacity: 0; } }
+.is-live .dg.d4 { animation: dg4 10s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; max-width: 0; }
+@keyframes zero { 0%,9% { max-width: calc(40 * var(--u)); opacity: 1; } 9.8%,76% { max-width: 0; opacity: 0; } 79%,100% { max-width: calc(40 * var(--u)); opacity: 1; } }
+.is-live .zero { animation: zero 10s ease infinite; max-width: calc(40 * var(--u)); opacity: 1; }
+@keyframes pun { 0%,45% { opacity: 1; } 47%,76% { opacity: 0; } 79%,100% { opacity: 1; } }
+@keyframes pch { 0%,45% { opacity: 0; } 47%,76% { opacity: 1; } 79%,100% { opacity: 0; } }
+.is-live .cpill.un { animation: pun 10s ease infinite; opacity: 1; }
+.is-live .cpill.ch { animation: pch 10s ease infinite; opacity: 0; }
+@keyframes dismiss { 0%,69% { transform: none; } 76%,90% { transform: translateY(100%); } 98%,100% { transform: none; } }
+.is-live .sheet { animation: dismiss 10s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+@keyframes wc0 { 0%,16.66% { opacity: 1; } 16.67%,100% { opacity: 0; } }
+.is-live .wc0 { animation: wc0 15s step-end infinite; }
+@keyframes wc1 { 0%,16.66% { opacity: 0; } 16.67%,33.32% { opacity: 1; } 33.33%,100% { opacity: 0; } }
+.is-live .wc1 { animation: wc1 15s step-end infinite; }
+@keyframes wc2 { 0%,33.32% { opacity: 0; } 33.33%,49.99% { opacity: 1; } 50.00%,100% { opacity: 0; } }
+.is-live .wc2 { animation: wc2 15s step-end infinite; }
+@keyframes wc3 { 0%,49.99% { opacity: 0; } 50.00%,66.66% { opacity: 1; } 66.67%,100% { opacity: 0; } }
+.is-live .wc3 { animation: wc3 15s step-end infinite; }
+@keyframes wc4 { 0%,66.66% { opacity: 0; } 66.67%,83.32% { opacity: 1; } 83.33%,100% { opacity: 0; } }
+.is-live .wc4 { animation: wc4 15s step-end infinite; }
+@keyframes wc5 { 0%,83.32% { opacity: 0; } 83.33%,99.5% { opacity: 1; } 100% { opacity: 0; } }
+.is-live .wc5 { animation: wc5 15s step-end infinite; }
+@keyframes wtap { 0% { opacity: 0; } 15.37% { opacity: 0; transform: scale(1.4); } 16.27% { opacity: 0.6; transform: scale(1); } 18.27% { opacity: 0; transform: scale(1.25); } 32.03% { opacity: 0; transform: scale(1.4); } 32.93% { opacity: 0.6; transform: scale(1); } 34.93% { opacity: 0; transform: scale(1.25); } 48.70% { opacity: 0; transform: scale(1.4); } 49.60% { opacity: 0.6; transform: scale(1); } 51.60% { opacity: 0; transform: scale(1.25); } 65.37% { opacity: 0; transform: scale(1.4); } 66.27% { opacity: 0.6; transform: scale(1); } 68.27% { opacity: 0; transform: scale(1.25); } 82.03% { opacity: 0; transform: scale(1.4); } 82.93% { opacity: 0.6; transform: scale(1); } 84.93% { opacity: 0; transform: scale(1.25); } 100% { opacity: 0; } }
+.wtap { left: calc(310 * var(--u)); top: calc(520 * var(--u)); }
+.is-live .wtap { animation: wtap 15s linear infinite; }
+
+</style>

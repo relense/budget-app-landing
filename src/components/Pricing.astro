@@ -33,7 +33,7 @@ const plus = {
     </div>
 
     <div class="mt-12 grid grid-cols-1 gap-5 lg:grid-cols-2">
-      <div class="rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-8" data-reveal>
+      <div class="price-card spot rounded-[var(--radius-card)] bg-[var(--color-bg-elevated)] p-8" data-reveal>
         <h3 class="text-lg font-medium text-[var(--color-ink)]">{free.name}</h3>
         <p class="mt-3 flex items-baseline gap-1">
           <span class="text-4xl font-medium text-[var(--color-ink)]">{free.price}</span>
@@ -41,9 +41,9 @@ const plus = {
 
         <ul class="mt-7 space-y-3">
           {
-            free.features.map((feature) => (
-              <li class="flex items-start gap-3 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-                <Icon name="check" class="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--color-ink-faint)]" />
+            free.features.map((feature, i) => (
+              <li style={`--i:${i}`} class="feat flex items-start gap-3 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                <Icon name="check" class="tick mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--color-ink-faint)]" />
                 {feature}
               </li>
             ))
@@ -52,22 +52,22 @@ const plus = {
       </div>
 
       <div
-        class="relative rounded-[var(--radius-card)] bg-[var(--color-mint)] p-8"
+        class="price-card price-plus spot spot-light relative overflow-hidden rounded-[var(--radius-card)] bg-[var(--color-mint)] p-8"
         data-reveal
         style="transition-delay: 80ms"
       >
         <h3 class="text-lg font-medium text-[var(--color-mint-deep)]">{plus.name}</h3>
         <p class="mt-3 flex items-baseline gap-1">
-          <span class="text-4xl font-medium text-[var(--color-mint-deep)]">{plus.price}</span>
+          <span class="price-num text-4xl font-medium text-[var(--color-mint-deep)]" data-price-to="2.99">{plus.price}</span>
           <span class="text-[15px] text-[var(--color-mint-deep)]/70">{plus.period}</span>
         </p>
-        <p class="mt-1 text-[13px] font-medium text-[var(--color-mint-deep)]/70">{plus.trial}</p>
+        <p class="trial mt-1 inline-block rounded-full bg-white/60 px-3 py-1 text-[13px] font-medium text-[var(--color-mint-deep)]">{plus.trial}</p>
 
         <ul class="mt-7 space-y-3">
           {
-            plus.features.map((feature) => (
-              <li class="flex items-start gap-3 text-[15px] leading-relaxed text-[var(--color-mint-deep)]">
-                <Icon name="check" class="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--color-mint-deep)]" />
+            plus.features.map((feature, i) => (
+              <li style={`--i:${i}`} class="feat flex items-start gap-3 text-[15px] leading-relaxed text-[var(--color-mint-deep)]">
+                <Icon name="check" class="tick mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--color-mint-deep)]" />
                 {feature}
               </li>
             ))
@@ -78,7 +78,7 @@ const plus = {
           href={PRICING_URL}
           target="_blank"
           rel="noopener noreferrer"
-          class="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-[15px] font-medium text-[var(--color-mint-deep)] shadow-[var(--shadow-lifted)] transition-transform active:scale-[0.98]"
+          class="cta-arrow mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-[15px] font-medium text-[var(--color-mint-deep)] shadow-[var(--shadow-lifted)] transition-transform active:scale-[0.98]"
         >
           {t('pricing.cta')}
           <Icon name="arrow-square-out" class="h-4 w-4" />
@@ -88,3 +88,102 @@ const plus = {
     </div>
   </div>
 </section>
+
+<script>
+  // Counts the Plus price up from zero the first time it scrolls into view. The server-rendered text
+  // is already the final price, so with JS off (or reduced motion) nothing changes.
+  const price = document.querySelector<HTMLElement>('[data-price-to]');
+  if (price && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    const finalText = price.textContent ?? '';
+    const symbol = finalText.replace(/[\d.,\s]/g, '');
+    const target = Number(price.dataset.priceTo);
+    new IntersectionObserver(
+      (entries, observer) => {
+        if (!entries[0].isIntersecting) return;
+        observer.disconnect();
+        const start = performance.now();
+        const tick = (now: number) => {
+          const p = Math.min((now - start) / 1100, 1);
+          price.textContent = p < 1 ? `${symbol}${(target * (1 - Math.pow(1 - p, 4))).toFixed(2)}` : finalText;
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      },
+      { threshold: 0.6 },
+    ).observe(price);
+  }
+</script>
+
+<style>
+  .price-card {
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .price-card:hover {
+    transform: translateY(-6px);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* Feature lines cascade in once the card has been revealed; ticks pop after their line. */
+    .price-card .feat {
+      opacity: 0;
+      transform: translateX(-14px);
+      transition:
+        opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      transition-delay: calc(var(--i) * 70ms + 0.35s);
+    }
+    .price-card.is-visible .feat {
+      opacity: 1;
+      transform: none;
+    }
+    .price-card .tick {
+      transform: scale(0) rotate(-40deg);
+      transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition-delay: calc(var(--i) * 70ms + 0.55s);
+    }
+    .price-card.is-visible .tick {
+      transform: none;
+    }
+
+    /* Plus: a slow light sweep, and the trial pill breathes. */
+    .price-plus::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.5) 50%, transparent 62%);
+      transform: translateX(-130%);
+      animation: plus-sheen 6.5s ease-in-out 1.5s infinite;
+      pointer-events: none;
+    }
+    .trial {
+      animation: trial-breathe 3.2s ease-in-out infinite;
+    }
+
+    .cta-arrow :global(svg) {
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .cta-arrow:hover :global(svg) {
+      transform: translate(3px, -3px);
+    }
+  }
+  @keyframes plus-sheen {
+    0%,
+    55% {
+      transform: translateX(-130%);
+    }
+    100% {
+      transform: translateX(130%);
+    }
+  }
+  @keyframes trial-breathe {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.06);
+    }
+  }
+</style>

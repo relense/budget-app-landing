@@ -9,6 +9,7 @@
 // on a dark surface) so they were not force-fit here. FIRE-number reference line uses the
 // existing neutral --color-ink-faint token, not a categorical color (it's a reference, not a
 // series).
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -59,6 +60,8 @@ const faqJsonLd = {
       Quanto precisas investido para viveres dos rendimentos, quando lá chegas ao teu ritmo atual,
       e o que muda se a rentabilidade for mais baixa.
     </p>
+
+    <ToolBanner scene="garden" variant="sun" tone="--color-cat-peach-bg" />
     <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
       Esta é uma projeção a partir de pressupostos que podes editar, não uma previsão pessoal nem
       aconselhamento financeiro. Sem nomes de índices, corretoras ou produtos.
@@ -353,8 +356,7 @@ const faqJsonLd = {
         Já sabes o número. Agora é acompanhar se estás no ritmo.
       </h2>
       <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-        O Otterbond ajuda-te a guardar esse valor todos os meses, e a ver se os depósitos reais
-        acompanham o plano.
+        O Otterbond deixa-te planear esse valor como um fundo de poupança mensal, registar os depósitos e ver se estás no caminho certo.
       </p>
       <a
         id="bridge-cta"

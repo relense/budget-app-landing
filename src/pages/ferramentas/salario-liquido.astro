@@ -2,6 +2,7 @@
 // Standalone, Portuguese-only SEO tool page -- see recibos-verdes.astro's own comment for the
 // shared "front door, not a feature of the app" rationale and the `lang`/`noAlternate` reasoning.
 // English counterpart: /tools/portugal-net-salary-calculator.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -61,6 +62,8 @@ const faqJsonLd = {
       Calcula o teu salário líquido a partir do bruto, ou o bruto que precisas para um líquido
       específico, com as tabelas de retenção de 2026 para Continente, Açores e Madeira.
     </p>
+
+    <ToolBanner scene="desk" variant="payslip" tone="--color-cat-blue-bg" />
 
     <form
       id="calc-form"
@@ -292,8 +295,7 @@ const faqJsonLd = {
         Já sabes o teu líquido. Sabes quanto disso podes gastar hoje?
       </h2>
       <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-        O Otterbond diz-te quanto desse valor podes gastar hoje, depois das contas e das
-        poupanças.
+        Regista o teu saldo e o dia do ordenado, e o Otterbond mostra quanto desse valor podes gastar hoje, depois das contas que faltam pagar e das poupanças planeadas.
       </p>
       <a
         href="/pt-pt/#get-the-app"

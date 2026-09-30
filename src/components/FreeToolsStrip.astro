@@ -1,0 +1,43 @@
+---
+import Icon from './Icon.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const en = lang === 'en';
+
+// Same order as `toolsStrip.items` in ui.ts: net salary, recibos verdes, IRS, pension, FIRE.
+const hrefs = en
+  ? [
+      '/tools/portugal-net-salary-calculator',
+      '/tools/portugal-freelancer-tax-calculator',
+      '/tools/portugal-income-tax-calculator',
+      '/tools/portugal-state-pension-calculator',
+      '/tools/fire-calculator',
+    ]
+  : [
+      '/ferramentas/salario-liquido',
+      '/ferramentas/recibos-verdes',
+      '/ferramentas/simulador-irs',
+      '/ferramentas/simulador-reforma',
+      '/ferramentas/calculadora-fire',
+    ];
+const items = t('toolsStrip.items').map((label, i) => ({ label, href: hrefs[i] }));
+const hubHref = en ? '/tools' : '/ferramentas';
+const linkClass =
+  'text-[var(--color-ink)] underline decoration-[var(--color-ink-faint)] underline-offset-4 hover:decoration-[var(--color-mint)]';
+---
+
+<section id="free-tools" class="border-y border-[var(--color-line)] bg-[var(--color-bg-elevated)]">
+  <p class="mx-auto max-w-7xl px-5 py-7 text-center text-[16px] leading-relaxed text-[var(--color-ink-soft)] sm:px-8">
+    <span class="font-medium text-[var(--color-ink)]">{t('toolsStrip.lead')}</span>
+    {items.map((item, i) => (<><a href={item.href} class={linkClass}>{item.label}</a>{i < items.length - 1 ? ', ' : ' '}</>))}
+    <a
+      href={hubHref}
+      class="inline-flex items-center gap-1 font-medium text-[var(--color-mint)] hover:underline"
+    >
+      {t('toolsStrip.more')}
+      <Icon name="arrow-right" class="h-3.5 w-3.5" />
+    </a>
+  </p>
+</section>

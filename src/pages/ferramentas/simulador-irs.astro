@@ -19,6 +19,7 @@
 // recalc until the user edits that field directly (`retainedManuallyEdited`), so someone who
 // changed jobs mid-year (a real, common mismatch vs. the table estimate) can still override it,
 // with a one-click "usar estimativa automática" reset back to the computed value.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -79,6 +80,8 @@ const softwareApplicationJsonLd = {
       automaticamente a partir das tabelas oficiais, sem teres de a ir procurar ao recibo de
       vencimento.
     </p>
+
+    <ToolBanner scene="desk" variant="stamp" tone="--color-cat-purple-bg" />
     <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
       Estimativa a partir de regras públicas, não é a tua declaração de IRS nem aconselhamento
       fiscal. Valores de 2026 (declaração a entregar entre abril e junho de 2027). Fonte: Código
@@ -537,7 +540,7 @@ const softwareApplicationJsonLd = {
     } else {
       headline.textContent = `Estimativa: pagas cerca de ${euro.format(-result.balance)}.`;
       bridgeHeadline.textContent = `Vais ter de pagar cerca de ${euro.format(-result.balance)}. Prepara-te com antecedência.`;
-      bridgeBody.textContent = 'O Otterbond ajuda-te a separar esse valor mês a mês, antes de o pagamento chegar.';
+      bridgeBody.textContent = 'O Otterbond deixa-te planear esse valor como um fundo de poupança mensal, antes de o pagamento chegar.';
     }
 
     document.getElementById('result-detail-1')!.textContent =

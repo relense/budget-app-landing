@@ -5,6 +5,7 @@
 //
 // Mainland Portugal only -- see src/lib/calculators/imtStampDuty.ts's own file comment for why
 // Açores/Madeira aren't modeled, and for the full sourcing on the bracket tables and IMT Jovem.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -63,6 +64,8 @@ const softwareApplicationJsonLd = {
       Introduz o valor do imóvel e vê quanto vais pagar de IMT e Imposto do Selo na escritura --
       com as tabelas de 2026 (Continente) e a isenção IMT Jovem.
     </p>
+
+    <ToolBanner scene="home" variant="stamp" tone="--color-cat-peach-bg" />
 
     <form
       id="calc-form"

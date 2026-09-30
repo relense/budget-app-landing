@@ -3,6 +3,7 @@
 // comment for the shared "front door, not a feature of the app" rationale and the
 // `lang`/`noAlternate` reasoning. Mainland Portugal only -- see imtStampDuty.ts's own file comment
 // for why Açores/Madeira aren't modeled, and for the full sourcing.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -61,6 +62,8 @@ const softwareApplicationJsonLd = {
       Enter the property's value and see how much you'll pay in IMT and Stamp Duty at the deed
       signing -- with 2026's tables (mainland) and the IMT Jovem exemption.
     </p>
+
+    <ToolBanner scene="home" variant="stamp" tone="--color-cat-peach-bg" />
 
     <form
       id="calc-form"
