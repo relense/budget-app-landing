@@ -112,7 +112,7 @@ const jsonLd = {
                 <p class="q-answer mt-5 max-w-[46ch] text-lg leading-relaxed text-[var(--color-ink-soft)]">{q.answer}</p>
                 {'link' in q && q.link && (
                   <a
-                    href={q.link.hash}
+                    href={q.link.hash.startsWith('#') ? `${lang === 'en' ? '' : '/pt-pt'}/${q.link.hash.slice(1)}` : q.link.hash}
                     class="q-link mt-5 inline-flex items-center gap-2 rounded-full border border-[var(--color-mint)] px-5 py-2.5 text-[15px] font-medium text-[var(--color-mint)] transition-transform active:scale-[0.98]"
                   >
                     {q.link.label}

@@ -92,7 +92,7 @@ const stages: Stage[] = [
         {withHero && (
           <article id="hero" data-world-panel data-stage="0" class="world-panel hero-panel is-active" style="--w: var(--color-mint);">
             <div class="inline-stage" data-inline-stage>
-              <HeroScene />
+              <HeroScene uid="i" />
               <div class="app-tile" aria-hidden="true">
                 <span class="tile-ping"></span>
                 <span class="tile-icon"><Image src={logo} alt="" width={64} height={64} class="h-full w-full object-contain" /></span>
@@ -183,7 +183,7 @@ const stages: Stage[] = [
                 class:list={['stage-layer', { 'is-active': i === 0 }]}
                 style={`background: var(${p.bg});`}
               >
-                {p.scene === 'welcome' ? <HeroScene /> : <PersonaScene kind={p.scene} uid="s" />}
+                {p.scene === 'welcome' ? <HeroScene uid="s" /> : <PersonaScene kind={p.scene} uid="s" />}
               </div>
             ))
           }

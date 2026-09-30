@@ -14,6 +14,10 @@ const K = {
   paper: '#F2F2F2',
 };
 const dark = (a: number) => `rgba(26,26,26,${a})`;
+interface Props {
+  uid?: string;
+}
+const { uid = 's' } = Astro.props;
 const light = (a: number) => `rgba(255,255,255,${a})`;
 ---
 
@@ -22,9 +26,9 @@ const light = (a: number) => `rgba(255,255,255,${a})`;
   <rect x="-20" y="466" width="560" height="12" rx="4" fill={dark(0.1)} />
 
   {/* window: the sun comes up over the city */}
-  <clipPath id="heroWin"><rect x="318" y="40" width="170" height="190" rx="12" /></clipPath>
+  <clipPath id={`heroWin-${uid}`}><rect x="318" y="40" width="170" height="190" rx="12" /></clipPath>
   <rect x="308" y="30" width="190" height="210" rx="16" fill={light(0.6)} />
-  <g clip-path="url(#heroWin)">
+  <g clip-path={`url(#heroWin-${uid})`}>
     <rect x="318" y="40" width="170" height="190" fill={light(0.85)} />
     <circle class="sunrise" cx="402" cy="196" r="34" fill={K.yellow} />
     <g fill={dark(0.12)}>

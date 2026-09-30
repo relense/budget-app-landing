@@ -14,7 +14,7 @@ The web app is live at https://app.otterbond.app. The iOS and Android apps are n
 
 - Plans: Free (budget, bills, savings funds, the Safe to Spend number, the month wrap, 2 workspaces with up to 2 people each, current and next month, 10 currencies) and Plus, EUR 2.99/month (full Safe to Spend timeline, pace and insights, full month reports for every month, a what-if slider for savings goals, 5 workspaces with up to 5 people each, planning up to 24 months ahead). Plus has a 15-day free trial that requires a card and is granted once per person. Purchases happen on the web.
 - Currencies: 10 (EUR, GBP, USD, JPY, CNY, CHF, SEK, NOK, DKK, PLN). Each workspace tracks one currency; changing it relabels numbers and does not convert them.
-- Privacy: no ads and no data-selling. No third-party analytics or ad trackers; error reports go to Sentry and first-party usage stats are kept for 90 days. Details in the Privacy Policy.
+- Privacy: no ads and no data-selling. No ad trackers; Google Analytics loads only if you accept the cookie banner; error reports go to Sentry and first-party usage stats are kept for 90 days. Details in the Privacy Policy.
 - Free calculators for Portugal (net salary, freelancer tax, IRS, pension, FIRE and more) work on their own and do not need an account.
 
 ## Pages
