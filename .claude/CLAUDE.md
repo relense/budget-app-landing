@@ -21,6 +21,8 @@ See `docs/PLAN.md` for the original scaffolding plan and rationale.
 
 ## Rules (apply every session, not just the first)
 
+- **Claims must match the app.** Before writing or changing any marketing claim, check it against the app's code; `docs/claims-audit.md` lists what was wrong, what is true, and what must not be promised (no automatic set-asides, no morning notification, no colour-coded number, one currency per workspace, no imports).
+
 - **Never invent details.** If something isn't decided in `docs/PLAN.md`, ask before writing code, don't fill the gap with a "reasonable" default.
 - **Interview before coding ("grill me").** Before starting a new module or feature, ask about edge cases, data shapes, and error behavior until there's a shared understanding, don't jump from a one-line request straight to code.
 - **TDD, small steps.** Failing test, then minimal code to pass, then refactor. Don't generate a whole module in one shot.

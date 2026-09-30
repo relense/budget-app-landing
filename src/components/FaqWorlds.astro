@@ -51,6 +51,35 @@ const jsonLd = {
   <div class="mx-auto max-w-7xl px-5 sm:px-8">
     <div class="faq-grid">
       <div class="faq-panels">
+        <details class="faq-nav" data-faq-nav>
+          <summary class="faq-nav-bar">
+            <a class="fn-step" data-fn-prev href="#q1" aria-label={t('faqPage.prev')} onclick="event.stopPropagation()">
+              <Icon name="caret-left" class="h-4 w-4" />
+            </a>
+            <span class="fn-current">
+              <span class="fn-count"><b data-fn-index>1</b> / {items.length}</span>
+              <span class="fn-title" data-fn-title>{items[0].question}</span>
+            </span>
+            <a class="fn-step" data-fn-next href="#q2" aria-label={t('faqPage.next')} onclick="event.stopPropagation()">
+              <Icon name="caret-right" class="h-4 w-4" />
+            </a>
+            <span class="fn-all">{t('faqPage.jump')} <Icon name="caret-down" class="fn-caret h-4 w-4" /></span>
+            <i class="fn-progress" data-fn-progress style={`--p:${1 / items.length}`}></i>
+          </summary>
+          <ol class="fn-list">
+            {
+              items.map((q, i) => (
+                <li>
+                  <a href={`#q${i + 1}`} data-fn-link class:list={{ 'is-current': i === 0 }} aria-current={i === 0 ? 'true' : undefined}>
+                    <span class="fn-num">{i + 1}</span>
+                    <span>{q.question}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ol>
+        </details>
+
         <div class="faq-intro max-w-[38ch]" data-reveal>
           <h1 class="text-4xl leading-[1.1] font-medium text-[var(--color-ink)] sm:text-5xl">{t('faq.heading')}</h1>
           <p class="mt-5 max-w-[46ch] text-lg leading-relaxed text-[var(--color-ink-soft)]">{t('faqPage.body')}</p>
@@ -158,9 +187,30 @@ const jsonLd = {
       screens.forEach((screen, i) => screen.classList.toggle('is-live', i === index));
       if (index !== null && !reduce) countUp(screens[index]);
     };
+    const nav = root.querySelector<HTMLDetailsElement>('[data-faq-nav]');
+    const links = Array.from(root.querySelectorAll<HTMLElement>('[data-fn-link]'));
+    const questions = links.map((l) => l.querySelector('span:last-child')?.textContent ?? '');
+    const syncNav = (index: number) => {
+      if (!nav) return;
+      nav.querySelector('[data-fn-index]')!.textContent = String(index + 1);
+      nav.querySelector('[data-fn-title]')!.textContent = questions[index];
+      nav.querySelector<HTMLElement>('[data-fn-progress]')!.style.setProperty('--p', String((index + 1) / panels.length));
+      nav.querySelector<HTMLAnchorElement>('[data-fn-prev]')!.href = `#q${Math.max(index, 1)}`;
+      nav.querySelector<HTMLAnchorElement>('[data-fn-next]')!.href = `#q${Math.min(index + 2, panels.length)}`;
+      links.forEach((l, i) => {
+        l.classList.toggle('is-current', i === index);
+        if (i === index) l.setAttribute('aria-current', 'true');
+        else l.removeAttribute('aria-current');
+      });
+    };
+    links.forEach((l) => l.addEventListener('click', () => nav && (nav.open = false)));
+    document.addEventListener('keydown', (e) => e.key === 'Escape' && nav && (nav.open = false));
+    document.addEventListener('click', (e) => nav?.open && !nav.contains(e.target as Node) && (nav.open = false));
+
     const activate = (index: number) => {
       if (index === current) return;
       current = index;
+      syncNav(index);
       panels.forEach((panel, i) => panel.classList.toggle('is-active', i === index));
       items.forEach((item, i) => item.classList.toggle('is-active', i % panels.length === index));
       rails.forEach((rail, i) => rail.classList.toggle('is-active', i === index));
@@ -211,6 +261,163 @@ const jsonLd = {
   }
   .faq-intro {
     padding-bottom: 2rem;
+  }
+  .faq-panel {
+    scroll-margin-top: 6rem;
+  }
+
+  /* Question navigator: always visible, always says where you are, always lets you jump. */
+  .faq-nav {
+    position: sticky;
+    top: 4.6rem;
+    z-index: 30;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: 22px;
+    background: rgb(30 30 30 / 0.94);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 14px 30px -14px rgb(0 0 0 / 0.6);
+    overflow: hidden;
+  }
+  .faq-nav-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px 12px;
+    cursor: pointer;
+    list-style: none;
+  }
+  .faq-nav-bar::-webkit-details-marker {
+    display: none;
+  }
+  .fn-step {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--color-bg-elevated);
+    color: var(--color-ink);
+    transition:
+      background-color 0.25s,
+      transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .fn-step:hover {
+    background: #4d4d4d;
+    transform: scale(1.08);
+  }
+  .fn-current {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+  }
+  .fn-count {
+    flex: none;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--color-mint);
+    color: var(--color-mint-deep);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+  .fn-count b {
+    font-weight: 500;
+  }
+  .fn-title {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    color: var(--color-ink);
+  }
+  .fn-all {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    flex: none;
+    font-size: 13px;
+    color: var(--color-ink-soft);
+  }
+  @media (min-width: 640px) {
+    .fn-all {
+      display: inline-flex;
+    }
+  }
+  .fn-caret {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .faq-nav[open] .fn-caret {
+    transform: rotate(180deg);
+  }
+  .fn-progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: var(--color-mint);
+    transform: scaleX(var(--p, 0.1));
+    transform-origin: left;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .fn-list {
+    max-height: min(60dvh, 460px);
+    overflow-y: auto;
+    padding: 6px 8px 10px;
+    border-top: 1px solid var(--color-line);
+    counter-reset: none;
+  }
+  .fn-list a {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.35;
+    color: var(--color-ink-soft);
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+  .fn-list a:hover {
+    background: var(--color-bg-elevated);
+    color: var(--color-ink);
+  }
+  .fn-list a.is-current {
+    background: var(--color-bg-elevated);
+    color: var(--color-ink);
+  }
+  .fn-num {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-line);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .fn-list a.is-current .fn-num {
+    background: var(--color-mint);
+    color: var(--color-mint-deep);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .faq-nav[open] .fn-list {
+      animation: fn-open 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+  }
+  @keyframes fn-open {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
   }
   .inline-stage {
     position: relative;
