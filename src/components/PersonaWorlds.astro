@@ -1,0 +1,790 @@
+---
+// Scrolling "persona worlds" section. Each persona is a full-height panel; on desktop a sticky stage
+// on the right swaps colour and a live, code-drawn phone as the panel crosses the middle of the
+// viewport. Floating cards and the phone tilt follow the pointer. Below `lg`, and whenever JS is
+// off, every panel carries its own inline stage, so the copy is server-rendered plain HTML either
+// way (and each phone shows its final frame).
+//
+// Persona copy lives in src/i18n/ui.ts (`worlds.items`, both locales). What lives here is only what
+// is not copy: which pastel each persona owns and which icon represents them.
+import Icon from './Icon.astro';
+import PersonaScreen from './PersonaScreen.astro';
+import LiveScreen from './LiveScreen.astro';
+import PersonaScene from './PersonaScene.astro';
+import HeroScene from './HeroScene.astro';
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/logo.png';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+interface Props {
+  /** How many personas to render, in `worlds.items` order (the homepage shows the strongest five). */
+  limit?: number;
+  headingLevel?: 'h1' | 'h2';
+  /** Link to the page with all eight; only the homepage version sets this. */
+  allHref?: string;
+  id?: string;
+  /** Put the hero first: same sticky stage, the hero card morphs into the first persona as you scroll. */
+  withHero?: boolean;
+}
+
+const { limit = 8, headingLevel = 'h2', allHref, id, withHero = false } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const Heading = headingLevel;
+// Keep heading order unbroken: h1 page -> h2 per persona, h2 section -> h3 per persona.
+const Sub = headingLevel === 'h1' ? 'h2' : 'h3';
+const chipsById = t('worlds.chips');
+
+// Every colour below is an existing token in global.css (mobile's fixed pastel surfaces).
+const worlds = {
+  couple: { bg: '--color-mint', icon: 'users-three' },
+  spreadsheet: { bg: '--color-cat-blue-bg', icon: 'chart-pie' },
+  payday: { bg: '--color-cat-peach-bg', icon: 'calendar-blank' },
+  saver: { bg: '--color-cat-purple-bg', icon: 'piggy-bank' },
+  freelancer: { bg: '--color-cat-teal-bg', icon: 'percent' },
+  privacy: { bg: '--color-cat-pink-bg', icon: 'shield-check' },
+  expat: { bg: '--color-cat-blue-bg', icon: 'globe' },
+  closer: { bg: '--color-cat-peach-bg', icon: 'lock-simple' },
+} as const;
+
+const personas = t('worlds.items')
+  .slice(0, limit)
+  .map((item) => {
+    const id = item.id as keyof typeof worlds;
+    return { ...item, ...worlds[id], kind: id, chips: chipsById[id], words: item.quote.split(' ') };
+  });
+
+// Every stage item, in scroll order. With the hero on top, stage 0 is the hero and persona i is stage i + 1.
+const [heroChipA, heroChipB] = t('hero.chips');
+const offset = withHero ? 1 : 0;
+type Kind = keyof typeof worlds;
+interface Stage {
+  key: string;
+  bg: string;
+  scene: Kind | 'welcome';
+  screen: Kind | 'home';
+  icon: string;
+  chips: [string, string];
+  name: string;
+  hero: boolean;
+}
+const stages: Stage[] = [
+  ...(withHero
+    ? [{ key: 'hero', bg: '--color-mint', scene: 'welcome', screen: 'home', icon: 'check-circle', chips: [heroChipA, heroChipB], name: 'Otterbond', hero: true } satisfies Stage]
+    : []),
+  ...personas.map((p): Stage => ({ key: p.id, bg: p.bg, scene: p.kind, screen: p.kind, icon: p.icon, chips: [p.chips[0], p.chips[1]], name: p.name, hero: false })),
+];
+---
+
+<section
+  id={withHero ? undefined : id}
+  data-worlds
+  class:list={['worlds relative bg-[var(--color-bg)] pb-16 sm:pb-24', withHero ? 'pt-8 sm:pt-12' : 'pt-20 sm:pt-28']}
+>
+  <script is:inline>
+    // Runs before first paint of this section, so the sticky layout never causes a layout shift.
+    document.currentScript.parentElement.classList.add('worlds-js');
+  </script>
+
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="worlds-grid">
+      <div class="worlds-panels">
+        {withHero && (
+          <article id="hero" data-world-panel data-stage="0" class="world-panel hero-panel is-active" style="--w: var(--color-mint);">
+            <div class="inline-stage" data-inline-stage>
+              <HeroScene uid="i" />
+              <div class="app-tile" aria-hidden="true">
+                <span class="tile-ping"></span>
+                <span class="tile-icon"><Image src={logo} alt="" width={64} height={64} class="h-full w-full object-contain" /></span>
+                <span class="tile-plus">+</span>
+              </div>
+              <div class="inline-phone"><PersonaScreen><LiveScreen kind="home" /></PersonaScreen></div>
+              <div class="chip chip-a"><span class="ci"><Icon name="check-circle" /></span>{heroChipA}</div>
+            </div>
+            <div class="copy"><slot name="hero" /></div>
+          </article>
+        )}
+        <div id={withHero ? id : undefined} data-world-panel data-stage={offset} class:list={['worlds-intro max-w-[38ch]', { 'with-hero': withHero }]} data-reveal>
+          <Heading class="text-3xl leading-tight font-medium text-[var(--color-ink)] sm:text-5xl sm:leading-[1.1]">
+            {headingLevel === 'h1' ? t('whoPage.heading') : t('worlds.heading')}
+          </Heading>
+          <p class="mt-5 max-w-[46ch] text-lg leading-relaxed text-[var(--color-ink-soft)]">
+            {t('worlds.body')}
+          </p>
+        </div>
+        {
+          personas.map((p, i) => (
+            <article
+              id={`world-${p.id}`}
+              data-world-panel
+              data-stage={i + offset}
+              class:list={['world-panel', { 'is-active': i + offset === 0 }]}
+              style={`--w: var(${p.bg});`}
+            >
+              <div class="inline-stage" data-inline-stage>
+                <PersonaScene kind={p.kind} uid="i" />
+                <div class="inline-phone">
+                  <PersonaScreen>
+                    <LiveScreen kind={p.kind} />
+                  </PersonaScreen>
+                </div>
+                <div class="chip chip-a"><span class="ci"><Icon name={p.icon} /></span>{p.chips[0]}</div>
+                <div class="chip chip-b"><span class="ci"><Icon name="check-circle" /></span>{p.chips[1]}</div>
+              </div>
+
+              <div class="copy">
+                <p class="flex flex-wrap items-center gap-x-3 gap-y-2">
+                  <span class="role pill inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[13px] font-medium">
+                    <Icon name={p.icon} class="h-4 w-4" />
+                    {p.role}
+                  </span>
+                  <span class="text-[15px] text-[var(--color-ink-soft)]">{p.name}</span>
+                </p>
+
+                <blockquote class="quote mt-6 text-2xl leading-snug font-medium text-[var(--color-ink)] sm:text-[2rem] sm:leading-[1.2]">
+                  {p.words.map((word, w) => (
+                    <span class="w" style={`--i:${w}`}>{word} </span>
+                  ))}
+                </blockquote>
+
+                <div class="beat mt-8">
+                  <p class="flex items-center gap-2 text-[13px] font-medium text-[var(--color-ink-faint)]">
+                    <Icon name="device-mobile" class="h-4 w-4" />
+                    {t('worlds.opens')}
+                  </p>
+                  <p class="mt-2 max-w-[46ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">{p.moment}</p>
+                </div>
+
+                <div class="answer beat mt-7 pl-5">
+                  <p class="flex items-center gap-2 text-[13px] font-medium text-[var(--color-ink-faint)]">
+                    <Icon name="check-circle" class="h-4 w-4" />
+                    {t('worlds.answer')}
+                    {p.plus && (
+                      <span class="role rounded-full px-2 py-0.5 text-[11px] font-medium">{t('worlds.plusBadge')}</span>
+                    )}
+                  </p>
+                  <Sub class="feature-title mt-2 inline-block text-xl font-medium">{p.featureTitle}</Sub>
+                  <p class="mt-2 max-w-[46ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+                    {p.featureBody}
+                  </p>
+                </div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="worlds-stage">
+        <div class="stage-card" aria-hidden="true">
+          {
+            stages.map((p, i) => (
+              <div
+                data-world-stage-item
+                class:list={['stage-layer', { 'is-active': i === 0 }]}
+                style={`background: var(${p.bg});`}
+              >
+                {p.scene === 'welcome' ? <HeroScene uid="s" /> : <PersonaScene kind={p.scene} uid="s" />}
+              </div>
+            ))
+          }
+          <span class="stage-orb stage-orb-a"></span>
+          <span class="stage-orb stage-orb-b"></span>
+          {
+            stages.map((p, i) => (
+              <div
+                data-world-stage-item
+                data-stage-screen
+                class:list={['stage-screen', { 'is-active': i === 0 }]}
+                style={`--w: var(${p.bg});`}
+              >
+                {p.hero && (
+                  <div class="app-tile" aria-hidden="true">
+                    <span class="tile-ping"></span>
+                    <span class="tile-icon"><Image src={logo} alt="" width={64} height={64} class="h-full w-full object-contain" /></span>
+                    <span class="tile-plus">+</span>
+                  </div>
+                )}
+                <div class="tilt">
+                  <PersonaScreen>
+                    <LiveScreen kind={p.screen} />
+                  </PersonaScreen>
+                </div>
+                <div class="chip chip-a"><span class="ci"><Icon name={p.icon} /></span>{p.chips[0]}</div>
+                <div class="chip chip-b"><span class="ci"><Icon name={p.hero ? 'users-three' : 'check-circle'} /></span>{p.chips[1]}</div>
+              </div>
+            ))
+          }
+        </div>
+        <nav class="rail" aria-label={t('worlds.heading')}>
+          {
+            stages.map((p, i) => (
+              <a
+                href={p.hero ? '#hero' : `#world-${p.key}`}
+                data-rail
+                aria-label={p.name}
+                class:list={['rail-item', { 'is-active': i === 0 }]}
+              />
+            ))
+          }
+        </nav>
+      </div>
+    </div>
+
+    <div class="mt-4 max-w-[52ch] sm:mt-10" data-reveal>
+      <p class="text-lg leading-relaxed font-medium text-[var(--color-ink)]">{t('worlds.portugal')}</p>
+      {
+        allHref && (
+          <a
+            href={allHref}
+            class="mt-5 inline-flex items-center gap-2 rounded-full border border-[var(--color-mint)] px-6 py-3 text-[15px] font-medium text-[var(--color-mint)] transition-transform active:scale-[0.98]"
+          >
+            {t('worlds.seeAll')}
+            <Icon name="arrow-right" class="h-4 w-4" />
+          </a>
+        )
+      }
+      <p class="mt-5 text-[13px] text-[var(--color-ink-faint)]">{t('worlds.exampleNote')}</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { countUp } from '../lib/countUp';
+  import { attachTilt } from '../lib/tilt';
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-worlds]').forEach((root) => {
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-world-panel]'));
+    const items = Array.from(root.querySelectorAll<HTMLElement>('[data-world-stage-item]'));
+    const screens = Array.from(root.querySelectorAll<HTMLElement>('[data-stage-screen]'));
+    const rails = Array.from(root.querySelectorAll<HTMLElement>('[data-rail]'));
+    const inlineStages = Array.from(root.querySelectorAll<HTMLElement>('[data-inline-stage]'));
+    const stage = root.querySelector<HTMLElement>('.worlds-stage');
+    const card = root.querySelector<HTMLElement>('.stage-card');
+    if (!panels.length || !('IntersectionObserver' in window)) return;
+
+    const stageCount = root.querySelectorAll('.stage-layer').length;
+    const stageOf = (el: HTMLElement) => Number(el.dataset.stage ?? 0);
+    const worldPanels = Array.from(root.querySelectorAll<HTMLElement>('.world-panel'));
+    let current = 0;
+    let stageVisible = false;
+
+    // Only the screen you are looking at plays; leaving and coming back replays it from the start.
+    const setLive = (index: number | null) => {
+      screens.forEach((screen, i) => screen.classList.toggle('is-live', i === index));
+      if (index !== null && !reduce) countUp(screens[index]);
+    };
+
+    const activate = (index: number) => {
+      if (index === current) return;
+      current = index;
+      worldPanels.forEach((panel) => panel.classList.toggle('is-active', stageOf(panel) === index));
+      // Stage items are two lists (colour layers, then screens) in the same order as the stages.
+      items.forEach((item, i) => item.classList.toggle('is-active', i % stageCount === index));
+      rails.forEach((rail, i) => rail.classList.toggle('is-active', i === index));
+      if (stageVisible) setLive(index);
+    };
+
+    // A zero-height band across the middle of the viewport: whichever panel crosses it is "current".
+    const panelObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) activate(stageOf(entry.target as HTMLElement));
+        }
+      },
+      { rootMargin: '-50% 0px -50% 0px' },
+    );
+    panels.forEach((panel) => panelObserver.observe(panel));
+
+    if (stage) {
+      new IntersectionObserver(
+        ([entry]) => {
+          stageVisible = entry.isIntersecting;
+          setLive(stageVisible ? current : null);
+        },
+        { threshold: 0.35 },
+      ).observe(stage);
+    }
+
+    // Mobile / narrow: every panel has its own stage; play the one on screen.
+    const inlineObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const el = entry.target as HTMLElement;
+          el.classList.toggle('is-live', entry.isIntersecting);
+          if (entry.isIntersecting && !reduce) countUp(el);
+        }
+      },
+      { threshold: 0.4 },
+    );
+    inlineStages.forEach((el) => inlineObserver.observe(el));
+
+    // Pointer parallax: the phone tilts, the floating cards drift the other way for depth.
+    if (card) attachTilt(card);
+  });
+</script>
+
+<style>
+  /* Default (mobile, and JS off at any width): each panel carries its own stage. */
+  .world-panel {
+    position: relative;
+    isolation: isolate;
+    padding-block: 2.5rem;
+  }
+  .inline-stage {
+    position: relative;
+    overflow: hidden;
+    height: 520px;
+    margin-bottom: 2rem;
+    border-radius: var(--radius-stage);
+    background: var(--w);
+  }
+  .inline-phone {
+    position: relative;
+    z-index: 1;
+    width: 170px;
+    margin: 36px 0 0 14px;
+  }
+  .worlds-intro {
+    padding-bottom: 2rem;
+  }
+  .role {
+    background: var(--w);
+    color: var(--color-on-surface);
+  }
+  .quote {
+    border-left: 3px solid var(--w);
+    padding-left: 1.25rem;
+  }
+  .answer {
+    border-left: 2px solid var(--color-line);
+  }
+  .feature-title {
+    position: relative;
+    color: var(--w);
+  }
+  .feature-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 2px;
+    width: 100%;
+    background: var(--w);
+    transform-origin: left;
+  }
+  .worlds-stage {
+    display: none;
+  }
+
+  /* Floating cards: base look is global (global.css), positions are per stage. */
+  /* Cards sit in the empty corners (status-bar row, tab-bar row) so they never cover a number. */
+  .chip-a {
+    left: 3%;
+    top: 6%;
+  }
+  .chip-b {
+    right: 3%;
+    bottom: 4%;
+  }
+  .inline-stage .chip-a {
+    left: 2%;
+    top: 2%;
+  }
+  .inline-stage .chip-b {
+    display: none;
+  }
+
+  /* JS off on desktop: copy left, its own stage right, one panel per row. */
+  @media (min-width: 1024px) {
+    .world-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+      align-items: center;
+      column-gap: 4rem;
+    }
+    .inline-stage {
+      order: 2;
+      margin-bottom: 0;
+      height: 560px;
+    }
+    .inline-phone {
+      width: 230px;
+      margin: 40px 0 0 24px;
+    }
+    .inline-stage .chip-b {
+      display: flex;
+    }
+  }
+
+  /* Desktop with JS: sticky stage on the right, copy scrolls on the left. */
+  @media (min-width: 1024px) {
+    .worlds-js .worlds-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+      column-gap: 4rem;
+    }
+    .worlds-js .world-panel {
+      display: flex;
+      align-items: center;
+      min-height: calc(100dvh - 4rem);
+      padding-block: 3rem;
+    }
+    .worlds-js .inline-stage {
+      display: none;
+    }
+
+    /* The focus dim: the panel you are on is full strength, the rest recede. */
+    .worlds-js .copy {
+      opacity: 0.28;
+      transform: translateX(-10px);
+      transition:
+        opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .worlds-js .world-panel.is-active .copy {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* A wash of the active persona's colour behind their copy. */
+    .worlds-js .world-panel::before {
+      content: '';
+      position: absolute;
+      inset: -6% -24% -6% -30%;
+      z-index: -1;
+      background: radial-gradient(closest-side, color-mix(in srgb, var(--w) 20%, transparent), transparent);
+      opacity: 0;
+      transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+    .worlds-js .world-panel.is-active::before {
+      opacity: 1;
+    }
+
+    .worlds-js .worlds-stage {
+      display: block;
+      position: sticky;
+      top: 5rem;
+      align-self: start;
+      height: calc(100dvh - 7rem);
+      max-height: 820px;
+    }
+    .worlds-js .chip {
+      font-size: 14px;
+    }
+    .worlds-js .chip .ci {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+    .worlds-js .world-panel.is-active .w {
+      animation: word-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: calc(var(--i) * 45ms + 0.1s);
+    }
+    .worlds-js .world-panel.is-active .pill {
+      animation: pill-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+    .worlds-js .world-panel.is-active .beat {
+      animation: beat-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+    }
+    .worlds-js .world-panel.is-active .answer {
+      animation-delay: 0.85s;
+    }
+    .worlds-js .world-panel.is-active .feature-title::after {
+      animation: underline 0.9s cubic-bezier(0.16, 1, 0.3, 1) 1.3s both;
+    }
+  }
+
+  .w {
+    display: inline-block;
+    white-space: pre;
+  }
+  @keyframes word-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.55em);
+    }
+  }
+  @keyframes pill-in {
+    from {
+      opacity: 0;
+      transform: scale(0.7);
+    }
+  }
+  @keyframes beat-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+  @keyframes underline {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  /* Stage */
+  .stage-card {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 40px;
+    isolation: isolate;
+    --rx: 0deg;
+    --ry: 0deg;
+  }
+  .stage-layer {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .stage-layer.is-active {
+    opacity: 1;
+  }
+  .stage-orb {
+    display: none;
+  }
+  .stage-orb-a {
+    width: 46%;
+    aspect-ratio: 1;
+    top: -12%;
+    right: -14%;
+  }
+  .stage-orb-b {
+    width: 30%;
+    aspect-ratio: 1;
+    bottom: -8%;
+    left: -8%;
+    background: rgb(255 255 255 / 0.2);
+  }
+  .stage-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 6%;
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+  .stage-screen.is-active {
+    opacity: 1;
+    transform: none;
+  }
+  .tilt {
+    height: 74%;
+    aspect-ratio: 1170 / 2532;
+    transform: perspective(1100px) rotateX(var(--rx)) rotateY(var(--ry));
+    transition: transform 0.25s ease-out;
+  }
+  .tilt :global(.screen-phone) {
+    width: 100%;
+    height: 100%;
+  }
+  .stage-screen .chip {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .stage-screen.is-active .tilt {
+      animation: world-bob 7s ease-in-out infinite;
+    }
+    .stage-orb-a {
+      animation: world-drift 14s ease-in-out infinite alternate;
+    }
+    .stage-orb-b {
+      animation: world-drift 18s ease-in-out infinite alternate-reverse;
+    }
+    .stage-screen.is-active .chip-a {
+      animation:
+        chip-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both,
+        chip-float 6s ease-in-out 1.4s infinite;
+    }
+    .stage-screen.is-active .chip-b {
+      animation:
+        chip-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.95s both,
+        chip-float 7s ease-in-out 1.9s infinite reverse;
+    }
+    .inline-stage.is-live .chip-a {
+      animation:
+        chip-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both,
+        chip-float 6s ease-in-out 1.4s infinite;
+    }
+    .inline-stage.is-live .chip-b {
+      animation:
+        chip-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.95s both,
+        chip-float 7s ease-in-out 1.9s infinite reverse;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stage-screen.is-active .chip {
+      opacity: 1;
+    }
+  }
+  @keyframes world-bob {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 -10px;
+    }
+  }
+  @keyframes world-drift {
+    from {
+      transform: translate(0, 0);
+    }
+    to {
+      transform: translate(-24px, 18px);
+    }
+  }
+
+  /* Progress rail: a real nav, one link per persona. */
+  .rail {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    z-index: 4;
+    display: flex;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: rgb(26 26 26 / 0.14);
+    transform: translateX(-50%);
+  }
+  .rail-item {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: rgb(26 26 26 / 0.35);
+    transition:
+      width 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 0.4s;
+  }
+  .rail-item.is-active {
+    width: 34px;
+    background: rgb(26 26 26 / 0.8);
+  }
+
+  /* The hero leads the same sequence: its copy is the first panel, its set the first stage item. */
+  .worlds-intro.with-hero {
+    padding-top: 4rem;
+  }
+  @media (max-width: 1023px) {
+    .hero-panel {
+      display: flex;
+      flex-direction: column;
+    }
+    .hero-panel .inline-stage {
+      order: 2;
+      margin: 2rem 0 0;
+    }
+    .hero-panel .copy {
+      order: 1;
+    }
+  }
+  /* "Add the app": the Otterbond icon floats over the hero set, with a plus badge. */
+  .app-tile {
+    position: absolute;
+    z-index: 3;
+    left: 64%;
+    top: 5%;
+    width: 74px;
+    height: 74px;
+  }
+  .inline-stage .app-tile {
+    left: 60%;
+    top: 14px;
+    width: 60px;
+    height: 60px;
+  }
+  .tile-icon {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 12px;
+    border-radius: 20px;
+    background: rgb(255 255 255 / 0.96);
+    box-shadow: 0 18px 34px -12px rgb(0 0 0 / 0.42);
+  }
+  .tile-plus {
+    position: absolute;
+    right: -8px;
+    bottom: -8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #234d2e;
+    color: #fff;
+    font-size: 20px;
+    line-height: 1;
+    box-shadow: 0 0 0 3px #cff3da;
+  }
+  .tile-ping {
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    border: 2px solid #234d2e;
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .stage-screen.is-active .app-tile,
+    .inline-stage.is-live .app-tile {
+      animation: tile-float 3.6s ease-in-out infinite;
+    }
+    .stage-screen.is-active .tile-ping,
+    .inline-stage.is-live .tile-ping {
+      animation: tile-ping 2.4s ease-out infinite;
+    }
+    .stage-screen.is-active .tile-plus,
+    .inline-stage.is-live .tile-plus {
+      animation: plus-pop 3.6s ease-in-out infinite;
+    }
+  }
+  @keyframes tile-float {
+    0%,
+    100% {
+      transform: translateY(0) rotate(-3deg);
+    }
+    50% {
+      transform: translateY(-12px) rotate(3deg);
+    }
+  }
+  @keyframes tile-ping {
+    0% {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+  @keyframes plus-pop {
+    0%,
+    60%,
+    100% {
+      transform: scale(1);
+    }
+    72% {
+      transform: scale(1.3);
+    }
+    84% {
+      transform: scale(0.95);
+    }
+  }
+</style>

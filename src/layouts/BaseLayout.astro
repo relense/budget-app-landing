@@ -56,6 +56,19 @@ const websiteJsonLd = {
     }
     <meta name="generator" content={Astro.generator} />
 
+    <noscript>
+      <style>
+        [data-reveal],
+        .price-card .feat {
+          opacity: 1;
+          transform: none;
+        }
+        .price-card .tick {
+          transform: none;
+        }
+      </style>
+    </noscript>
+
     <title>{title}</title>
     <meta name="description" content={description} />
 
@@ -80,6 +93,9 @@ const websiteJsonLd = {
     <CookieConsent lang={lang} />
 
     <script>
+      import { initLiveNumbers } from '../lib/liveNumbers';
+      import { initSpotlight } from '../lib/spotlight';
+
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const targets = document.querySelectorAll('[data-reveal]');
 
@@ -98,6 +114,15 @@ const websiteJsonLd = {
           { threshold: 0.15, rootMargin: '0px 0px -8% 0px' },
         );
         targets.forEach((el) => observer.observe(el));
+      }
+
+      // Decorative extras go last so a throw here can never leave the page unrevealed.
+      for (const init of [initSpotlight, initLiveNumbers]) {
+        try {
+          init();
+        } catch (err) {
+          console.error(err);
+        }
       }
     </script>
 

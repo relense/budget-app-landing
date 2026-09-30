@@ -1,0 +1,64 @@
+/* Subset of Material Design Icons (the icon set the Otterbond mobile app uses via @expo/vector-icons, Apache-2.0),
+   limited to the glyphs the landing page's app mockups draw. Regenerate with pyftsubset from the app's
+   MaterialCommunityIcons.ttf when a mockup needs a new icon. */
+@font-face {
+  font-family: 'MDI';
+  src: url('../assets/fonts/mdi-subset.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+.mdi {
+  font-family: 'MDI';
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+}
+.mdi-account-cash-outline::before { content: '\F1098'; }
+.mdi-account-circle::before { content: '\F0009'; }
+.mdi-account-multiple::before { content: '\F000E'; }
+.mdi-account-switch::before { content: '\F0019'; }
+.mdi-backspace-outline::before { content: '\F0B5C'; }
+.mdi-bank::before { content: '\F0070'; }
+.mdi-battery::before { content: '\F0079'; }
+.mdi-bell-outline::before { content: '\F009C'; }
+.mdi-calculator::before { content: '\F00EC'; }
+.mdi-calendar-outline::before { content: '\F0B67'; }
+.mdi-car::before { content: '\F010B'; }
+.mdi-cart::before { content: '\F0110'; }
+.mdi-chart-box-outline::before { content: '\F154E'; }
+.mdi-chart-line::before { content: '\F012A'; }
+.mdi-check::before { content: '\F012C'; }
+.mdi-chevron-down::before { content: '\F0140'; }
+.mdi-chevron-left::before { content: '\F0141'; }
+.mdi-chevron-right::before { content: '\F0142'; }
+.mdi-chevron-up::before { content: '\F0143'; }
+.mdi-close::before { content: '\F0156'; }
+.mdi-coffee::before { content: '\F0176'; }
+.mdi-credit-card-outline::before { content: '\F019B'; }
+.mdi-eye-outline::before { content: '\F06D0'; }
+.mdi-file-document::before { content: '\F0219'; }
+.mdi-file-document-outline::before { content: '\F09EE'; }
+.mdi-gamepad-variant::before { content: '\F0297'; }
+.mdi-gas-station::before { content: '\F0298'; }
+.mdi-heart::before { content: '\F02D1'; }
+.mdi-help-circle-outline::before { content: '\F0625'; }
+.mdi-home::before { content: '\F02DC'; }
+.mdi-home-variant::before { content: '\F02DE'; }
+.mdi-lock-outline::before { content: '\F0341'; }
+.mdi-pencil-outline::before { content: '\F0CB6'; }
+.mdi-piggy-bank::before { content: '\F1007'; }
+.mdi-plus::before { content: '\F0415'; }
+.mdi-plus-box-outline::before { content: '\F0704'; }
+.mdi-shield-outline::before { content: '\F0499'; }
+.mdi-signal-cellular-3::before { content: '\F08BE'; }
+.mdi-silverware-fork-knife::before { content: '\F0A70'; }
+.mdi-skip-next-outline::before { content: '\F0F27'; }
+.mdi-tag-outline::before { content: '\F04FC'; }
+.mdi-target::before { content: '\F04FE'; }
+.mdi-thermometer::before { content: '\F050F'; }
+.mdi-toolbox-outline::before { content: '\F09AD'; }
+.mdi-wallet-outline::before { content: '\F0BDD'; }
+.mdi-wifi::before { content: '\F05A9'; }

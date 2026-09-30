@@ -3,6 +3,7 @@
 // comment for the shared "front door, not a feature of the app" rationale and the
 // `lang`/`noAlternate` reasoning. See inflationCalculator.ts's own comment for the full CPI series
 // sourcing.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -62,6 +63,8 @@ const softwareApplicationJsonLd = {
       Enter an amount and two years, and see what it was worth (or will be worth) today -- with
       INE's official CPI series, from {EARLIEST_YEAR} to {LATEST_YEAR}.
     </p>
+
+    <ToolBanner scene="garden" variant="tags" tone="--color-cat-pink-bg" />
 
     <form
       id="calc-form"
@@ -212,8 +215,7 @@ const softwareApplicationJsonLd = {
         You know what inflation does to money that just sits there.
       </h2>
       <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-        Otterbond helps you set savings goals with a monthly amount, so your money doesn't just sit
-        idle.
+        Otterbond lets you set savings goals with a monthly amount and a target date, so you can see when you'll get there.
       </p>
       <a
         id="bridge-cta"

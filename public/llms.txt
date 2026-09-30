@@ -1,27 +1,29 @@
 # Otterbond
 
-> A shared, multi-currency budget and savings tracker. Free, no ads, no data-selling.
+> A shared budget and savings tracker built for Portugal first. Log your expenses, and it shows what is safe to spend today. No bank connection, no ads, no data-selling.
 
-Otterbond lets people track a household budget together. Invite people you trust into a
-shared workspace as an Editor (full access) or a Viewer (read-only), log expenses and recurring
-bills, and grow dedicated savings funds toward a goal. Balances display in whichever of 10
-supported currencies each person actually uses. Sign-in is passwordless, a one-time code sent by
-email, no password to manage.
+Otterbond lets you plan a month, log expenses and recurring bills, and keep savings funds with a monthly amount and a target date. Its headline feature, Safe to Spend, is one daily number: your balance minus the bills still due before payday, the savings you have planned this cycle and any amount you keep aside, spread over the days until payday. You set your own payday and confirm your balance yourself.
+
+You can keep a personal workspace and share others with people who have an Otterbond account, as an Editor (can add and edit) or a Viewer (read-only). Expenses are logged by hand; there is no bank sync and no CSV or spreadsheet import. Sign-in is passwordless: a one-time code sent by email.
 
 ## Status
 
-Not yet publicly launched. The web app is in staging and the iOS and Android apps are still in
-progress. Visitors can join a waitlist on the site to be notified when any of them are ready.
+The web app is live at https://app.otterbond.app. The iOS and Android apps are not published yet; visitors can join a waitlist on the site to be notified.
 
 ## Key facts
 
-- Pricing: free, no paid tier
-- Currencies supported: 10, including EUR, USD, GBP, JPY, CHF
-- Sign-in: passwordless (one-time email code)
-- Privacy: no ads, no data-selling, no third-party tracking
+- Plans: Free (budget, bills, savings funds, the Safe to Spend number, the month wrap, 2 workspaces with up to 2 people each, current and next month, 10 currencies) and Plus, EUR 2.99/month (full Safe to Spend timeline, pace and insights, full month reports for every month, a what-if slider for savings goals, 5 workspaces with up to 5 people each, planning up to 24 months ahead). Plus has a 15-day free trial that requires a card and is granted once per person. Purchases happen on the web.
+- Currencies: 10 (EUR, GBP, USD, JPY, CNY, CHF, SEK, NOK, DKK, PLN). Each workspace tracks one currency; changing it relabels numbers and does not convert them.
+- Privacy: no ads and no data-selling. No ad trackers; Google Analytics loads only if you accept the cookie banner; error reports go to Sentry and first-party usage stats are kept for 90 days. Details in the Privacy Policy.
+- Free calculators for Portugal (net salary, freelancer tax, IRS, pension, FIRE and more) work on their own and do not need an account.
 
 ## Pages
 
 - Home: /
+- Who it's for: /who-its-for
+- Pricing: /pricing
+- FAQ: /faq
+- Free tools: /tools
 - Privacy Policy: /privacy
 - Terms of Service: /terms
+- Portuguese (pt-PT) versions live under /pt-pt/

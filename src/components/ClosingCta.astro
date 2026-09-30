@@ -1,0 +1,138 @@
+---
+import Icon from './Icon.astro';
+import CtaScene from './CtaScene.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<section id="get-the-app" class="bg-[var(--color-bg)] py-20 sm:py-28">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="cta-card relative overflow-hidden rounded-[var(--radius-stage)] bg-[var(--color-mint)] px-6 pt-14 pb-56 text-center sm:px-12 sm:pt-20 sm:pb-24 lg:pb-28" data-reveal>
+      <span class="cta-orb cta-orb-a" aria-hidden="true"></span>
+      <span class="cta-orb cta-orb-b" aria-hidden="true"></span>
+      {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => <span class={`spark s${n}`} aria-hidden="true" />)}
+      <CtaScene side="left" />
+      <CtaScene side="right" />
+      <h2 class="relative mx-auto max-w-[24ch] text-balance text-4xl leading-[1.1] font-medium text-[var(--color-mint-deep)] sm:text-5xl">
+        {t('cta.heading')}
+      </h2>
+      <div class="relative mt-9 flex flex-wrap items-center justify-center gap-3">
+        <span class="cta-btn">
+          <a
+            href="https://app.otterbond.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 rounded-full bg-[var(--color-mint-deep)] px-7 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.98]"
+          >
+            {t('cta.web')}
+            <Icon name="arrow-square-out" class="h-4 w-4" />
+          </a>
+        </span>
+        <a
+          href="#waitlist"
+          class="inline-flex items-center gap-2 rounded-full border border-[var(--color-mint-deep)] px-6 py-3.5 text-[15px] font-medium text-[var(--color-mint-deep)] transition-transform active:scale-[0.98]"
+        >
+          {t('cta.waitlist')}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-btn {
+    position: relative;
+    display: inline-flex;
+  }
+  .cta-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    border: 2px solid var(--color-mint-deep);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .spark {
+    position: absolute;
+    z-index: 0;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.7);
+    opacity: 0;
+  }
+  .s1 { left: 22%; top: 30%; width: 10px; height: 10px; }
+  .s2 { left: 30%; top: 62%; width: 7px; height: 7px; background: #f5e27a; }
+  .s3 { left: 40%; top: 18%; width: 8px; height: 8px; }
+  .s4 { left: 58%; top: 14%; width: 12px; height: 12px; background: #f5e27a; }
+  .s5 { left: 68%; top: 34%; width: 8px; height: 8px; }
+  .s6 { left: 76%; top: 60%; width: 10px; height: 10px; }
+  .s7 { left: 48%; top: 72%; width: 7px; height: 7px; background: #f5e27a; }
+  .s8 { left: 84%; top: 22%; width: 7px; height: 7px; }
+  .cta-orb {
+    position: absolute;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.32);
+  }
+  .cta-orb-a {
+    width: 340px;
+    height: 340px;
+    top: -140px;
+    right: -90px;
+  }
+  .cta-orb-b {
+    width: 220px;
+    height: 220px;
+    bottom: -90px;
+    left: -60px;
+    background: rgb(255 255 255 / 0.2);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .cta-card.is-visible .cta-btn {
+      animation: cta-hop 6s ease-in-out 2s infinite;
+    }
+    .cta-card.is-visible .cta-btn::before {
+      animation: cta-ring 3s ease-out 1s infinite;
+    }
+    .cta-card.is-visible .spark {
+      animation: spark-up 6s ease-in-out infinite;
+    }
+    .s2 { animation-delay: 1s; }
+    .s3 { animation-delay: 2s; }
+    .s4 { animation-delay: 0.5s; }
+    .s5 { animation-delay: 3s; }
+    .s6 { animation-delay: 1.5s; }
+    .s7 { animation-delay: 4s; }
+    .s8 { animation-delay: 2.5s; }
+    .cta-orb-a {
+      animation: cta-drift 14s ease-in-out infinite alternate;
+    }
+    .cta-orb-b {
+      animation: cta-drift 18s ease-in-out infinite alternate-reverse;
+    }
+  }
+  @keyframes cta-hop {
+    0%, 14%, 100% { transform: translateY(0); }
+    4% { transform: translateY(-9px); }
+    8% { transform: translateY(0); }
+    11% { transform: translateY(-4px); }
+  }
+  @keyframes cta-ring {
+    0% { opacity: 0.8; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.35, 1.7); }
+  }
+  @keyframes spark-up {
+    0% { opacity: 0; transform: translateY(20px) scale(0.6); }
+    30%, 60% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-46px) scale(1.1); }
+  }
+  @keyframes cta-drift {
+    from {
+      transform: translate(0, 0);
+    }
+    to {
+      transform: translate(-30px, 24px);
+    }
+  }
+</style>

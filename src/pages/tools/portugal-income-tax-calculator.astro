@@ -15,6 +15,7 @@
 // rationale): most people don't know this figure, and a static default is actively misleading once
 // it stops scaling with income. Stays auto-computed on every recalc until the user edits that field
 // directly (`retainedManuallyEdited`), with a one-click "use automatic estimate" reset.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -74,6 +75,8 @@ const softwareApplicationJsonLd = {
       refund or a payment -- with 2026's brackets, and IRS withholding estimated automatically
       from the official tables, no need to go dig it out of a payslip.
     </p>
+
+    <ToolBanner scene="desk" variant="stamp" tone="--color-cat-purple-bg" />
     <p class="mt-4 max-w-[60ch] rounded-xl bg-[var(--color-bg-elevated)] px-4 py-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
       An estimate from public rules, not your actual tax return or tax advice. 2026 figures (return
       filed between April and June 2027). Source: Código do IRS and Portal das Finanças.
@@ -529,7 +532,7 @@ const softwareApplicationJsonLd = {
     } else {
       headline.textContent = `Estimate: you owe around ${euro.format(-result.balance)}.`;
       bridgeHeadline.textContent = `You'll need to pay around ${euro.format(-result.balance)}. Get ready ahead of time.`;
-      bridgeBody.textContent = "Otterbond helps you set that amount aside month by month, before the payment is due.";
+      bridgeBody.textContent = "Otterbond lets you plan that amount as a monthly savings fund, before the payment is due.";
     }
 
     document.getElementById('result-detail-1')!.textContent =

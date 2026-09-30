@@ -1,81 +1,145 @@
 ---
-import { Image } from 'astro:assets';
-import webExpensesEn from '../assets/screenshots/web-expenses.png';
-import webExpensesPt from '../assets/screenshots/web-expenses-pt.png';
-import mobileSafeToSpendEn from '../assets/screenshots/mobile-safe-to-spend.png';
-import mobileSafeToSpendPt from '../assets/screenshots/mobile-safe-to-spend-pt.png';
 import Icon from './Icon.astro';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-// One language per page version -- the app screenshot itself must match the page's own language,
-// not just the surrounding copy.
-const webExpenses = lang === 'pt-pt' ? webExpensesPt : webExpensesEn;
-const mobileSafeToSpend = lang === 'pt-pt' ? mobileSafeToSpendPt : mobileSafeToSpendEn;
+const words = t('hero.title').split(' ');
 ---
 
-<section class="relative overflow-hidden bg-[var(--color-bg)] pt-14 pb-20 sm:pt-20 sm:pb-28">
-  <div
-    class="pointer-events-none absolute -top-24 right-[-10%] h-[520px] w-[520px] rounded-full bg-[var(--color-mint)]/10 blur-2xl"
-    aria-hidden="true"
-  >
-  </div>
-
-  <div
-    class="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-14 px-5 sm:px-8 lg:grid-cols-[1fr_1.05fr] lg:gap-8"
-  >
-    <div data-reveal>
+<div class="hero-copy">
       <h1
-        class="max-w-[16ch] text-4xl leading-[1.1] font-medium tracking-tight text-[var(--color-ink)] sm:text-5xl lg:text-6xl"
+        class="max-w-[22ch] text-4xl leading-[1.1] font-medium tracking-tight text-[var(--color-ink)] sm:text-5xl lg:text-[3.4rem]"
+        aria-label={t('hero.title')}
       >
-        {t('hero.title')}
+        {words.map((word, i) => (
+          <span class="hw" style={`--i:${i}`} aria-hidden="true">{word} </span>
+        ))}
       </h1>
-      <p class="mt-6 max-w-[46ch] text-lg leading-relaxed text-[var(--color-ink-soft)]">
+      <p class="hero-rise mt-6 max-w-[46ch] text-lg leading-relaxed text-[var(--color-ink-soft)]" style="--d:.55s">
         {t('hero.subtitle')}
       </p>
 
-      <div class="mt-9 flex flex-wrap items-center gap-4">
+      <div class="hero-rise mt-9 flex flex-wrap items-center gap-3" style="--d:.7s">
+        <span class="cta-wrap">
+          <a
+            href="https://app.otterbond.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="cta-shine inline-flex items-center gap-2 rounded-full bg-[var(--color-mint)] px-7 py-3.5 text-[15px] font-medium text-[var(--color-mint-deep)] transition-transform active:scale-[0.98]"
+          >
+            {t('hero.cta')}
+            <Icon name="arrow-right" class="cta-arrow h-4 w-4" />
+          </a>
+        </span>
         <a
-          href="#get-the-app"
-          class="inline-flex items-center gap-2 rounded-full bg-[var(--color-pill)] px-7 py-3.5 text-[15px] font-medium text-white shadow-[var(--shadow-lifted)] transition-transform active:scale-[0.98]"
+          href="#waitlist"
+          class="inline-flex items-center gap-2 rounded-full border border-[var(--color-line)] px-6 py-3.5 text-[15px] font-medium text-[var(--color-ink)] transition-colors hover:border-[var(--color-ink-faint)] active:scale-[0.98]"
         >
-          {t('hero.cta')}
-          <Icon name="arrow-right" class="h-4 w-4" />
+          {t('hero.waitlistCta')}
         </a>
       </div>
 
-      <div class="mt-10 flex items-center gap-2 text-[13px] font-medium text-[var(--color-ink-faint)] lg:hidden">
-        <span>{t('hero.scrollHint')}</span>
-        <Icon name="caret-down" class="h-4 w-4 animate-bounce" />
-      </div>
+      <p class="hero-rise mt-6 max-w-[46ch] text-[14px] leading-relaxed text-[var(--color-ink-faint)]" style="--d:.85s">
+        {t('hero.trustLine')}
+      </p>
     </div>
 
-    <div class="relative" data-reveal style="transition-delay: 120ms">
-      <div
-        class="relative mx-auto max-w-[560px] rotate-[-2deg] overflow-hidden rounded-2xl border border-[var(--color-line)] shadow-[var(--shadow-lifted)] sm:rounded-[28px]"
-      >
-        <Image
-          src={webExpenses}
-          alt={t('hero.desktopAlt')}
-          width={800}
-          loading="eager"
-          fetchpriority="high"
-          class="w-full"
-        />
-      </div>
+<style>
+  .hw {
+    display: inline-block;
+    white-space: pre;
+  }
+  /* The invitation on the button itself: a ring that pings, a hop, and the arrow nudging. */
+  .cta-wrap {
+    position: relative;
+    display: inline-flex;
+  }
+  .cta-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    border: 2px solid var(--color-mint);
+    opacity: 0;
+    pointer-events: none;
+  }
 
-      <div
-        class="absolute -bottom-10 -left-4 w-[150px] rotate-[4deg] overflow-hidden rounded-[22px] border-4 border-[var(--color-bg-elevated)] shadow-[var(--shadow-lifted)] sm:-bottom-12 sm:-left-8 sm:w-[190px]"
-      >
-        <Image
-          src={mobileSafeToSpend}
-          alt={t('hero.mobileAlt')}
-          width={420}
-          loading="eager"
-          class="w-full"
-        />
-      </div>
-    </div>
-  </div>
-</section>
+  @media (prefers-reduced-motion: no-preference) {
+    .hw {
+      animation: hw-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: calc(var(--i) * 70ms + 0.05s);
+    }
+    .hero-rise {
+      animation: hw-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: var(--d, 0s);
+    }
+    .cta-wrap {
+      animation: cta-hop 6s ease-in-out 3s infinite;
+    }
+    .cta-wrap::before {
+      animation: cta-ring 3s ease-out 1.5s infinite;
+    }
+    .cta-wrap :global(.cta-arrow) {
+      animation: cta-nudge 1.6s ease-in-out infinite;
+    }
+    .cta-shine {
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-shine::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.55) 50%, transparent 65%);
+      transform: translateX(-120%);
+      animation: shine 5s ease-in-out 2.5s infinite;
+    }
+  }
+  @keyframes cta-hop {
+    0%,
+    14%,
+    100% {
+      transform: translateY(0);
+    }
+    4% {
+      transform: translateY(-9px);
+    }
+    8% {
+      transform: translateY(0);
+    }
+    11% {
+      transform: translateY(-4px);
+    }
+  }
+  @keyframes cta-ring {
+    0% {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.35, 1.7);
+    }
+  }
+  @keyframes cta-nudge {
+    50% {
+      transform: translateX(4px);
+    }
+  }
+  @keyframes hw-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.6em);
+    }
+  }
+  @keyframes shine {
+    0%,
+    55% {
+      transform: translateX(-120%);
+    }
+    100% {
+      transform: translateX(120%);
+    }
+  }
+</style>

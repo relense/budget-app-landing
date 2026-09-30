@@ -1,0 +1,89 @@
+---
+// Two small groups of people at the bottom corners of the closing card, waving you in. Same rig and
+// motion as the persona sets; they rise into view when the card is revealed, then keep waving.
+import { K, person } from '../lib/figures';
+
+interface Props {
+  side: 'left' | 'right';
+}
+const { side } = Astro.props;
+const flip = side === 'right';
+// [x, shoulder y, scale, skin, hair, style, top, phase]
+const group =
+  side === 'left'
+    ? [
+        { x: 96, y: 196, scale: 1.05, skin: K.skinB, hair: K.hairDark, style: 'curly' as const, top: K.pink, phase: 0 },
+        { x: 224, y: 214, scale: 0.9, skin: K.skinA, hair: K.hairAuburn, style: 'long' as const, top: K.blue, phase: 0.5 },
+      ]
+    : [
+        { x: 96, y: 200, scale: 0.96, skin: K.skinC, hair: K.hairBlack, style: 'cap' as const, top: K.teal, phase: 0.25 },
+        { x: 224, y: 192, scale: 1.05, skin: K.skinA, hair: K.hairBrown, style: 'bun' as const, top: K.purple, phase: 0.75 },
+      ];
+---
+
+<svg class={`psc cta-fig cta-${side}`} viewBox="0 0 320 300" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+  {
+    group.map((g) => (
+      <g class="cta-person" style={`--rise:${g.phase}s`}
+        set:html={person({ x: g.x, y: g.y, scale: g.scale, skin: g.skin, hair: g.hair, style: g.style, top: g.top, arms: 'wave', legs: false, flip, act: 'nod', phase: g.phase })}
+      />
+    ))
+  }
+</svg>
+
+<style is:global>
+  /* .psc.cta-fig: has to out-rank the shared .psc rule (inset: 0; width/height: 100%). */
+  .psc.cta-fig {
+    position: absolute;
+    top: auto;
+    bottom: 0;
+    z-index: 1;
+    width: min(300px, 46%);
+    height: auto;
+    aspect-ratio: 320 / 300;
+    pointer-events: none;
+  }
+  .psc.cta-left {
+    left: 1%;
+    right: auto;
+  }
+  .psc.cta-right {
+    right: 1%;
+    left: auto;
+  }
+  @media (min-width: 1024px) {
+    .psc.cta-fig {
+      width: 25%;
+      max-width: 320px;
+    }
+    .psc.cta-left {
+      left: 2%;
+    }
+    .psc.cta-right {
+      right: 2%;
+    }
+  }
+  /* People start below the card edge and pop up when the section is revealed */
+  .cta-person {
+    transform: translateY(120px);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .cta-card.is-visible .cta-person {
+      animation: cta-rise 1s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+      animation-delay: calc(var(--rise) + 0.2s);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cta-person {
+      transform: none;
+    }
+  }
+  @keyframes cta-rise {
+    from {
+      transform: translateY(120px);
+    }
+    to {
+      transform: none;
+    }
+  }
+</style>

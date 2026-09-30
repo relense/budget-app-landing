@@ -5,6 +5,7 @@
 //
 // See src/lib/calculators/sickLeaveBenefit.ts's own comment for the full sourcing. Employees
 // (TCO) only -- self-employed workers have a different 10-day waiting period, not modeled.
+import ToolBanner from '../../components/ToolBanner.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NavBar from '../../components/NavBar.astro';
 import Footer from '../../components/Footer.astro';
@@ -63,6 +64,8 @@ const softwareApplicationJsonLd = {
       Introduz o teu salário médio e os dias de baixa, e vê quanto recebes no total e por dia,
       depois do período de espera.
     </p>
+
+    <ToolBanner scene="rest" variant="" tone="--color-cat-pink-bg" />
 
     <form
       id="calc-form"
@@ -215,8 +218,7 @@ const softwareApplicationJsonLd = {
         Já sabes o número. Agora vê como fica o teu mês.
       </h2>
       <p class="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-        O Otterbond mostra-te quanto podes gastar por dia com um rendimento temporariamente mais
-        baixo, sem surpresas.
+        Regista o teu rendimento mais baixo à medida que chega, e o Otterbond mostra quanto podes gastar por dia até ao teu próximo pagamento.
       </p>
       <a
         id="bridge-cta"
