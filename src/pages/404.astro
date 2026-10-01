@@ -14,7 +14,7 @@ const t = useTranslations(lang);
 const homeHref = lang === 'en' ? '/' : '/pt-pt/';
 ---
 
-<BaseLayout title={t('notFound.title')} description={t('notFound.description')}>
+<BaseLayout title={t('notFound.title')} description={t('notFound.description')} noAlternate>
   <NavBar />
   <main class="flex min-h-[60vh] flex-col items-center justify-center px-5 py-24 text-center">
     <p class="font-mono text-sm text-[var(--color-ink-faint)]">404</p>

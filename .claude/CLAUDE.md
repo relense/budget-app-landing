@@ -134,7 +134,7 @@ routing in `astro.config.mjs` (`defaultLocale: 'en'`, `locales: ['en', { path: '
 this, it's routing/URL convention plus `Astro.currentLocale` only; the actual page files under
 `src/pages/pt-pt/` are hand-duplicated. No visible language switcher, purely system-based: an
 inline `<head>` script in `BaseLayout.astro` (runs before first paint, on every English landing, no
-once-only flag) sends English-page visitors whose browser languages include Portuguese to the
+once-only flag) sends English-page visitors whose preferred (first) browser language is Portuguese to the
 `/pt-pt/` equivalent, one-directional only (never redirects
 someone away from a `/pt-pt/` page they navigated to directly, e.g. a shared link).
 

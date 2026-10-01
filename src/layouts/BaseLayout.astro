@@ -89,14 +89,14 @@ const websiteJsonLd = {
     {
       !noAlternate && lang === 'en' && (
         <script is:inline define:vars={{ alternatePath: getAlternatePath(Astro.url.pathname, lang) }}>
-          // System-based language redirect: if any of the browser's languages is Portuguese and the
-          // visitor lands on an English (default-locale) page, send them to the pt-PT equivalent.
+          // System-based language redirect: if the browser's preferred (first) language is Portuguese
+          // and the visitor lands on an English (default-locale) page, send them to the pt-PT equivalent.
           // Runs in <head> so it fires before first paint. Applies on every English landing (no
           // once-only flag, no manual override -- the language follows the system setting).
           // One-directional: /pt-pt/ pages are never redirected away, so shared links work as sent.
           try {
-            const langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language];
-            if (langs.some((l) => String(l).toLowerCase().startsWith('pt'))) {
+            const preferred = (navigator.languages && navigator.languages[0]) || navigator.language || '';
+            if (String(preferred).toLowerCase().startsWith('pt')) {
               window.location.replace(alternatePath + window.location.search + window.location.hash);
             }
           } catch {
