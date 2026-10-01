@@ -10,7 +10,7 @@ interface Props {
   /** Set for a standalone page with no true bilingual counterpart at the mirrored `/pt-pt/...`
    * path (e.g. the `/ferramentas/*` calculator pages, which are Portuguese-only by design, or an
    * English-only tool page whose PT equivalent lives at an unrelated URL). Suppresses the
-   * hreflang alternate links (there's nothing valid to point them at) and the first-visit
+   * hreflang alternate links (there's nothing valid to point them at) and the
    * PT-browser redirect script (there's no `/pt-pt/...` version to redirect a visitor to). */
   noAlternate?: boolean;
 }
@@ -86,6 +86,25 @@ const websiteJsonLd = {
     <meta name="twitter:image" content={ogImageURL} />
 
     <script is:inline type="application/ld+json" set:html={JSON.stringify(websiteJsonLd)} />
+    {
+      !noAlternate && lang === 'en' && (
+        <script is:inline define:vars={{ alternatePath: getAlternatePath(Astro.url.pathname, lang) }}>
+          // System-based language redirect: if any of the browser's languages is Portuguese and the
+          // visitor lands on an English (default-locale) page, send them to the pt-PT equivalent.
+          // Runs in <head> so it fires before first paint. Applies on every English landing (no
+          // once-only flag, no manual override -- the language follows the system setting).
+          // One-directional: /pt-pt/ pages are never redirected away, so shared links work as sent.
+          try {
+            const langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language];
+            if (langs.some((l) => String(l).toLowerCase().startsWith('pt'))) {
+              window.location.replace(alternatePath + window.location.search + window.location.hash);
+            }
+          } catch {
+            // navigator unavailable -- stay on English.
+          }
+        </script>
+      )
+    }
   </head>
   <body>
     <slot />
@@ -125,36 +144,5 @@ const websiteJsonLd = {
         }
       }
     </script>
-
-    {
-      !noAlternate && (
-        <script
-          is:inline
-          define:vars={{ lang, alternatePath: getAlternatePath(Astro.url.pathname, lang) }}
-        >
-          // First-visit-only language redirect: if the visitor's browser is set to Portuguese and
-          // they land on the English (default-locale) site, send them to the pt-PT equivalent page
-          // once. Remembered in localStorage so it never fires again after that. Deliberately
-          // one-directional: someone who lands on (or follows a link to) a /pt-pt/ page is never
-          // redirected away from it, so shared pt-pt links always work as sent.
-          try {
-            const DONE_KEY = 'otterbond-locale-redirect-done';
-            if (!localStorage.getItem(DONE_KEY)) {
-              localStorage.setItem(DONE_KEY, '1');
-              if (lang === 'en') {
-                const browserIsPortuguese = navigator.languages
-                  ? navigator.languages.some((l) => l.toLowerCase().startsWith('pt'))
-                  : navigator.language.toLowerCase().startsWith('pt');
-                if (browserIsPortuguese) {
-                  window.location.replace(alternatePath + window.location.search + window.location.hash);
-                }
-              }
-            }
-          } catch {
-            // localStorage unavailable (private mode, disabled storage, etc.) -- skip detection.
-          }
-        </script>
-      )
-    }
   </body>
 </html>
