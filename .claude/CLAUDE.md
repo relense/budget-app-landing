@@ -132,9 +132,10 @@ English is the default locale, unprefixed (`/`, `/privacy`, `/terms`); Portugues
 routing in `astro.config.mjs` (`defaultLocale: 'en'`, `locales: ['en', { path: 'pt-pt', codes:
 ['pt-PT'] }]`, `prefixDefaultLocale: false`) — Astro doesn't auto-generate translated pages from
 this, it's routing/URL convention plus `Astro.currentLocale` only; the actual page files under
-`src/pages/pt-pt/` are hand-duplicated. No visible language switcher: a first-visit-only,
-localStorage-remembered redirect in `BaseLayout.astro` sends English-page visitors with a
-Portuguese browser language to the `/pt-pt/` equivalent, one-directional only (never redirects
+`src/pages/pt-pt/` are hand-duplicated. No visible language switcher, purely system-based: an
+inline `<head>` script in `BaseLayout.astro` (runs before first paint, on every English landing, no
+once-only flag) sends English-page visitors whose preferred (first) browser language is Portuguese to the
+`/pt-pt/` equivalent, one-directional only (never redirects
 someone away from a `/pt-pt/` page they navigated to directly, e.g. a shared link).
 
 - `src/i18n/ui.ts` — the single translation dictionary, keyed by section (`hero.title`,
